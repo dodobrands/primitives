@@ -1,0 +1,83 @@
+name: Push to master
+on:
+  push:
+    branches:
+      - "master"
+jobs:
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-18.04
+    if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.sha }}
+      - name: Extract version
+        id: extract-version
+        run: |
+          version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
+          version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
+          echo "Package version prefix: $version_prefix"
+          echo "Package version suffix: $version_suffix"
+          if [ -z "${version_prefix// }" ]; then exit 1; fi
+          if [ -z "${version_suffix// }" ] && [ $prerelease == "true" ]
+          then
+              exit 1
+          fi
+          version_with_suffix="${version_prefix}"
+          if [ ! -z "${version_suffix// }" ]
+          then
+              version_with_suffix="${version_prefix}-${version_suffix}"
+          fi
+          echo "::set-output name=version_with_suffix::$version_with_suffix"
+          echo "::set-output name=version_suffix::$version_suffix"
+      - name: Setup .NET Core SDK 3.1.300
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.300
+      - name: Run tests
+        run: |
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/coverage.netcoreapp3.1.info /p:CoverletOutputFormat=lcov
+      - name: Publish coverage report to coveralls.io
+        uses: coverallsapp/github-action@v1.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/coverage.netcoreapp3.1.info
+  release:
+    name: Create release
+    runs-on: ubuntu-18.04
+    needs: run-tests
+    if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.sha }}
+      - name: Extract version
+        id: extract-version
+        run: |
+          version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
+          version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
+          echo "Package version prefix: $version_prefix"
+          echo "Package version suffix: $version_suffix"
+          if [ -z "${version_prefix// }" ]; then exit 1; fi
+          version_with_suffix="${version_prefix}"
+          has_suffix="false"
+          if [ ! -z "${version_suffix// }" ]
+          then
+              version_with_suffix="${version_prefix}-${version_suffix}"
+              has_suffix="true"
+          fi
+          echo "::set-output name=version_with_suffix::$version_with_suffix"
+          echo "::set-output name=has_suffix::$has_suffix"
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.extract-version.outputs.version_with_suffix }}
+          release_name: Release ${{ steps.extract-version.outputs.version_with_suffix }}
+          draft: true
+          prerelease: ${{ steps.extract-version.outputs.has_suffix }}

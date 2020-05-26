@@ -1,0 +1,56 @@
+name: Release
+on:
+  release:
+    types: [published]
+jobs:
+  build-test-and-publish:
+    name: Build and publish library to NuGet
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.sha }}
+      - name: Setup .NET Core SDK  3.1.300
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.300
+      - name: Run tests
+        run: |
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/coverage.netcoreapp3.1.info /p:CoverletOutputFormat=lcov
+      - name: Publish coverage report to coveralls.io
+        uses: coverallsapp/github-action@v1.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/coverage.netcoreapp3.1.info
+      - name: Build and publish library to NuGet
+        run: |
+          dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f netcoreapp3.1
+          dotnet pack -c Release --no-restore --no-build --output out/ ./src/Dodo.Primitives/Dodo.Primitives.csproj
+          dotnet nuget push out/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: NuGet package
+          path: out/
+  upload-release-assets:
+    name: Upload release assets
+    runs-on: ubuntu-18.04
+    needs: build-test-and-publish
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: NuGet package
+          path: out
+      - name: Get package
+        id: get-package
+        run: |
+          echo "::set-output name=package::$(ls out/)"
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./out/${{ steps.get-package.outputs.package }}
+          asset_name: ${{ steps.get-package.outputs.package }}
+          asset_content_type: application/zip

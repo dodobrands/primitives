@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dodo.Primitives", "Dodo.Primitives\Dodo.Primitives.csproj", "{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dodo.Primitives.Tests", "Dodo.Primitives.Tests\Dodo.Primitives.Tests.csproj", "{4C9485A5-FCB5-4361-8C46-C99669D5B22E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{56E0CBC4-2555-4231-B28A-A0193DDB9F88}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{23740544-1379-49B7-8654-AEC78FB10D75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dodo.Primitives.IL", "Dodo.Primitives.IL\Dodo.Primitives.IL.ilproj", "{39986063-46F5-410C-9C09-86FFAE90C121}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{D54C1753-031A-4F30-B892-0C6456E3D7D6}"
+ProjectSection(SolutionItems) = preProject
+	Directory.Build.props = Directory.Build.props
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{021B24DA-238D-4E15-B27D-9DA9191F0ED0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dodo.Primitives.Benchmarks", "Dodo.Primitives.Benchmarks\Dodo.Primitives.Benchmarks.csproj", "{288CCF26-65FB-4CC8-932B-01F0A458940A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C9485A5-FCB5-4361-8C46-C99669D5B22E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C9485A5-FCB5-4361-8C46-C99669D5B22E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C9485A5-FCB5-4361-8C46-C99669D5B22E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C9485A5-FCB5-4361-8C46-C99669D5B22E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39986063-46F5-410C-9C09-86FFAE90C121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39986063-46F5-410C-9C09-86FFAE90C121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39986063-46F5-410C-9C09-86FFAE90C121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39986063-46F5-410C-9C09-86FFAE90C121}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288CCF26-65FB-4CC8-932B-01F0A458940A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288CCF26-65FB-4CC8-932B-01F0A458940A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288CCF26-65FB-4CC8-932B-01F0A458940A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288CCF26-65FB-4CC8-932B-01F0A458940A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7} = {56E0CBC4-2555-4231-B28A-A0193DDB9F88}
+		{4C9485A5-FCB5-4361-8C46-C99669D5B22E} = {23740544-1379-49B7-8654-AEC78FB10D75}
+		{39986063-46F5-410C-9C09-86FFAE90C121} = {56E0CBC4-2555-4231-B28A-A0193DDB9F88}
+		{288CCF26-65FB-4CC8-932B-01F0A458940A} = {021B24DA-238D-4E15-B27D-9DA9191F0ED0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD7CBDA7-367E-4456-8A78-BD65663C7340}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
+        <LangVersion>8.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <PackageId>Dodo.Primitives</PackageId>
+        <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
+        <PackageTags>Uuid;Hex;Dodo</PackageTags>
+        <PackageIcon>dodopizza-logo.png</PackageIcon>
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeP2PAssets</TargetsForTfmSpecificBuildOutput>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../.github/images/dodopizza-logo.png">
+            <Pack>true</Pack>
+            <PackagePath>\</PackagePath>
+            <Visible>false</Visible>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Dodo.Primitives.IL\Dodo.Primitives.IL.ilproj"/>
+    </ItemGroup>
+
+    <Target Name="IncludeP2PAssets">
+        <ItemGroup>
+            <BuildOutputInPackage Include="$(OutputPath)Dodo.Primitives.IL.dll"/>
+        </ItemGroup>
+    </Target>
+
+</Project>

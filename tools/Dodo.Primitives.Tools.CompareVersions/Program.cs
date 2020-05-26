@@ -1,0 +1,42 @@
+﻿using System;
+using NuGet.Versioning;
+
+namespace Dodo.Primitives.Tools.CompareVersions
+{
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            if (args == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(args),
+                    "Application requires to pass 2 versions as command-line parameters, but got nothing.");
+            }
+
+            if (args.Length != 2)
+            {
+                throw new ArgumentNullException(
+                    nameof(args),
+                    $"Application requires to pass 2 versions as command-line parameters, but got {args.Length}.");
+            }
+
+            if (!NuGetVersion.TryParseStrict(args[0], out var versionA))
+            {
+                throw new ArgumentNullException(
+                    nameof(args),
+                    "First argument is not a valid nuget version");
+            }
+
+            if (!NuGetVersion.TryParseStrict(args[1], out var versionB))
+            {
+                throw new ArgumentNullException(
+                    nameof(args),
+                    "Second argument is not a valid nuget version");
+            }
+
+            var compare = VersionComparer.VersionReleaseMetadata.Compare(versionA, versionB);
+            Console.WriteLine(compare);
+        }
+    }
+}

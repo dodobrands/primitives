@@ -1,0 +1,109 @@
+name: Pull request
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  compare-version:
+    name: Compare versions in current branch and master
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Get source branch version
+        id: source-version
+        run: |
+          version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
+          version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
+          echo "Package version prefix: $version_prefix"
+          echo "Package version suffix: $version_suffix"
+          if [ -z "${version_prefix// }" ]; then exit 1; fi
+          version_with_suffix="${version_prefix}"
+          has_suffix="false"
+          if [ ! -z "${version_suffix// }" ]
+          then
+              version_with_suffix="${version_prefix}-${version_suffix}"
+              has_suffix="true"
+          fi
+          echo "::set-output name=version_with_suffix::$version_with_suffix"
+          echo "::set-output name=has_suffix::$has_suffix"
+      - name: Checkout target branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.base_ref }}
+      - name: Get target branch version
+        id: target-version
+        run: |
+          version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
+          version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
+          echo "Package version prefix: $version_prefix"
+          echo "Package version suffix: $version_suffix"
+          if [ -z "${version_prefix// }" ]; then exit 1; fi
+          version_with_suffix="${version_prefix}"
+          has_suffix="false"
+          if [ ! -z "${version_suffix// }" ]
+          then
+              version_with_suffix="${version_prefix}-${version_suffix}"
+              has_suffix="true"
+          fi
+          echo "::set-output name=version_with_suffix::$version_with_suffix"
+          echo "::set-output name=has_suffix::$has_suffix"
+      - name: Setup .NET Core SDK  3.1.300
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.300
+      - name: Compare versions
+        run: |
+          dotnet publish -c Release ./tools/Dodo.Primitives.Tools.CompareVersions/Dodo.Primitives.Tools.CompareVersions.csproj
+          source_more_than_target=$(dotnet ./tools/Dodo.Primitives.Tools.CompareVersions/bin/Release/netcoreapp3.1/publish/Dodo.Primitives.Tools.CompareVersions.dll "${source_version}" "${target_version}")
+          last_exit_code=$(printf "%d" $?)
+          source_more_than_target=$(printf "%s" $source_more_than_target)
+          if [ "$last_exit_code" -ne 0 ]
+          then
+            echo "dotnet run status code is ${last_exit_code}"
+            exit 1
+          fi
+          if (( "$source_more_than_target" >= -1 && "$source_more_than_target" <=1 ))
+          then
+            if (( "$source_more_than_target" == 1 ))
+            then
+              echo "Version check passed"
+            elif (( "$source_more_than_target" == 0 ))
+            then
+              echo "Source and target versions are same! Expect that source version will be greater than target."
+              exit 1
+            else
+              echo "Target version is bigger than source! Expect that source version will be greater than target."
+              exit 1
+            fi
+          else
+            echo "Unexpected range result from version tool. Result is: ${source_more_than_target}"
+            exit 1
+          fi
+        env:
+          source_version: ${{ steps.source-version.outputs.version_with_suffix }}
+          target_version: ${{ steps.target-version.outputs.version_with_suffix }}
+  run-tests:
+    name: Run tests
+    needs: compare-version
+    runs-on: ubuntu-18.04
+    if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.sha }}
+      - name: Setup .NET Core SDK  3.1.300
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.300
+      - name: Run tests
+        run: |
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/coverage.netcoreapp3.1.info /p:CoverletOutputFormat=lcov
+      - name: Publish coverage report to coveralls.io
+        uses: coverallsapp/github-action@v1.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/coverage.netcoreapp3.1.info
