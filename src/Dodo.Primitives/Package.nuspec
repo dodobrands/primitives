@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
+        <id>Dodo.Primitives</id>
+        <version>1.0.2</version>
+        <authors>Dodo Pizza</authors>
+        <owners>Dodo Pizza</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <license type="expression">MIT</license>
+        <icon>images\dodopizza-logo.png</icon>
+        <description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</description>
+        <copyright>Copyright 2020 Dodo Pizza</copyright>
+        <tags>Uuid Hex Dodo</tags>
+        <repository type="git" url="https://github.com/dodopizza/primitives"/>
+        <dependencies>
+            <group targetFramework=".NETCoreApp3.1"/>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\..\.github\images\dodopizza-logo.png" target="images\"/>
+        <file src="bin\Release\netcoreapp3.1\publish\Dodo.Primitives.dll" target="lib\netcoreapp3.1"/>
+        <file src="bin\Release\netcoreapp3.1\publish\Dodo.Primitives.IL.dll" target="lib\netcoreapp3.1"/>
+        <file src="bin\Release\netcoreapp3.1\publish\Dodo.Primitives.pdb" target="lib\netcoreapp3.1"/>
+    </files>
+</package>
