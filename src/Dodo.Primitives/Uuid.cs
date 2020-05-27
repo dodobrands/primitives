@@ -692,6 +692,64 @@ namespace Dodo.Primitives
             destUints[29] = TableToHex[_byte14];
         }
 
+        /// <summary>
+        ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+        public Guid ToGuidByteLayout()
+        {
+            var result = new Guid();
+            Guid* resultPtr = &result;
+            var resultPtrBytes = (byte*) resultPtr;
+            resultPtrBytes[0] = _byte0;
+            resultPtrBytes[1] = _byte1;
+            resultPtrBytes[2] = _byte2;
+            resultPtrBytes[3] = _byte3;
+            resultPtrBytes[4] = _byte4;
+            resultPtrBytes[5] = _byte5;
+            resultPtrBytes[6] = _byte6;
+            resultPtrBytes[7] = _byte7;
+            resultPtrBytes[8] = _byte8;
+            resultPtrBytes[9] = _byte9;
+            resultPtrBytes[10] = _byte10;
+            resultPtrBytes[11] = _byte11;
+            resultPtrBytes[12] = _byte12;
+            resultPtrBytes[13] = _byte13;
+            resultPtrBytes[14] = _byte14;
+            resultPtrBytes[15] = _byte15;
+            return result;
+        }
+
+        /// <summary>
+        ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+        public Guid ToGuidStringLayout()
+        {
+            var result = new Guid();
+            Guid* resultPtr = &result;
+            var resultPtrBytes = (byte*) resultPtr;
+            resultPtrBytes[0] = _byte3;
+            resultPtrBytes[1] = _byte2;
+            resultPtrBytes[2] = _byte1;
+            resultPtrBytes[3] = _byte0;
+            resultPtrBytes[4] = _byte5;
+            resultPtrBytes[5] = _byte4;
+            resultPtrBytes[6] = _byte7;
+            resultPtrBytes[7] = _byte6;
+            resultPtrBytes[8] = _byte8;
+            resultPtrBytes[9] = _byte9;
+            resultPtrBytes[10] = _byte10;
+            resultPtrBytes[11] = _byte11;
+            resultPtrBytes[12] = _byte12;
+            resultPtrBytes[13] = _byte13;
+            resultPtrBytes[14] = _byte14;
+            resultPtrBytes[15] = _byte15;
+            return result;
+        }
+
         public Uuid(string input)
         {
             if (input == null)
