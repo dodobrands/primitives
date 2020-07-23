@@ -50,10 +50,10 @@ jobs:
           fi
           echo "::set-output name=version_with_suffix::$version_with_suffix"
           echo "::set-output name=has_suffix::$has_suffix"
-      - name: Setup .NET Core SDK  3.1.300
+      - name: Setup .NET Core SDK  3.1.302
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.300
+          dotnet-version: 3.1.302
       - name: Compare versions
         run: |
           dotnet publish -c Release ./tools/Dodo.Primitives.Tools.CompareVersions/Dodo.Primitives.Tools.CompareVersions.csproj
@@ -95,10 +95,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
-      - name: Setup .NET Core SDK  3.1.300
+      - name: Setup .NET Core SDK  3.1.302
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.300
+          dotnet-version: 3.1.302
       - name: Run tests
         run: |
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/coverage.netcoreapp3.1.info /p:CoverletOutputFormat=lcov
