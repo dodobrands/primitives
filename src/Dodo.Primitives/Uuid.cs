@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
-using Dodo.Primitives.IL;
 using Dodo.Primitives.Internal;
 
 namespace Dodo.Primitives
@@ -12,6 +11,7 @@ namespace Dodo.Primitives
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     [TypeConverter(typeof(UuidTypeConverter))]
     [JsonConverter(typeof(SystemTextJsonUuidJsonConverter))]
+    [SuppressMessage("ReSharper", "RedundantNameQualifier")]
     public unsafe partial struct Uuid : IFormattable, IComparable, IComparable<Uuid>, IEquatable<Uuid>
     {
         static Uuid()
@@ -498,7 +498,7 @@ namespace Dodo.Primitives
             {
                 case 'n':
                 {
-                    var uuidString = CoreLib.FastAllocateString(32);
+                    var uuidString = Dodo.Primitives.IL.CoreLib.FastAllocateString(32);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
                         FormatN(uuidChars);
@@ -508,7 +508,7 @@ namespace Dodo.Primitives
                 }
                 case 'd':
                 {
-                    var uuidString = CoreLib.FastAllocateString(36);
+                    var uuidString = Dodo.Primitives.IL.CoreLib.FastAllocateString(36);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
                         FormatD(uuidChars);
@@ -518,7 +518,7 @@ namespace Dodo.Primitives
                 }
                 case 'b':
                 {
-                    var uuidString = CoreLib.FastAllocateString(38);
+                    var uuidString = Dodo.Primitives.IL.CoreLib.FastAllocateString(38);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
                         FormatB(uuidChars);
@@ -528,7 +528,7 @@ namespace Dodo.Primitives
                 }
                 case 'p':
                 {
-                    var uuidString = CoreLib.FastAllocateString(38);
+                    var uuidString = Dodo.Primitives.IL.CoreLib.FastAllocateString(38);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
                         FormatP(uuidChars);
@@ -538,7 +538,7 @@ namespace Dodo.Primitives
                 }
                 case 'x':
                 {
-                    var uuidString = CoreLib.FastAllocateString(68);
+                    var uuidString = Dodo.Primitives.IL.CoreLib.FastAllocateString(68);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
                         FormatX(uuidChars);

@@ -1,8 +1,9 @@
-﻿using Dodo.Primitives.IL;
+﻿using System.Diagnostics.CodeAnalysis;
 using Dodo.Primitives.Internal;
 
 namespace Dodo.Primitives
 {
+    [SuppressMessage("ReSharper", "RedundantNameQualifier")]
     public static unsafe class Hex
     {
         private const ushort MaximalChar = InternalHexTables.MaximalChar;
@@ -104,7 +105,7 @@ namespace Dodo.Primitives
                 return string.Empty;
             }
 
-            var resultString = CoreLib.FastAllocateString(bytes.Length * 2);
+            var resultString = Dodo.Primitives.IL.CoreLib.FastAllocateString(bytes.Length * 2);
             fixed (char* stringPtr = &resultString.GetPinnableReference())
             {
                 var destUints = (uint*) stringPtr;

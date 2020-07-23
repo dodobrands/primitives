@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Dodo.Primitives.IL;
 
 namespace Dodo.Primitives
 {
+    [SuppressMessage("ReSharper", "RedundantNameQualifier")]
     public static class Utf8JsonReaderUuidExtensions
     {
         // https://github.com/dotnet/runtime/blob/v5.0.0-preview.3.20214.6/src/libraries/System.Text.Json/src/System/Text/Json/ThrowHelper.cs#L14
@@ -45,7 +46,7 @@ namespace Dodo.Primitives
                 byte* stackBuffer = stackalloc byte[(int) sequenceLength];
                 var stackSpan = new Span<byte>(stackBuffer, (int) sequenceLength);
                 reader.ValueSequence.CopyTo(stackSpan);
-                return reader.IsStringHasEscaping()
+                return Dodo.Primitives.IL.SystemTextJson.IsStringHasEscaping(ref reader)
                     ? TryGetEscapedUuid(stackSpan, out value)
                     : TryParseUuid(stackSpan, out value);
             }
@@ -56,7 +57,7 @@ namespace Dodo.Primitives
                 return false;
             }
 
-            return reader.IsStringHasEscaping()
+            return Dodo.Primitives.IL.SystemTextJson.IsStringHasEscaping(ref reader)
                 ? TryGetEscapedUuid(reader.ValueSpan, out value)
                 : TryParseUuid(reader.ValueSpan, out value);
         }
@@ -66,7 +67,7 @@ namespace Dodo.Primitives
         {
             int idx = source.IndexOf(BackSlash);
             Span<byte> utf8Unescaped = stackalloc byte[source.Length];
-            SystemTextJson.Unescape(source, utf8Unescaped, idx, out int written);
+            Dodo.Primitives.IL.SystemTextJson.Unescape(source, utf8Unescaped, idx, out int written);
             utf8Unescaped = utf8Unescaped.Slice(0, written);
             if (utf8Unescaped.Length <= MaximumFormatUuidLength && TryParseUuid(utf8Unescaped, out value))
             {
