@@ -4,17 +4,18 @@ using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids
 {
-    public class UuidTryFormatTests
+    public unsafe class UuidTryFormatTests
     {
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
         public void TryFormatNullFormat(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringN(correctBytes);
-            Span<char> buffer = stackalloc char[32];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten));
+            char* bufferPtr = stackalloc char[32];
+            var spanBuffer = new Span<char>(bufferPtr, 32);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten));
             Assert.AreEqual(32, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 32));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -22,10 +23,11 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringN(correctBytes);
-            Span<char> buffer = stackalloc char[32];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten, ReadOnlySpan<char>.Empty));
+            char* bufferPtr = stackalloc char[32];
+            var spanBuffer = new Span<char>(bufferPtr, 32);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, ReadOnlySpan<char>.Empty));
             Assert.AreEqual(32, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 32));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -33,7 +35,7 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             Span<char> buffer = stackalloc char[68];
-            Assert.False(uuid.TryFormat(buffer, out int charsWritten, "Ъ"));
+            Assert.False(uuid.TryFormat(buffer, out int charsWritten, "Ъ".AsSpan()));
             Assert.AreEqual(0, charsWritten);
         }
 
@@ -42,7 +44,7 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             Span<char> buffer = stackalloc char[68];
-            Assert.False(uuid.TryFormat(buffer, out int charsWritten, "ЪЪ"));
+            Assert.False(uuid.TryFormat(buffer, out int charsWritten, "ЪЪ".AsSpan()));
             Assert.AreEqual(0, charsWritten);
         }
 
@@ -51,10 +53,11 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringN(correctBytes);
-            Span<char> buffer = stackalloc char[32];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'N'})));
+            char* bufferPtr = stackalloc char[32];
+            var spanBuffer = new Span<char>(bufferPtr, 32);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'N'})));
             Assert.AreEqual(32, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 32));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -62,10 +65,11 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringD(correctBytes);
-            Span<char> buffer = stackalloc char[36];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'D'})));
+            char* bufferPtr = stackalloc char[36];
+            var spanBuffer = new Span<char>(bufferPtr, 36);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'D'})));
             Assert.AreEqual(36, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 36));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -73,10 +77,11 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringB(correctBytes);
-            Span<char> buffer = stackalloc char[38];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'B'})));
+            char* bufferPtr = stackalloc char[38];
+            var spanBuffer = new Span<char>(bufferPtr, 38);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'B'})));
             Assert.AreEqual(38, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 38));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -84,10 +89,11 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringP(correctBytes);
-            Span<char> buffer = stackalloc char[38];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'P'})));
+            char* bufferPtr = stackalloc char[38];
+            var spanBuffer = new Span<char>(bufferPtr, 38);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'P'})));
             Assert.AreEqual(38, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 38));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -95,10 +101,11 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
             var expectedString = UuidTestsUtils.GetStringX(correctBytes);
-            Span<char> buffer = stackalloc char[68];
-            Assert.True(uuid.TryFormat(buffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'X'})));
+            char* bufferPtr = stackalloc char[68];
+            var spanBuffer = new Span<char>(bufferPtr, 68);
+            Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'X'})));
             Assert.AreEqual(68, charsWritten);
-            Assert.AreEqual(expectedString, new string(buffer));
+            Assert.AreEqual(expectedString, new string(bufferPtr, 0, 68));
         }
 
         [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]

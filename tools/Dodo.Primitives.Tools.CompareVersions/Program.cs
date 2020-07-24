@@ -35,7 +35,7 @@ namespace Dodo.Primitives.Tools.CompareVersions
                     "Second argument is not a valid nuget version");
             }
 
-            var compare = VersionComparer.VersionReleaseMetadata.Compare(versionA, versionB);
+            int compare = VersionComparer.VersionReleaseMetadata.Compare(versionA, versionB);
             Console.WriteLine(compare);
         }
     }

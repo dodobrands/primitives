@@ -4,17 +4,16 @@ on:
     branches:
       - "master"
 jobs:
-  run-tests:
-    name: Run tests
+  validate-version:
+    name: Validate package version
     runs-on: ubuntu-18.04
-    if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
-      - name: Extract version
-        id: extract-version
+      - name: Validate version
+        id: validate-version
         run: |
           version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
           version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
@@ -32,18 +31,29 @@ jobs:
           fi
           echo "::set-output name=version_with_suffix::$version_with_suffix"
           echo "::set-output name=version_suffix::$version_suffix"
-      - name: Setup .NET Core SDK 3.1.300
+  run-tests:
+    name: Run tests
+    needs: validate-version
+    runs-on: windows-2019
+    if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.sha }}
+      - name: Setup .NET Core SDK  3.1.302
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.300
+          dotnet-version: 3.1.302
       - name: Run tests
         run: |
-          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/coverage.netcoreapp3.1.info /p:CoverletOutputFormat=lcov
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net462 /p:CoverletOutput=../../coverage/cover_netstandard20 /p:CoverletOutputFormat=json
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:MergeWith=../../coverage/cover_netstandard20.net462.json /p:CoverletOutput=../../coverage/cover_full /p:CoverletOutputFormat=lcov
       - name: Publish coverage report to coveralls.io
         uses: coverallsapp/github-action@v1.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/coverage.netcoreapp3.1.info
+          path-to-lcov: ./coverage/cover_full.netcoreapp3.1.info
   release:
     name: Create release
     runs-on: ubuntu-18.04

@@ -1,16 +1,28 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Dodo.Primitives.IL;
 
+#endif
+#if NETSTANDARD2_0
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+
+#endif
+
+
 namespace Dodo.Primitives
 {
+    [SuppressMessage("ReSharper", "RedundantNameQualifier")]
     public static class Utf8JsonReaderUuidExtensions
     {
         // https://github.com/dotnet/runtime/blob/v5.0.0-preview.3.20214.6/src/libraries/System.Text.Json/src/System/Text/Json/ThrowHelper.cs#L14
         private const string ExceptionSourceValueToRethrowAsJsonException = "System.Text.Json.Rethrowable";
-
+#if NETCOREAPP3_1
         // https://github.com/dotnet/runtime/blob/v5.0.0-preview.3.20214.6/src/libraries/System.Text.Json/src/System/Text/Json/JsonConstants.cs#L20
         private const byte BackSlash = 0x5C;
 
@@ -102,5 +114,32 @@ namespace Dodo.Primitives
 
             return value;
         }
+#endif
+#if NETSTANDARD2_0
+        public static Uuid GetUuid(this ref Utf8JsonReader reader)
+        {
+            if (!reader.TryGetUuid(out Uuid value))
+            {
+                throw new FormatException("The JSON value is not in a supported Uuid format.")
+                {
+                    Source = ExceptionSourceValueToRethrowAsJsonException
+                };
+            }
+
+            return value;
+        }
+
+        public static bool TryGetUuid(this ref Utf8JsonReader reader, out Uuid value)
+        {
+            var possibleUuidString = reader.GetString();
+            if (Uuid.TryParse(possibleUuidString, out value))
+            {
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+#endif
     }
 }
