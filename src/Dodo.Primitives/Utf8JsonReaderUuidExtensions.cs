@@ -1,8 +1,19 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Dodo.Primitives.IL;
+
+#endif
+#if NETSTANDARD2_0
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+
+#endif
+
 
 namespace Dodo.Primitives
 {
@@ -11,7 +22,7 @@ namespace Dodo.Primitives
     {
         // https://github.com/dotnet/runtime/blob/v5.0.0-preview.3.20214.6/src/libraries/System.Text.Json/src/System/Text/Json/ThrowHelper.cs#L14
         private const string ExceptionSourceValueToRethrowAsJsonException = "System.Text.Json.Rethrowable";
-
+#if NETCOREAPP3_1
         // https://github.com/dotnet/runtime/blob/v5.0.0-preview.3.20214.6/src/libraries/System.Text.Json/src/System/Text/Json/JsonConstants.cs#L20
         private const byte BackSlash = 0x5C;
 
@@ -46,7 +57,7 @@ namespace Dodo.Primitives
                 byte* stackBuffer = stackalloc byte[(int) sequenceLength];
                 var stackSpan = new Span<byte>(stackBuffer, (int) sequenceLength);
                 reader.ValueSequence.CopyTo(stackSpan);
-                return Dodo.Primitives.IL.SystemTextJson.IsStringHasEscaping(ref reader)
+                return reader.IsStringHasEscaping()
                     ? TryGetEscapedUuid(stackSpan, out value)
                     : TryParseUuid(stackSpan, out value);
             }
@@ -57,7 +68,7 @@ namespace Dodo.Primitives
                 return false;
             }
 
-            return Dodo.Primitives.IL.SystemTextJson.IsStringHasEscaping(ref reader)
+            return reader.IsStringHasEscaping()
                 ? TryGetEscapedUuid(reader.ValueSpan, out value)
                 : TryParseUuid(reader.ValueSpan, out value);
         }
@@ -67,7 +78,7 @@ namespace Dodo.Primitives
         {
             int idx = source.IndexOf(BackSlash);
             Span<byte> utf8Unescaped = stackalloc byte[source.Length];
-            Dodo.Primitives.IL.SystemTextJson.Unescape(source, utf8Unescaped, idx, out int written);
+            SystemTextJson.Unescape(source, utf8Unescaped, idx, out int written);
             utf8Unescaped = utf8Unescaped.Slice(0, written);
             if (utf8Unescaped.Length <= MaximumFormatUuidLength && TryParseUuid(utf8Unescaped, out value))
             {
@@ -103,5 +114,32 @@ namespace Dodo.Primitives
 
             return value;
         }
+#endif
+#if NETSTANDARD2_0
+        public static Uuid GetUuid(this ref Utf8JsonReader reader)
+        {
+            if (!reader.TryGetUuid(out Uuid value))
+            {
+                throw new FormatException("The JSON value is not in a supported Uuid format.")
+                {
+                    Source = ExceptionSourceValueToRethrowAsJsonException
+                };
+            }
+
+            return value;
+        }
+
+        public static bool TryGetUuid(this ref Utf8JsonReader reader, out Uuid value)
+        {
+            var possibleUuidString = reader.GetString();
+            if (Uuid.TryParse(possibleUuidString, out value))
+            {
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+#endif
     }
 }

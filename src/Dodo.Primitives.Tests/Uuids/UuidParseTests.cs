@@ -6,13 +6,15 @@ namespace Dodo.Primitives.Tests.Uuids
 {
     public class UuidParseTests
     {
+        private const string? NullString = null;
+
         [Test]
         public void ParseNullStringShouldThrows()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
 #nullable disable
-                Uuid _ = Uuid.Parse(null);
+                Uuid _ = Uuid.Parse(NullString!);
 #nullable restore
             });
         }

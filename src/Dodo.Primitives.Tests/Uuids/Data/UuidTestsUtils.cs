@@ -1,9 +1,21 @@
+#if NETCOREAPP
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Dodo.Primitives.Tests.Uuids.Data.Models;
+
+#endif
+#if NETFRAMEWORK
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
+
+#endif
+
 
 namespace Dodo.Primitives.Tests.Uuids.Data
 {
@@ -265,6 +277,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 stringsToCreate = stringsToCreate >> 1, itemsToFill = itemsToFill << 1)
             for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
             {
+#if NETCOREAPP
                 resultStrings.Add(
                     string.Create(
                         32,
@@ -283,6 +296,25 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                                 result[startPositionToFill + j] = '1';
                             }
                         }));
+#endif
+#if NETFRAMEWORK
+                var result = new char[32];
+                int startPositionToFill = stringIndex * itemsToFill;
+                int itemsToFillCount = itemsToFill;
+                for (var j = 0; j < 32; j++)
+                {
+                    result[j] = '0';
+                }
+
+                result[startPositionToFill] = '1';
+                for (var j = 0; j < itemsToFillCount; j++)
+                {
+                    result[startPositionToFill + j] = '1';
+                }
+
+                var resultStr = new string(result);
+                resultStrings.Add(resultStr);
+#endif
             }
 
             for (int stringsToCreate = 32, itemsToFill = 1;
@@ -290,6 +322,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 stringsToCreate = stringsToCreate >> 1, itemsToFill = itemsToFill << 1)
             for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
             {
+#if NETCOREAPP
                 resultStrings.Add(
                     string.Create(
                         32,
@@ -308,6 +341,25 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                                 result[startPositionToFill + j] = '0';
                             }
                         }));
+#endif
+#if NETFRAMEWORK
+                var result = new char[32];
+                int startPositionToFill = stringIndex * itemsToFill;
+                int itemsToFillCount = itemsToFill;
+                for (var j = 0; j < 32; j++)
+                {
+                    result[j] = '1';
+                }
+
+                result[startPositionToFill] = '1';
+                for (var j = 0; j < itemsToFillCount; j++)
+                {
+                    result[startPositionToFill + j] = '0';
+                }
+
+                var resultStr = new string(result);
+                resultStrings.Add(resultStr);
+#endif
             }
 
             var nStrings = resultStrings.Distinct().ToArray();
@@ -411,6 +463,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
 
                 var bytesOfUuid = new ReadOnlySpan<byte>(uuidIntegers, 16).ToArray();
                 var uuidString = formatString(bytesOfUuid);
+#if NETCOREAPP
                 Span<char> spanOfString = MemoryMarshal.CreateSpan(
                     ref MemoryMarshal.GetReference(uuidString.AsSpan()),
                     uuidString.Length);
@@ -429,6 +482,27 @@ namespace Dodo.Primitives.Tests.Uuids.Data
 
                 spanOfString[brokenCharIndex] = charToBreakPtr[0];
                 result[i] = uuidString;
+#endif
+#if NETFRAMEWORK
+                fixed (char* uuidStringPtr = uuidString)
+                {
+                    int brokenCharIndex = i % outputFormatSize;
+                    bool shouldBreakUpperByte = breakUpperByteOnCharArray[brokenCharIndex];
+                    breakUpperByteOnCharArray[brokenCharIndex] = !shouldBreakUpperByte;
+                    charToBreakPtr[0] = uuidString[brokenCharIndex];
+                    if (shouldBreakUpperByte)
+                    {
+                        charBytesPtr[0] = 110;
+                    }
+                    else
+                    {
+                        charBytesPtr[1] = 110;
+                    }
+
+                    uuidStringPtr[brokenCharIndex] = charToBreakPtr[0];
+                    result[i] = uuidString;
+                }
+#endif
             }
 
             return result;

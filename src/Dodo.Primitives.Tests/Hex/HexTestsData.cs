@@ -41,7 +41,7 @@ namespace Dodo.Primitives.Tests.Hex
             var resultStrings = new string[strings.Length];
             for (var i = 0; i < strings.Length; i++)
             {
-                var brokenString = new string(strings[i]);
+                var brokenString = new string(strings[i].ToCharArray());
                 fixed (char* brokenPtr = brokenString)
                 {
                     var bytePtr = (byte*) brokenPtr;

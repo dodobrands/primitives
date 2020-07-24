@@ -1,5 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Dodo.Primitives.Internal;
+#if NETCOREAPP3_1
+using Dodo.Primitives.IL;
+
+#endif
 
 namespace Dodo.Primitives
 {
@@ -30,7 +34,12 @@ namespace Dodo.Primitives
 
             int length = possibleHexString.Length;
 
+#if NETCOREAPP3_1
             fixed (char* stringPtr = &possibleHexString.GetPinnableReference())
+#endif
+#if NETSTANDARD2_0
+            fixed (char* stringPtr = possibleHexString)
+#endif
             {
                 for (var i = 0; i < length;)
                 {
@@ -65,7 +74,12 @@ namespace Dodo.Primitives
 
             int length = hexString.Length;
             var result = new byte[length / 2];
+#if NETCOREAPP3_1
             fixed (char* stringPtr = &hexString.GetPinnableReference())
+#endif
+#if NETSTANDARD2_0
+            fixed (char* stringPtr = hexString)
+#endif
             fixed (byte* resultPtr = &result[0])
             {
                 var resultIndex = 0;
@@ -104,9 +118,14 @@ namespace Dodo.Primitives
             {
                 return string.Empty;
             }
-
-            var resultString = Dodo.Primitives.IL.CoreLib.FastAllocateString(bytes.Length * 2);
+#if NETCOREAPP3_1
+            var resultString = CoreLib.FastAllocateString(bytes.Length * 2);
             fixed (char* stringPtr = &resultString.GetPinnableReference())
+#endif
+#if NETSTANDARD2_0
+            var resultString = new string('\0', bytes.Length * 2);
+            fixed (char* stringPtr = resultString)
+#endif
             {
                 var destUints = (uint*) stringPtr;
                 for (var i = 0; i < bytes.Length; i++)
