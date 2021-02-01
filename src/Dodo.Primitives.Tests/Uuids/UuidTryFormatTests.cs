@@ -10,7 +10,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatNullFormat(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
             char* bufferPtr = stackalloc char[32];
             var spanBuffer = new Span<char>(bufferPtr, 32);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten));
@@ -22,7 +22,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatEmptyFormat(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
             char* bufferPtr = stackalloc char[32];
             var spanBuffer = new Span<char>(bufferPtr, 32);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, ReadOnlySpan<char>.Empty));
@@ -52,7 +52,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatNCorrect(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
             char* bufferPtr = stackalloc char[32];
             var spanBuffer = new Span<char>(bufferPtr, 32);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'N'})));
@@ -64,7 +64,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatDCorrect(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringD(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringD(correctBytes);
             char* bufferPtr = stackalloc char[36];
             var spanBuffer = new Span<char>(bufferPtr, 36);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'D'})));
@@ -76,7 +76,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatBCorrect(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringB(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringB(correctBytes);
             char* bufferPtr = stackalloc char[38];
             var spanBuffer = new Span<char>(bufferPtr, 38);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'B'})));
@@ -88,7 +88,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatPCorrect(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringP(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringP(correctBytes);
             char* bufferPtr = stackalloc char[38];
             var spanBuffer = new Span<char>(bufferPtr, 38);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'P'})));
@@ -100,7 +100,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void TryFormatXCorrect(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringX(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringX(correctBytes);
             char* bufferPtr = stackalloc char[68];
             var spanBuffer = new Span<char>(bufferPtr, 68);
             Assert.True(uuid.TryFormat(spanBuffer, out int charsWritten, new ReadOnlySpan<char>(new[] {'X'})));

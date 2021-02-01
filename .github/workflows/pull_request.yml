@@ -50,14 +50,14 @@ jobs:
           fi
           echo "::set-output name=version_with_suffix::$version_with_suffix"
           echo "::set-output name=has_suffix::$has_suffix"
-      - name: Setup .NET Core SDK  3.1.302
+      - name: Setup .NET Core SDK 5.0.102
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.302
+          dotnet-version: 5.0.102
       - name: Compare versions
         run: |
           dotnet publish -c Release ./tools/Dodo.Primitives.Tools.CompareVersions/Dodo.Primitives.Tools.CompareVersions.csproj
-          source_more_than_target=$(dotnet ./tools/Dodo.Primitives.Tools.CompareVersions/bin/Release/netcoreapp3.1/publish/Dodo.Primitives.Tools.CompareVersions.dll "${source_version}" "${target_version}")
+          source_more_than_target=$(dotnet ./tools/Dodo.Primitives.Tools.CompareVersions/bin/Release/net5.0/publish/Dodo.Primitives.Tools.CompareVersions.dll "${source_version}" "${target_version}")
           last_exit_code=$(printf "%d" $?)
           source_more_than_target=$(printf "%s" $source_more_than_target)
           if [ "$last_exit_code" -ne 0 ]
@@ -95,16 +95,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
-      - name: Setup .NET Core SDK  3.1.302
+      - name: Setup .NET Core SDK 5.0.102
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.302
+          dotnet-version: 5.0.102
       - name: Run tests
         run: |
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net462 /p:CoverletOutput=../../coverage/cover_netstandard20 /p:CoverletOutputFormat=json
-          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:MergeWith=../../coverage/cover_netstandard20.net462.json /p:CoverletOutput=../../coverage/cover_full /p:CoverletOutputFormat=lcov
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/cover_netcoreapp31 /p:MergeWith=../../coverage/cover_netstandard20.net462.json /p:CoverletOutputFormat=json
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net5.0 /p:MergeWith=../../coverage/cover_netcoreapp31.netcoreapp3.1.json /p:CoverletOutput=../../coverage/cover_full /p:CoverletOutputFormat=lcov
       - name: Publish coverage report to coveralls.io
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v1.1.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/cover_full.netcoreapp3.1.info
+          path-to-lcov: ./coverage/cover_full.net5.0.info

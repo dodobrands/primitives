@@ -5,9 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Dodo.Primitives.Internal;
-#if NETCOREAPP3_1
-using Dodo.Primitives.IL;
-#endif
 
 namespace Dodo.Primitives
 {
@@ -96,7 +93,7 @@ namespace Dodo.Primitives
 
         // ReSharper disable once RedundantDefaultMemberInitializer
         // ReSharper disable once MemberCanBePrivate.Global
-        public static readonly Uuid Empty = new Uuid();
+        public static readonly Uuid Empty = new();
 
         public Uuid(byte[] bytes)
         {
@@ -369,7 +366,7 @@ namespace Dodo.Primitives
         {
             if (format.Length == 0)
             {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                 format = "N";
 #endif
 #if NETSTANDARD2_0
@@ -506,12 +503,11 @@ namespace Dodo.Primitives
             {
                 case 'n':
                 {
-#if NETCOREAPP3_1
-                    var uuidString = CoreLib.FastAllocateString(32);
+                    var uuidString = new string('\0', 32);
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
-                    var uuidString = new string('\0', 32);
                     fixed (char* uuidChars = uuidString)
 #endif
                     {
@@ -522,12 +518,11 @@ namespace Dodo.Primitives
                 }
                 case 'd':
                 {
-#if NETCOREAPP3_1
-                    var uuidString = CoreLib.FastAllocateString(36);
+                    var uuidString = new string('\0', 36);
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
-                    var uuidString = new string('\0', 36);
                     fixed (char* uuidChars = uuidString)
 #endif
                     {
@@ -538,12 +533,11 @@ namespace Dodo.Primitives
                 }
                 case 'b':
                 {
-#if NETCOREAPP3_1
-                    var uuidString = CoreLib.FastAllocateString(38);
+                    var uuidString = new string('\0', 38);
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
-                    var uuidString = new string('\0', 38);
                     fixed (char* uuidChars = uuidString)
 #endif
                     {
@@ -554,12 +548,11 @@ namespace Dodo.Primitives
                 }
                 case 'p':
                 {
-#if NETCOREAPP3_1
-                    var uuidString = CoreLib.FastAllocateString(38);
+                    var uuidString = new string('\0', 38);
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
-                    var uuidString = new string('\0', 38);
                     fixed (char* uuidChars = uuidString)
 #endif
                     {
@@ -570,12 +563,11 @@ namespace Dodo.Primitives
                 }
                 case 'x':
                 {
-#if NETCOREAPP3_1
-                    var uuidString = CoreLib.FastAllocateString(68);
+                    var uuidString = new string('\0', 68);
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
-                    var uuidString = new string('\0', 68);
                     fixed (char* uuidChars = uuidString)
 #endif
                     {
@@ -589,7 +581,7 @@ namespace Dodo.Primitives
                         "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
             }
         }
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -617,7 +609,7 @@ namespace Dodo.Primitives
             destUints[15] = TableToHex[_byte15];
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -648,7 +640,7 @@ namespace Dodo.Primitives
             destUints[10] = TableToHex[_byte9];
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -681,7 +673,7 @@ namespace Dodo.Primitives
             destUints[17] = TableToHex[_byte15];
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -718,7 +710,7 @@ namespace Dodo.Primitives
         private const uint CommaBrace = 8060972; // ,{
         private const uint CloseBraces = 8192125; // }}
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -758,7 +750,7 @@ namespace Dodo.Primitives
         ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation.
         /// </summary>
         /// <returns></returns>
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
 #endif
 #if NETSTANDARD2_0
@@ -792,7 +784,7 @@ namespace Dodo.Primitives
         ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation.
         /// </summary>
         /// <returns></returns>
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
 #endif
 #if NETSTANDARD2_0
@@ -831,7 +823,7 @@ namespace Dodo.Primitives
 
             var result = new Uuid();
             var resultPtr = (byte*) &result;
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
             fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -870,7 +862,7 @@ namespace Dodo.Primitives
 
             var result = new Uuid();
             var resultPtr = (byte*) &result;
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
             fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -918,7 +910,7 @@ namespace Dodo.Primitives
             {
                 case 'n':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -932,7 +924,7 @@ namespace Dodo.Primitives
                 }
                 case 'd':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -946,7 +938,7 @@ namespace Dodo.Primitives
                 }
                 case 'b':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -960,7 +952,7 @@ namespace Dodo.Primitives
                 }
                 case 'p':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -974,7 +966,7 @@ namespace Dodo.Primitives
                 }
                 case 'x':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1074,7 +1066,7 @@ namespace Dodo.Primitives
 
             var result = new Uuid();
             var resultPtr = (byte*) &result;
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
             fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1155,7 +1147,7 @@ namespace Dodo.Primitives
             {
                 case 'd':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1169,7 +1161,7 @@ namespace Dodo.Primitives
                 }
                 case 'n':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1183,7 +1175,7 @@ namespace Dodo.Primitives
                 }
                 case 'b':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1197,7 +1189,7 @@ namespace Dodo.Primitives
                 }
                 case 'p':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1211,7 +1203,7 @@ namespace Dodo.Primitives
                 }
                 case 'x':
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -1500,15 +1492,15 @@ namespace Dodo.Primitives
                 }
                 case Utf8LeftCurlyBracket:
                 {
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
                     return uuidUtf8String.Contains(Utf8HyphenMinus)
                         ? ParseWithoutExceptionsBUtf8(length, uuidUtf8StringPtr, resultPtr)
                         : ParseWithoutExceptionsXUtf8(length, uuidUtf8StringPtr, resultPtr);
 #endif
 #if NETSTANDARD2_0
                     return uuidUtf8String.IndexOf(Utf8HyphenMinus) >= 0
-                         ? ParseWithoutExceptionsBUtf8(length, uuidUtf8StringPtr, resultPtr)
-                         : ParseWithoutExceptionsXUtf8(length, uuidUtf8StringPtr, resultPtr);
+                        ? ParseWithoutExceptionsBUtf8(length, uuidUtf8StringPtr, resultPtr)
+                        : ParseWithoutExceptionsXUtf8(length, uuidUtf8StringPtr, resultPtr);
 #endif
                 }
                 default:
@@ -1828,7 +1820,7 @@ namespace Dodo.Primitives
                 throw new FormatException("Uuid string should only contain hexadecimal characters.");
             }
         }
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -1972,7 +1964,7 @@ namespace Dodo.Primitives
             return false;
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -2128,7 +2120,7 @@ namespace Dodo.Primitives
             return false;
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -2327,7 +2319,7 @@ namespace Dodo.Primitives
             return false;
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -2471,7 +2463,7 @@ namespace Dodo.Primitives
             return false;
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0
@@ -2627,7 +2619,7 @@ namespace Dodo.Primitives
             return false;
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #if NETSTANDARD2_0

@@ -16,8 +16,8 @@ namespace Dodo.Primitives.Tests.Uuids
                     var uuid = new Uuid(nString.Bytes);
                     Guid guid = uuid.ToGuidByteLayout();
 
-                    var expectedBytes = uuid.ToByteArray();
-                    var actualBytes = guid.ToByteArray();
+                    byte[] expectedBytes = uuid.ToByteArray();
+                    byte[] actualBytes = guid.ToByteArray();
                     string? expectedGuidString = Primitives.Hex.GetString(new[]
                     {
                         nString.Bytes[3],
@@ -55,7 +55,7 @@ namespace Dodo.Primitives.Tests.Uuids
                     var uuid = new Uuid(nString.Bytes);
                     Guid guid = uuid.ToGuidStringLayout();
 
-                    var expectedBytes = new[]
+                    byte[] expectedBytes =
                     {
                         nString.Bytes[3],
                         nString.Bytes[2],
@@ -74,7 +74,7 @@ namespace Dodo.Primitives.Tests.Uuids
                         nString.Bytes[14],
                         nString.Bytes[15]
                     };
-                    var actualBytes = guid.ToByteArray();
+                    byte[] actualBytes = guid.ToByteArray();
                     var expectedGuidString = uuid.ToString("N");
                     var actualGuidString = guid.ToString("N");
 

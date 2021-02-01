@@ -50,9 +50,9 @@ namespace Dodo.Primitives.Tests.Uuids.Data
             var result = new UuidBytesWithUtf8Bytes[src.Length];
             for (var i = 0; i < src.Length; i++)
             {
-                var bytes = src[i].Bytes;
+                byte[] bytes = src[i].Bytes;
                 var uuid = new Uuid(bytes);
-                var escapedString = ToUtf8EscapedString(uuid, format);
+                string escapedString = ToUtf8EscapedString(uuid, format);
                 result[i] = new UuidBytesWithUtf8Bytes(bytes, escapedString);
             }
 
@@ -69,7 +69,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 escapedCharacters.Add("\\u" + intChar.ToString("x4"));
             }
 
-            var flatChars = escapedCharacters
+            char[] flatChars = escapedCharacters
                 .Select(x => x.Select(ch => ch))
                 .SelectMany(x => x)
                 .ToArray();

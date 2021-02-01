@@ -308,8 +308,8 @@ namespace Dodo.Primitives.Tests.Uuids
             {
                 foreach (var correctString in correctStrings)
                 {
-                    var stringToParse = correctString.String;
-                    var expectedBytes = correctString.Bytes;
+                    string stringToParse = correctString.String;
+                    byte[] expectedBytes = correctString.Bytes;
 
                     bool parsed = Uuid.TryParse(stringToParse, out Uuid uuid);
 
@@ -332,7 +332,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 foreach (var correctString in correctStrings)
                 {
                     var spanToParse = new ReadOnlySpan<char>(correctString.String.ToCharArray());
-                    var expectedBytes = correctString.Bytes;
+                    byte[] expectedBytes = correctString.Bytes;
 
                     bool parsed = Uuid.TryParse(spanToParse, out Uuid uuid);
 

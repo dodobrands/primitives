@@ -11,7 +11,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ReadCorrect()
         {
             var expectedUuid = new Uuid("d0bec403-3323-44df-9dd4-4456121ab00b");
-            var data = Encoding.UTF8.GetBytes($"\"{expectedUuid.ToString("N")}\"");
+            byte[] data = Encoding.UTF8.GetBytes($"\"{expectedUuid.ToString("N")}\"");
             var reader = new Utf8JsonReader(data);
             reader.Read();
             var converter = new SystemTextJsonUuidJsonConverter();
@@ -37,7 +37,7 @@ namespace Dodo.Primitives.Tests.Uuids
 #pragma warning restore 8625
 
             writer.Flush();
-            var actualValue = Encoding.UTF8.GetString(stream.ToArray());
+            string actualValue = Encoding.UTF8.GetString(stream.ToArray());
             Assert.AreEqual(expectedValue, actualValue);
         }
     }

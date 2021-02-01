@@ -14,10 +14,10 @@ namespace Dodo.Primitives
             .DeclaredConstructors
             .Single(x =>
             {
-                var parameters = x.GetParameters();
+                ParameterInfo[] parameters = x.GetParameters();
                 if (parameters.Length == 1)
                 {
-                    var parameter = parameters[0];
+                    ParameterInfo parameter = parameters[0];
                     if (parameter.ParameterType == typeof(string))
                     {
                         return true;
