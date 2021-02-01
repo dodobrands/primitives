@@ -11,7 +11,7 @@ jobs:
       - name: Checkout source branch
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.sha }}
       - name: Get source branch version
         id: source-version
         run: |
@@ -54,6 +54,10 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 5.0.102
+      - name: Checkout source branch back
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.sha }}
       - name: Compare versions
         run: |
           dotnet publish -c Release ./tools/Dodo.Primitives.Tools.CompareVersions/Dodo.Primitives.Tools.CompareVersions.csproj
