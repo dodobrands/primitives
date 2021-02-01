@@ -10,7 +10,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToString(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
 
             var actualString = uuid.ToString();
 
@@ -21,7 +21,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringNullFormat(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
 
             var actualString = uuid.ToString(null);
 
@@ -32,7 +32,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringEmptyFormat(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
 
             var actualString = uuid.ToString(string.Empty);
 
@@ -65,7 +65,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringN(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
 
             var actualString = uuid.ToString("N");
 
@@ -76,7 +76,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringD(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringD(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringD(correctBytes);
 
             var actualString = uuid.ToString("D");
 
@@ -87,7 +87,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringB(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringB(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringB(correctBytes);
 
             var actualString = uuid.ToString("B");
 
@@ -98,7 +98,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringP(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringP(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringP(correctBytes);
 
             var actualString = uuid.ToString("P");
 
@@ -109,7 +109,7 @@ namespace Dodo.Primitives.Tests.Uuids
         public void ToStringX(byte[] correctBytes)
         {
             var uuid = new Uuid(correctBytes);
-            var expectedString = UuidTestsUtils.GetStringX(correctBytes);
+            string expectedString = UuidTestsUtils.GetStringX(correctBytes);
 
             var actualString = uuid.ToString("X");
 

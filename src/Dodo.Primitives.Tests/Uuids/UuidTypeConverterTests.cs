@@ -37,7 +37,7 @@ namespace Dodo.Primitives.Tests.Uuids
             var notUuid = new NotUuid(133742);
             var converter = new UuidTypeConverter();
 
-            var actualValue = converter.ConvertTo(notUuid, typeof(string));
+            object? actualValue = converter.ConvertTo(notUuid, typeof(string));
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<string>(actualValue);
@@ -52,7 +52,7 @@ namespace Dodo.Primitives.Tests.Uuids
             var uuid = new Uuid("28d2b480-b9e7-43f4-8ee3-2ecf03247ad1");
             var converter = new UuidTypeConverter();
 
-            var actualValue = converter.ConvertTo(uuid, typeof(string));
+            object? actualValue = converter.ConvertTo(uuid, typeof(string));
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<string>(actualValue);
@@ -67,7 +67,7 @@ namespace Dodo.Primitives.Tests.Uuids
             var uuid = new Uuid("ee753afd-d98a-4567-8de9-740de0441987");
             var converter = new UuidTypeConverter();
 
-            var actualValue = converter.ConvertTo(uuid, typeof(InstanceDescriptor));
+            object? actualValue = converter.ConvertTo(uuid, typeof(InstanceDescriptor));
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<InstanceDescriptor>(actualValue);
@@ -85,7 +85,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.Throws<NotSupportedException>(() =>
             {
-                var _ = converter.ConvertTo(uuid, typeof(int));
+                object? _ = converter.ConvertTo(uuid, typeof(int));
             });
         }
 
@@ -95,7 +95,7 @@ namespace Dodo.Primitives.Tests.Uuids
             var expectedValue = new Uuid("28d2b480-b9e7-43f4-8ee3-2ecf03247ad1");
             var converter = new UuidTypeConverter();
 
-            var actualValue = converter.ConvertFrom("28d2b480b9e743f48ee32ecf03247ad1");
+            object? actualValue = converter.ConvertFrom("28d2b480b9e743f48ee32ecf03247ad1");
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<Uuid>(actualValue);
@@ -110,7 +110,7 @@ namespace Dodo.Primitives.Tests.Uuids
             ConstructorInfo? uuidCtor = typeof(Uuid)!.GetConstructor(new[] {typeof(string)});
             var descriptor = new InstanceDescriptor(uuidCtor, new object[] {"b28d9df8fd78429f89c7c669e82eb604"});
 
-            var actualValue = converter.ConvertFrom(descriptor);
+            object? actualValue = converter.ConvertFrom(descriptor);
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<Uuid>(actualValue);
@@ -126,7 +126,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.Throws<NotSupportedException>(() =>
             {
-                var _ = converter.ConvertFrom(descriptor);
+                object? _ = converter.ConvertFrom(descriptor);
             });
         }
 
@@ -137,7 +137,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.Throws<NotSupportedException>(() =>
             {
-                var _ = converter.ConvertFrom(42);
+                object? _ = converter.ConvertFrom(42);
             });
         }
 

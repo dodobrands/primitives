@@ -174,7 +174,7 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
         private static string[] GenerateSometimesBrokenGuidsPStringsArray(int count)
         {
             // (dddddddd-dddd-dddd-dddd-dddddddddddd)
-            var nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
+            string[] nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
             var result = new string[count];
             for (var i = 0; i < count; i++)
             {
@@ -228,7 +228,7 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
         private static string[] GenerateSometimesBrokenGuidsBStringsArray(int count)
         {
             // {dddddddd-dddd-dddd-dddd-dddddddddddd}
-            var nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
+            string[] nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
             var result = new string[count];
             for (var i = 0; i < count; i++)
             {
@@ -282,7 +282,7 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
         private static string[] GenerateSometimesBrokenGuidsXStringsArray(int count)
         {
             // {0xdddddddd,0xdddd,0xdddd,{0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd}}
-            var nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
+            string[] nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
             var result = new string[count];
             for (var i = 0; i < count; i++)
             {
@@ -365,7 +365,7 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
         private static string[] GenerateSometimesBrokenGuidsDStringsArray(int count)
         {
             // dddddddd-dddd-dddd-dddd-dddddddddddd
-            var nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
+            string[] nStrings = GenerateSometimesBrokenGuidsNStringsArray(count);
             var result = new string[count];
             for (var i = 0; i < count; i++)
             {
@@ -434,8 +434,8 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
                     uuidIntegers[j] = random.Next();
                 }
 
-                var bytesOfUuid = new ReadOnlySpan<byte>(uuidIntegers, 16).ToArray();
-                var nString = GetStringN(bytesOfUuid);
+                byte[] bytesOfUuid = new ReadOnlySpan<byte>(uuidIntegers, 16).ToArray();
+                string nString = GetStringN(bytesOfUuid);
                 Span<char> spanOfString = MemoryMarshal.CreateSpan(
                     ref MemoryMarshal.GetReference(nString.AsSpan()),
                     nString.Length);

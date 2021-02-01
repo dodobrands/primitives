@@ -46,8 +46,8 @@ namespace Dodo.Primitives.Tests.Uuids
             {
                 foreach (var correctNString in UuidTestData.CorrectNStrings)
                 {
-                    var nString = correctNString.String;
-                    var expectedBytes = correctNString.Bytes;
+                    string nString = correctNString.String;
+                    byte[] expectedBytes = correctNString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(nString);
 
@@ -70,7 +70,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 foreach (var correctNString in UuidTestData.CorrectNStrings)
                 {
                     var nSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
-                    var expectedBytes = correctNString.Bytes;
+                    byte[] expectedBytes = correctNString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(nSpan);
 
@@ -189,8 +189,8 @@ namespace Dodo.Primitives.Tests.Uuids
             {
                 foreach (var correctDString in UuidTestData.CorrectDStrings)
                 {
-                    var dString = correctDString.String;
-                    var expectedBytes = correctDString.Bytes;
+                    string dString = correctDString.String;
+                    byte[] expectedBytes = correctDString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(dString);
 
@@ -213,7 +213,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 foreach (var correctDString in UuidTestData.CorrectDStrings)
                 {
                     var dSpan = new ReadOnlySpan<char>(correctDString.String.ToCharArray());
-                    var expectedBytes = correctDString.Bytes;
+                    byte[] expectedBytes = correctDString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(dSpan);
 
@@ -332,8 +332,8 @@ namespace Dodo.Primitives.Tests.Uuids
             {
                 foreach (var correctBString in UuidTestData.CorrectBStrings)
                 {
-                    var bString = correctBString.String;
-                    var expectedBytes = correctBString.Bytes;
+                    string bString = correctBString.String;
+                    byte[] expectedBytes = correctBString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(bString);
 
@@ -356,7 +356,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 foreach (var correctBString in UuidTestData.CorrectBStrings)
                 {
                     var bSpan = new ReadOnlySpan<char>(correctBString.String.ToCharArray());
-                    var expectedBytes = correctBString.Bytes;
+                    byte[] expectedBytes = correctBString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(bSpan);
 
@@ -475,8 +475,8 @@ namespace Dodo.Primitives.Tests.Uuids
             {
                 foreach (var correctPString in UuidTestData.CorrectPStrings)
                 {
-                    var pString = correctPString.String;
-                    var expectedBytes = correctPString.Bytes;
+                    string pString = correctPString.String;
+                    byte[] expectedBytes = correctPString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(pString);
 
@@ -499,7 +499,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 foreach (var correctPString in UuidTestData.CorrectPStrings)
                 {
                     var pSpan = new ReadOnlySpan<char>(correctPString.String.ToCharArray());
-                    var expectedBytes = correctPString.Bytes;
+                    byte[] expectedBytes = correctPString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(pSpan);
 
@@ -618,8 +618,8 @@ namespace Dodo.Primitives.Tests.Uuids
             {
                 foreach (var correctXString in UuidTestData.CorrectXStrings)
                 {
-                    var xString = correctXString.String;
-                    var expectedBytes = correctXString.Bytes;
+                    string xString = correctXString.String;
+                    byte[] expectedBytes = correctXString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(xString);
 
@@ -642,7 +642,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 foreach (var correctXString in UuidTestData.CorrectXStrings)
                 {
                     var xSpan = new ReadOnlySpan<char>(correctXString.String.ToCharArray());
-                    var expectedBytes = correctXString.Bytes;
+                    byte[] expectedBytes = correctXString.Bytes;
 
                     Uuid parsedUuid = Uuid.Parse(xSpan);
 

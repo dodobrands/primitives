@@ -10,7 +10,7 @@ namespace Dodo.Primitives.Tests.Uuids
         {
             var uuid = new Uuid(correctBytes);
 
-            var uuidBytes = uuid.ToByteArray();
+            byte[] uuidBytes = uuid.ToByteArray();
 
             Assert.AreEqual(correctBytes, uuidBytes);
         }

@@ -1,4 +1,4 @@
-#if NETCOREAPP
+#if NETCOREAPP || NET5_0
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -31,7 +31,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
             var data = new byte[hexString.Length / 2];
             for (var index = 0; index < data.Length; index++)
             {
-                var byteValue = hexString.Substring(index * 2, 2);
+                string byteValue = hexString.Substring(index * 2, 2);
                 data[index] = Convert.ToByte(byteValue, 16);
             }
 
@@ -60,7 +60,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 throw new Exception("Uuid bytes count should be 16");
             }
 
-            var stringN = GetStringN(bytes);
+            string stringN = GetStringN(bytes);
             char* stringDPtr = stackalloc char[36];
             stringDPtr[0] = stringN[0];
             stringDPtr[1] = stringN[1];
@@ -109,7 +109,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 throw new Exception("Uuid bytes count should be 16");
             }
 
-            var stringN = GetStringN(bytes);
+            string stringN = GetStringN(bytes);
             char* stringBPtr = stackalloc char[38];
             stringBPtr[0] = '{';
             stringBPtr[1] = stringN[0];
@@ -160,7 +160,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 throw new Exception("Uuid bytes count should be 16");
             }
 
-            var stringN = GetStringN(bytes);
+            string stringN = GetStringN(bytes);
             char* stringPPtr = stackalloc char[38];
             stringPPtr[0] = '(';
             stringPPtr[1] = stringN[0];
@@ -211,7 +211,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 throw new Exception("Uuid bytes count should be 16");
             }
 
-            var stringN = GetStringN(bytes);
+            string stringN = GetStringN(bytes);
             char* stringXPtr = stackalloc char[68];
             stringXPtr[0] = stringXPtr[26] = '{';
             stringXPtr[66] = stringXPtr[67] = '}';
@@ -277,7 +277,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 stringsToCreate = stringsToCreate >> 1, itemsToFill = itemsToFill << 1)
             for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
             {
-#if NETCOREAPP
+#if NETCOREAPP || NET5_0
                 resultStrings.Add(
                     string.Create(
                         32,
@@ -322,7 +322,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 stringsToCreate = stringsToCreate >> 1, itemsToFill = itemsToFill << 1)
             for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
             {
-#if NETCOREAPP
+#if NETCOREAPP || NET5_0
                 resultStrings.Add(
                     string.Create(
                         32,
@@ -362,11 +362,11 @@ namespace Dodo.Primitives.Tests.Uuids.Data
 #endif
             }
 
-            var nStrings = resultStrings.Distinct().ToArray();
+            string[] nStrings = resultStrings.Distinct().ToArray();
             var output = new UuidStringWithBytes[nStrings.Length];
             for (var i = 0; i < nStrings.Length; i++)
             {
-                var bytes = ConvertHexStringToByteArray(nStrings[i]);
+                byte[] bytes = ConvertHexStringToByteArray(nStrings[i]);
                 output[i] = new UuidStringWithBytes(nStrings[i], bytes);
             }
 
@@ -376,8 +376,8 @@ namespace Dodo.Primitives.Tests.Uuids.Data
         [SuppressMessage("ReSharper", "ConvertClosureToMethodGroup")]
         public static UuidStringWithBytes[] GenerateDStrings()
         {
-            var nStrings = GenerateNStrings();
-            var dStrings = nStrings
+            UuidStringWithBytes[] nStrings = GenerateNStrings();
+            UuidStringWithBytes[] dStrings = nStrings
                 .Select(x => new UuidStringWithBytes(GetStringD(x.Bytes), x.Bytes))
                 .ToArray();
             return dStrings;
@@ -386,8 +386,8 @@ namespace Dodo.Primitives.Tests.Uuids.Data
         [SuppressMessage("ReSharper", "ConvertClosureToMethodGroup")]
         public static UuidStringWithBytes[] GenerateBStrings()
         {
-            var nStrings = GenerateNStrings();
-            var dStrings = nStrings
+            UuidStringWithBytes[] nStrings = GenerateNStrings();
+            UuidStringWithBytes[] dStrings = nStrings
                 .Select(x => new UuidStringWithBytes(GetStringB(x.Bytes), x.Bytes))
                 .ToArray();
             return dStrings;
@@ -396,8 +396,8 @@ namespace Dodo.Primitives.Tests.Uuids.Data
         [SuppressMessage("ReSharper", "ConvertClosureToMethodGroup")]
         public static UuidStringWithBytes[] GeneratePStrings()
         {
-            var nStrings = GenerateNStrings();
-            var dStrings = nStrings
+            UuidStringWithBytes[] nStrings = GenerateNStrings();
+            UuidStringWithBytes[] dStrings = nStrings
                 .Select(x => new UuidStringWithBytes(GetStringP(x.Bytes), x.Bytes))
                 .ToArray();
             return dStrings;
@@ -406,8 +406,8 @@ namespace Dodo.Primitives.Tests.Uuids.Data
         [SuppressMessage("ReSharper", "ConvertClosureToMethodGroup")]
         public static UuidStringWithBytes[] GenerateXStrings()
         {
-            var nStrings = GenerateNStrings();
-            var dStrings = nStrings
+            UuidStringWithBytes[] nStrings = GenerateNStrings();
+            UuidStringWithBytes[] dStrings = nStrings
                 .Select(x => new UuidStringWithBytes(GetStringX(x.Bytes), x.Bytes))
                 .ToArray();
             return dStrings;
@@ -461,9 +461,9 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                     uuidIntegers[j] = rng.Next();
                 }
 
-                var bytesOfUuid = new ReadOnlySpan<byte>(uuidIntegers, 16).ToArray();
-                var uuidString = formatString(bytesOfUuid);
-#if NETCOREAPP
+                byte[] bytesOfUuid = new ReadOnlySpan<byte>(uuidIntegers, 16).ToArray();
+                string uuidString = formatString(bytesOfUuid);
+#if NETCOREAPP || NET5_0
                 Span<char> spanOfString = MemoryMarshal.CreateSpan(
                     ref MemoryMarshal.GetReference(uuidString.AsSpan()),
                     uuidString.Length);

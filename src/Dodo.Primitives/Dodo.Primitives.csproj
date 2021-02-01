@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
         <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -16,18 +16,8 @@
         <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     </PropertyGroup>
 
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-        <ProjectReference Include="..\Dodo.Primitives.IL\Dodo.Primitives.IL.ilproj"/>
-    </ItemGroup>
-
-    <Target Name="IncludeP2PAssets">
-        <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-            <BuildOutputInPackage Include="$(OutputPath)Dodo.Primitives.IL.dll"/>
-        </ItemGroup>
-    </Target>
-
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-        <PackageReference Include="System.Text.Json" Version="4.7.2"/>
+        <PackageReference Include="System.Text.Json" Version="5.0.1"/>
     </ItemGroup>
 
 </Project>

@@ -40,7 +40,7 @@ namespace Dodo.Primitives.Tests.Hex
         [TestCaseSource(typeof(HexTestsData), nameof(HexTestsData.ValidHexStrings))]
         public void CanGetBytesCorrect(string validHexString)
         {
-            var expected = HexStringToByteArrayNaive(validHexString);
+            byte[] expected = HexStringToByteArrayNaive(validHexString);
             byte[]? actual = Primitives.Hex.GetBytes(validHexString);
             Assert.Multiple(() =>
             {
@@ -76,7 +76,7 @@ namespace Dodo.Primitives.Tests.Hex
         [TestCaseSource(typeof(HexTestsData), nameof(HexTestsData.ValidByteArrays))]
         public void CanGetStringCorrect(byte[] bytesToHex)
         {
-            var expected = ByteArrayToHexStringNaive(bytesToHex);
+            string expected = ByteArrayToHexStringNaive(bytesToHex);
             string? actual = Primitives.Hex.GetString(bytesToHex);
             Assert.AreEqual(expected, actual);
         }

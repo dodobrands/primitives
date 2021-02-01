@@ -15,7 +15,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             bool wasWritten = uuid.TryWriteBytes(output);
 
-            var outputBytes = output.ToArray();
+            byte[] outputBytes = output.ToArray();
 
             Assert.True(wasWritten);
             Assert.AreEqual(correctBytes, outputBytes);
@@ -30,7 +30,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             bool wasWritten = uuid.TryWriteBytes(output);
 
-            var outputBytes = output.Slice(0, 16).ToArray();
+            byte[] outputBytes = output.Slice(0, 16).ToArray();
 
             Assert.True(wasWritten);
             Assert.AreEqual(correctBytes, outputBytes);
@@ -45,7 +45,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             bool wasWritten = uuid.TryWriteBytes(output);
 
-            var outputBytes = output.ToArray();
+            byte[] outputBytes = output.ToArray();
 
             Assert.False(wasWritten);
             Assert.AreNotEqual(correctBytes, outputBytes);

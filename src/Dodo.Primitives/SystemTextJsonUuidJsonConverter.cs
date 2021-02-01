@@ -19,16 +19,14 @@ namespace Dodo.Primitives
             Uuid value,
             JsonSerializerOptions options)
         {
-#if NETCOREAPP3_1
-            // ReSharper disable once SuggestVarOrType_Elsewhere
-            Span<char> outputBuffer = stackalloc char[32];
             // Always will be well-formatted, cuz we allocate exact buffer for output format
+            Span<char> outputBuffer = stackalloc char[32];
+#if NETCOREAPP3_1 || NET5_0
             value.TryFormat(outputBuffer, out _, "N");
             writer.WriteStringValue(outputBuffer);
 #endif
 #if NETSTANDARD2_0
             // ReSharper disable once SuggestVarOrType_Elsewhere
-            Span<char> outputBuffer = stackalloc char[32]; // Always will be well-formatted, cuz we allocate exact buffer for output format
             Span<char> format = stackalloc char[1];
             format[0] = 'N';
             value.TryFormat(outputBuffer, out _, format);

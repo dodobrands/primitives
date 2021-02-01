@@ -181,7 +181,7 @@ namespace Dodo.Primitives.Tests.Uuids
                 {
                     int utf8Chars = GetUtf8BytesSpanFromString(correctString.String, utf8Buffer);
                     Span<byte> spanToParse = utf8Buffer.Slice(0, utf8Chars);
-                    var expectedBytes = correctString.Bytes;
+                    byte[] expectedBytes = correctString.Bytes;
 
                     bool parsed = Uuid.TryParse(spanToParse, out Uuid uuid);
 
@@ -213,7 +213,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
         private static int GetUtf8BytesSpanFromString(string uuidString, Span<byte> result)
         {
-            var resultBytes = Encoding.UTF8.GetBytes(uuidString);
+            byte[] resultBytes = Encoding.UTF8.GetBytes(uuidString);
             if (resultBytes.Length > result.Length)
             {
                 throw new Exception("Utf8 bytes larger than provided buffer");
