@@ -1,4 +1,4 @@
-#if NETCOREAPP || NET5_0
+#if NETCOREAPP || NET5_0 || NET6_0
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -277,7 +277,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 stringsToCreate = stringsToCreate >> 1, itemsToFill = itemsToFill << 1)
             for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
             {
-#if NETCOREAPP || NET5_0
+#if NETCOREAPP || NET5_0 || NET6_0
                 resultStrings.Add(
                     string.Create(
                         32,
@@ -322,7 +322,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
                 stringsToCreate = stringsToCreate >> 1, itemsToFill = itemsToFill << 1)
             for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
             {
-#if NETCOREAPP || NET5_0
+#if NETCOREAPP || NET5_0 || NET6_0
                 resultStrings.Add(
                     string.Create(
                         32,
@@ -463,7 +463,7 @@ namespace Dodo.Primitives.Tests.Uuids.Data
 
                 byte[] bytesOfUuid = new ReadOnlySpan<byte>(uuidIntegers, 16).ToArray();
                 string uuidString = formatString(bytesOfUuid);
-#if NETCOREAPP || NET5_0
+#if NETCOREAPP || NET5_0 || NET6_0
                 Span<char> spanOfString = MemoryMarshal.CreateSpan(
                     ref MemoryMarshal.GetReference(uuidString.AsSpan()),
                     uuidString.Length);

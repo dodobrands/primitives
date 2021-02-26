@@ -30,7 +30,7 @@ namespace Dodo.Primitives
 
             int length = possibleHexString.Length;
 
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET5_0 || NET6_0
             fixed (char* stringPtr = &possibleHexString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -70,7 +70,7 @@ namespace Dodo.Primitives
 
             int length = hexString.Length;
             var result = new byte[length / 2];
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET5_0 || NET6_0
             fixed (char* stringPtr = &hexString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0
@@ -116,7 +116,7 @@ namespace Dodo.Primitives
             }
 
             var resultString = new string('\0', bytes.Length * 2);
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET5_0 || NET6_0
             fixed (char* stringPtr = &resultString.GetPinnableReference())
 #endif
 #if NETSTANDARD2_0

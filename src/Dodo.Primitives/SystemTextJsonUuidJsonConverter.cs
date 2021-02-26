@@ -21,7 +21,7 @@ namespace Dodo.Primitives
         {
             // Always will be well-formatted, cuz we allocate exact buffer for output format
             Span<char> outputBuffer = stackalloc char[32];
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET5_0 || NET6_0
             value.TryFormat(outputBuffer, out _, "N");
             writer.WriteStringValue(outputBuffer);
 #endif
