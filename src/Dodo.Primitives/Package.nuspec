@@ -23,6 +23,8 @@
     </metadata>
     <files>
         <file src="..\..\.github\images\dodopizza-logo.png" target="images\"/>
+        <file src="bin\Release\net6.0\publish\Dodo.Primitives.dll" target="lib\net6.0"/>
+        <file src="bin\Release\net6.0\publish\Dodo.Primitives.pdb" target="lib\net6.0"/>
         <file src="bin\Release\net5.0\publish\Dodo.Primitives.dll" target="lib\net5.0"/>
         <file src="bin\Release\net5.0\publish\Dodo.Primitives.pdb" target="lib\net5.0"/>
         <file src="bin\Release\netcoreapp3.1\publish\Dodo.Primitives.dll" target="lib\netcoreapp3.1"/>
