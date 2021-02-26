@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <ProjectGuid>288ccf26-65fb-4cc8-932b-01f0a458940a</ProjectGuid>
         <LangVersion>9.0</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

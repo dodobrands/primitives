@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net462;net5.0</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1;net462;net5.0;net6.0</TargetFrameworks>
         <ProjectGuid>4c9485a5-fcb5-4361-8c46-c99669d5b22e</ProjectGuid>
         <LangVersion>9.0</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -11,14 +11,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.msbuild" Version="3.0.2">
+        <PackageReference Include="coverlet.msbuild" Version="3.0.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
         <PackageReference Include="nunit" Version="3.13.1"/>
         <PackageReference Include="NUnit3TestAdapter" Version="3.17.0"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1"/>
     </ItemGroup>
 
     <ItemGroup>

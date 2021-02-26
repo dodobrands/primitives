@@ -11,25 +11,27 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
-      - name: Setup .NET Core SDK  5.0.102
+      - name: Setup .NET Core SDK 6.0.100-preview.1.21103.13
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.102
+          dotnet-version: 6.0.100-preview.1.21103.13
       - name: Run tests
         run: |
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net462 /p:CoverletOutput=../../coverage/cover_netstandard20 /p:CoverletOutputFormat=json
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/cover_netcoreapp31 /p:MergeWith=../../coverage/cover_netstandard20.net462.json /p:CoverletOutputFormat=json
-          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net5.0 /p:MergeWith=../../coverage/cover_netcoreapp31.netcoreapp3.1.json /p:CoverletOutput=../../coverage/cover_full /p:CoverletOutputFormat=lcov
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net5.0 /p:CoverletOutput=../../coverage/cover_net50 /p:MergeWith=../../coverage/cover_netcoreapp31.netcoreapp3.1.json /p:CoverletOutputFormat=json
+          dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net6.0 /p:MergeWith=../../coverage/cover_net50.net5.0.json /p:CoverletOutput=../../coverage/cover_full /p:CoverletOutputFormat=lcov
       - name: Publish coverage report to coveralls.io
         uses: coverallsapp/github-action@v1.1.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/cover_full.net5.0.info
+          path-to-lcov: ./coverage/cover_full.net6.0.info
       - name: Build and publish library to NuGet
         run: |
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f netcoreapp3.1
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f netstandard2.0
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net5.0
+          dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net6.0
           dotnet pack -c Release --no-restore --no-build --output out/ ./src/Dodo.Primitives/Dodo.Primitives.csproj
           dotnet nuget push (Get-ChildItem ./out/ -Filter *.nupkg | Select-Object -First 1 | % { $_.FullName }) --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
       - uses: actions/upload-artifact@v2
