@@ -2,7 +2,7 @@ name: Push to master
 on:
   push:
     branches:
-      - "master"
+      - "main"
 jobs:
   validate-version:
     name: Validate package version
