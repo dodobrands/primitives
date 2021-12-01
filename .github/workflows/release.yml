@@ -6,11 +6,22 @@ jobs:
   build-test-and-publish:
     name: Build and publish library to NuGet
     runs-on: windows-2019
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
+      - name: Setup .NET Core SDK 3.1.415
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.415
+      - name: Setup .NET Core SDK 5.0.403
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.403
       - name: Setup .NET Core SDK 6.0.100
         uses: actions/setup-dotnet@v1
         with:
@@ -33,7 +44,7 @@ jobs:
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net5.0
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net6.0
           dotnet pack -c Release --no-restore --no-build --output out/ ./src/Dodo.Primitives/Dodo.Primitives.csproj
-          dotnet nuget push (Get-ChildItem ./out/ -Filter *.nupkg | Select-Object -First 1 | % { $_.FullName }) --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push (Get-ChildItem ./out/ -Filter *.symbols.nupkg | Select-Object -First 1 | % { $_.FullName }) --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
       - uses: actions/upload-artifact@v2
         with:
           name: NuGet package

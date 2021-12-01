@@ -12,6 +12,10 @@ namespace Dodo.Primitives
         private const byte ResetReservedMask = 0b0011_1111;
         private const byte ReservedFlag = 0b1000_0000;
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure that represents Uuid v1 (RFC4122).
+        /// </summary>
+        /// <returns></returns>
         public static Uuid NewTimeBased()
         {
             byte* resultPtr = stackalloc byte[16];
@@ -32,6 +36,10 @@ namespace Dodo.Primitives
             return new Uuid(resultPtr);
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure that works the same way as UUID_TO_BIN(UUID(), 1) from MySQL 8.0.
+        /// </summary>
+        /// <returns></returns>
         public static Uuid NewMySqlOptimized()
         {
             byte* resultPtr = stackalloc byte[16];

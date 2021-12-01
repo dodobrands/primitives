@@ -8,11 +8,23 @@ using Dodo.Primitives.Internal;
 
 namespace Dodo.Primitives
 {
+    /// <summary>
+    ///     Represents a universally unique identifier (UUID).
+    /// </summary>
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     [TypeConverter(typeof(UuidTypeConverter))]
     [JsonConverter(typeof(SystemTextJsonUuidJsonConverter))]
     [SuppressMessage("ReSharper", "RedundantNameQualifier")]
-    public unsafe partial struct Uuid : IFormattable, IComparable, IComparable<Uuid>, IEquatable<Uuid>
+    public unsafe partial struct Uuid :
+#if NET6_0
+        ISpanFormattable,
+#endif
+#if NETCOREAPP3_1 || NET5_0 || NETSTANDARD2_0
+        IFormattable,
+#endif
+        IComparable,
+        IComparable<Uuid>,
+        IEquatable<Uuid>
     {
         static Uuid()
         {
@@ -91,10 +103,19 @@ namespace Dodo.Primitives
         [FieldOffset(12)]
         private readonly int _int12;
 
+        /// <summary>
+        ///     A read-only instance of the <see cref="Uuid" /> structure whose value is all zeros.
+        /// </summary>
         // ReSharper disable once RedundantDefaultMemberInitializer
         // ReSharper disable once MemberCanBePrivate.Global
         public static readonly Uuid Empty = new();
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified array of bytes.
+        /// </summary>
+        /// <param name="bytes">A 16-element byte array containing values with which to initialize the <see cref="Uuid" />.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="bytes" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentException"><paramref name="bytes" /> is not 16 bytes long.</exception>
         public Uuid(byte[] bytes)
         {
             if (bytes == null)
@@ -110,11 +131,21 @@ namespace Dodo.Primitives
             this = Unsafe.ReadUnaligned<Uuid>(ref MemoryMarshal.GetReference(new ReadOnlySpan<byte>(bytes)));
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified byte pointer.
+        /// </summary>
+        /// <param name="bytes">A byte pointer containing bytes which used to initialize the <see cref="Uuid" />.</param>
         public Uuid(byte* bytes)
         {
             this = Unsafe.ReadUnaligned<Uuid>(bytes);
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the value represented by the specified read-only span of
+        ///     bytes.
+        /// </summary>
+        /// <param name="bytes">A read-only span containing the bytes representing the <see cref="Uuid" />. The span must be exactly 16 bytes long.</param>
+        /// <exception cref="ArgumentException"><paramref name="bytes" /> is not 16 bytes long.</exception>
         public Uuid(ReadOnlySpan<byte> bytes)
         {
             if (bytes.Length != 16)
@@ -125,6 +156,10 @@ namespace Dodo.Primitives
             this = Unsafe.ReadUnaligned<Uuid>(ref MemoryMarshal.GetReference(bytes));
         }
 
+        /// <summary>
+        ///     Returns a 16-element byte array that contains the value of this instance.
+        /// </summary>
+        /// <returns>A 16-element byte array.</returns>
         public byte[] ToByteArray()
         {
             var result = new byte[16];
@@ -132,6 +167,14 @@ namespace Dodo.Primitives
             return result;
         }
 
+        /// <summary>
+        ///     Tries to write the current <see cref="Uuid" /> instance into a span of bytes.
+        /// </summary>
+        /// <param name="destination">When this method returns <see langword="true" />, the <see cref="Uuid" /> as a span of bytes.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the <see cref="Uuid" /> is successfully written to the specified span; <see langword="false" />
+        ///     otherwise.
+        /// </returns>
         public bool TryWriteBytes(Span<byte> destination)
         {
             if (Unsafe.SizeOf<Uuid>() > destination.Length)
@@ -143,6 +186,14 @@ namespace Dodo.Primitives
             return true;
         }
 
+        /// <summary>
+        ///     Compares this instance to a specified object or <see cref="Uuid" /> and returns an indication of their relative values.
+        /// </summary>
+        /// <param name="obj">An object to compare, or <see langword="null" />.</param>
+        /// <returns>A signed number indicating the relative values of this instance and <paramref name="obj" />.</returns>
+        /// <exception cref="ArgumentException"><paramref name="obj" /> must be of type <see cref="Uuid" />.</exception>
+        [SuppressMessage("ReSharper", "MergeCastWithTypeCheck")]
+        [SuppressMessage("ReSharper", "UseNegatedPatternInIsExpression")]
         public int CompareTo(object? obj)
         {
             if (obj == null)
@@ -239,6 +290,11 @@ namespace Dodo.Primitives
             return 0;
         }
 
+        /// <summary>
+        ///     Compares this instance to a specified <see cref="Uuid" /> object and returns an indication of their relative values.
+        /// </summary>
+        /// <param name="other">An <see cref="Uuid" /> object to compare to this instance.</param>
+        /// <returns>A signed number indicating the relative values of this instance and <paramref name="other" />.</returns>
         public int CompareTo(Uuid other)
         {
             if (other._byte0 != _byte0)
@@ -324,9 +380,17 @@ namespace Dodo.Primitives
             return 0;
         }
 
-        // Do not change that code syntax (do not merge checks, do not remove else) - perf critical
+        /// <summary>
+        ///     Returns a value that indicates whether two instances of <see cref="Uuid" /> represent the same value.
+        /// </summary>
+        /// <param name="obj">The object to compare with this instance.</param>
+        /// <returns>
+        ///     <see langword="true" /> if <paramref name="obj" /> is <see cref="Uuid" /> that has the same value as this instance; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
         [SuppressMessage("ReSharper", "MergeSequentialChecks")]
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
+        // Do not change that code syntax (do not merge checks, do not remove else) - perf critical
         public override bool Equals(object? obj)
         {
             if (obj is Uuid other)
@@ -337,26 +401,184 @@ namespace Dodo.Primitives
             return false;
         }
 
+        /// <summary>
+        ///     Returns a value indicating whether this instance and a specified <see cref="Uuid" /> object represent the same value.
+        /// </summary>
+        /// <param name="other">An object to compare to this instance.</param>
+        /// <returns><see langword="true" /> if <paramref name="other" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
         public bool Equals(Uuid other)
         {
             return _ulong0 == other._ulong0 && _ulong8 == other._ulong8;
         }
 
+        /// <summary>
+        ///     Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>The hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return _int0 ^ _int4 ^ _int8 ^ _int12;
         }
 
+        /// <summary>
+        ///     Indicates whether the values of two specified <see cref="Uuid" /> objects are equal.
+        /// </summary>
+        /// <param name="left">The first object to compare.</param>
+        /// <param name="right">The second object to compare.</param>
+        /// <returns><see langword="true" /> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <see langword="false" />.</returns>
         public static bool operator ==(Uuid left, Uuid right)
         {
             return left._ulong0 == right._ulong0 && left._ulong8 == right._ulong8;
         }
 
+        /// <summary>
+        ///     Indicates whether the values of two specified <see cref="Uuid" /> objects are not equal.
+        /// </summary>
+        /// <param name="left">The first object to compare.</param>
+        /// <param name="right">The second object to compare.</param>
+        /// <returns>
+        ///     <see langword="true" /> if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
         public static bool operator !=(Uuid left, Uuid right)
         {
             return left._ulong0 != right._ulong0 || left._ulong8 != right._ulong8;
         }
 
+#if NET6_0
+        /// <summary>
+        ///     Tries to format the value of the current instance into the provided span of characters.
+        /// </summary>
+        /// <param name="destination">When this method returns <see langword="true" />, the <see cref="Uuid" /> as a span of characters.</param>
+        /// <param name="charsWritten">
+        ///     When this method returns <see langword="true" />, the number of characters written in
+        ///     <paramref name="destination" />.
+        /// </param>
+        /// <param name="format">
+        ///     A read-only span containing the character representing one of the following specifiers that indicates how to format
+        ///     the value of this <see cref="Uuid" />. The format parameter can be "N", "D", "B", "P", or "X". If format is <see langword="null" /> or
+        ///     an empty string (""), "N" is used.
+        /// </param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information for <paramref name="destination" />.</param>
+        /// <returns><see langword="true" /> if the formatting operation was successful; <see langword="false" /> otherwise.</returns>
+        bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        {
+            if (format.Length == 0)
+            {
+                format = "N";
+            }
+
+            if (format.Length != 1)
+            {
+                charsWritten = 0;
+                return false;
+            }
+
+            switch ((char) (format[0] | 0x20))
+            {
+                case 'n':
+                {
+                    if (destination.Length < 32)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatN(uuidChars);
+                    }
+
+                    charsWritten = 32;
+                    return true;
+                }
+                case 'd':
+                {
+                    if (destination.Length < 36)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatD(uuidChars);
+                    }
+
+                    charsWritten = 36;
+                    return true;
+                }
+                case 'b':
+                {
+                    if (destination.Length < 38)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatB(uuidChars);
+                    }
+
+                    charsWritten = 38;
+                    return true;
+                }
+                case 'p':
+                {
+                    if (destination.Length < 38)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatP(uuidChars);
+                    }
+
+                    charsWritten = 38;
+                    return true;
+                }
+                case 'x':
+                {
+                    if (destination.Length < 68)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatX(uuidChars);
+                    }
+
+                    charsWritten = 68;
+                    return true;
+                }
+                default:
+                {
+                    charsWritten = 0;
+                    return false;
+                }
+            }
+        }
+#endif
+
+        /// <summary>
+        ///     Tries to format the value of the current instance into the provided span of characters.
+        /// </summary>
+        /// <param name="destination">When this method returns <see langword="true" />, the <see cref="Uuid" /> as a span of characters.</param>
+        /// <param name="charsWritten">
+        ///     When this method returns <see langword="true" />, the number of characters written in
+        ///     <paramref name="destination" />.
+        /// </param>
+        /// <param name="format">
+        ///     A read-only span containing the character representing one of the following specifiers that indicates how to format
+        ///     the value of this <see cref="Uuid" />. The format parameter can be "N", "D", "B", "P", or "X". If format is <see langword="null" /> or
+        ///     an empty string (""), "N" is used.
+        /// </param>
+        /// <returns><see langword="true" /> if the formatting operation was successful; <see langword="false" /> otherwise.</returns>
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default)
         {
             if (format.Length == 0)
@@ -465,23 +687,46 @@ namespace Dodo.Primitives
             }
         }
 
+        /// <summary>
+        ///     Returns a string representation of the value of this instance.
+        /// </summary>
+        /// <returns>The value of this <see cref="Uuid" />, formatted by using the "N" format specifier as follows: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</returns>
         public override string ToString()
         {
             return ToString("N", null);
         }
 
+        /// <summary>
+        ///     Returns a string representation of the value of this <see cref="Uuid" /> instance, according to the provided format specifier.
+        /// </summary>
+        /// <param name="format">
+        ///     A single format specifier that indicates how to format the value of this <see cref="Uuid" />. The format parameter can
+        ///     be "N", "D", "B", "P", or "X". If format is <see langword="null" /> or an empty string (""), "N" is used.
+        /// </param>
+        /// <returns>The value of this <see cref="Uuid" />, represented as a series of lowercase hexadecimal digits in the specified format.</returns>
         public string ToString(string? format)
         {
             // ReSharper disable once IntroduceOptionalParameters.Global
             return ToString(format, null);
         }
 
+        /// <summary>
+        ///     Returns a string representation of the value of this <see cref="Uuid" /> instance, according to the provided format specifier and
+        ///     culture-specific format information.
+        /// </summary>
+        /// <param name="format">
+        ///     A single format specifier that indicates how to format the value of this <see cref="Uuid" />. The format parameter can
+        ///     be "N", "D", "B", "P", or "X". If format is null or an empty string (""), "N" is used.
+        /// </param>
+        /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The value of this <see cref="Uuid" />, represented as a series of lowercase hexadecimal digits in the specified format.</returns>
+        /// <exception cref="FormatException">
+        ///     The value of <paramref name="format" /> is not <see langword="null" />, an empty string (""), "N", "D",
+        ///     "B", "P", or "X".
+        /// </exception>
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            if (format == null)
-            {
-                format = "N";
-            }
+            format ??= "N";
 
             if (string.IsNullOrEmpty(format))
             {
@@ -576,6 +821,7 @@ namespace Dodo.Primitives
                         "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
             }
         }
+
 #if NETCOREAPP3_1 || NET5_0 || NET6_0
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
@@ -809,6 +1055,11 @@ namespace Dodo.Primitives
             return result;
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the value represented by the specified string.
+        /// </summary>
+        /// <param name="input">A string that contains a UUID.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" />.</exception>
         public Uuid(string input)
         {
             if (input == null)
@@ -831,6 +1082,12 @@ namespace Dodo.Primitives
             this = result;
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the value represented by the specified read-only span of
+        ///     characters.
+        /// </summary>
+        /// <param name="input">A read-only span of characters that contains a UUID.</param>
+        /// <exception cref="FormatException"><paramref name="input" /> is empty or contains unrecognized <see cref="Uuid" /> format.</exception>
         public Uuid(ReadOnlySpan<char> input)
         {
             if (input.IsEmpty)
@@ -848,6 +1105,12 @@ namespace Dodo.Primitives
             this = result;
         }
 
+        /// <summary>
+        ///     Converts the string representation of a UUID to the equivalent <see cref="Uuid" /> structure.
+        /// </summary>
+        /// <param name="input">The string to convert.</param>
+        /// <returns>A structure that contains the value that was parsed.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" />.</exception>
         public static Uuid Parse(string input)
         {
             if (input == null)
@@ -870,6 +1133,12 @@ namespace Dodo.Primitives
             return result;
         }
 
+        /// <summary>
+        ///     Converts a read-only character span that represents a UUID to the equivalent <see cref="Uuid" /> structure.
+        /// </summary>
+        /// <param name="input">A read-only span containing the bytes representing a <see cref="Uuid" />.</param>
+        /// <returns>A structure that contains the value that was parsed.</returns>
+        /// <exception cref="FormatException"><paramref name="input" /> is not in a recognized format.</exception>
         public static Uuid Parse(ReadOnlySpan<char> input)
         {
             if (input.IsEmpty)
@@ -887,6 +1156,18 @@ namespace Dodo.Primitives
             return result;
         }
 
+        /// <summary>
+        ///     Converts the string representation of a <see cref="Uuid" /> to the equivalent <see cref="Uuid" /> structure, provided that the string
+        ///     is in the specified format.
+        /// </summary>
+        /// <param name="input">The <see cref="Uuid" /> to convert.</param>
+        /// <param name="format">
+        ///     One of the following specifiers that indicates the exact format to use when interpreting <paramref name="input" />:
+        ///     "N", "D", "B", "P", or "X".
+        /// </param>
+        /// <returns>A structure that contains the value that was parsed.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="input" /> or <paramref name="format" /> is <see langword="null" />.</exception>
+        /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
         public static Uuid ParseExact(string input, string format)
         {
             if (input == null)
@@ -981,6 +1262,17 @@ namespace Dodo.Primitives
             }
         }
 
+        /// <summary>
+        ///     Converts the character span representation of a <see cref="Uuid" /> to the equivalent <see cref="Uuid" /> structure, provided that the
+        ///     string is in the specified format.
+        /// </summary>
+        /// <param name="input">A read-only span containing the characters representing the <see cref="Uuid" /> to convert.</param>
+        /// <param name="format">
+        ///     A read-only span of characters representing one of the following specifiers that indicates the exact format to use
+        ///     when interpreting <paramref name="input" />: "N", "D", "B", "P", or "X".
+        /// </param>
+        /// <returns>A structure that contains the value that was parsed.</returns>
+        /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
         public static Uuid ParseExact(ReadOnlySpan<char> input, ReadOnlySpan<char> format)
         {
             if (input.IsEmpty)
@@ -1051,6 +1343,16 @@ namespace Dodo.Primitives
             }
         }
 
+        /// <summary>
+        ///     Converts the string representation of a UUID to the equivalent <see cref="Uuid" /> structure.
+        /// </summary>
+        /// <param name="input">A string containing the UUID to convert.</param>
+        /// <param name="output">
+        ///     A <see cref="Uuid" /> instance to contain the parsed value. If the method returns <see langword="true" />,
+        ///     <paramref name="output" /> contains a valid <see cref="Uuid" />. If the method returns <see langword="false" />,
+        ///     <paramref name="output" /> equals <see cref="Empty" />.
+        /// </param>
+        /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
         public static bool TryParse(string? input, out Uuid output)
         {
             if (input == null)
@@ -1079,6 +1381,17 @@ namespace Dodo.Primitives
             return false;
         }
 
+        /// <summary>
+        ///     Converts the specified read-only span of characters containing the representation of a UUID to the equivalent <see cref="Uuid" />
+        ///     structure.
+        /// </summary>
+        /// <param name="input">A span containing the characters representing the UUID to convert.</param>
+        /// <param name="output">
+        ///     A <see cref="Uuid" /> instance to contain the parsed value. If the method returns <see langword="true" />,
+        ///     <paramref name="output" /> contains a valid <see cref="Uuid" />. If the method returns <see langword="false" />,
+        ///     <paramref name="output" /> equals <see cref="Empty" />.
+        /// </param>
+        /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
         public static bool TryParse(ReadOnlySpan<char> input, out Uuid output)
         {
             if (input.IsEmpty)
@@ -1102,6 +1415,17 @@ namespace Dodo.Primitives
             return false;
         }
 
+        /// <summary>
+        ///     Converts the specified read-only span bytes of UTF-8 characters containing the representation of a UUID to the equivalent
+        ///     <see cref="Uuid" /> structure.
+        /// </summary>
+        /// <param name="uuidUtf8String">A span containing the bytes of UTF-8 characters representing the UUID to convert.</param>
+        /// <param name="output">
+        ///     A <see cref="Uuid" /> instance to contain the parsed value. If the method returns <see langword="true" />,
+        ///     <paramref name="output" /> contains a valid <see cref="Uuid" />. If the method returns <see langword="false" />,
+        ///     <paramref name="output" /> equals <see cref="Empty" />.
+        /// </param>
+        /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
         public static bool TryParse(ReadOnlySpan<byte> uuidUtf8String, out Uuid output)
         {
             if (uuidUtf8String.IsEmpty)
@@ -1125,7 +1449,21 @@ namespace Dodo.Primitives
             return false;
         }
 
-
+        /// <summary>
+        ///     Converts the string representation of a UUID to the equivalent <see cref="Uuid" /> structure, provided that the string is in the
+        ///     specified format.
+        /// </summary>
+        /// <param name="input">The UUID to convert.</param>
+        /// <param name="format">
+        ///     One of the following specifiers that indicates the exact format to use when interpreting <paramref name="input" />:
+        ///     "N", "D", "B", "P", or "X".
+        /// </param>
+        /// <param name="output">
+        ///     A <see cref="Uuid" /> instance to contain the parsed value. If the method returns <see langword="true" />,
+        ///     <paramref name="output" /> contains a valid <see cref="Uuid" />. If the method returns <see langword="false" />,
+        ///     <paramref name="output" /> equals <see cref="Empty" />.
+        /// </param>
+        /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
         public static bool TryParseExact(string? input, string format, out Uuid output)
         {
             if (input == null || format?.Length != 1)
@@ -1222,6 +1560,21 @@ namespace Dodo.Primitives
             return false;
         }
 
+        /// <summary>
+        ///     Converts span of characters representing the UUID to the equivalent <see cref="Uuid" /> structure, provided that the string is in the
+        ///     specified format.
+        /// </summary>
+        /// <param name="input">A read-only span containing the characters representing the UUID to convert.</param>
+        /// <param name="format">
+        ///     A read-only span containing a character representing one of the following specifiers that indicates the exact format
+        ///     to use when interpreting <paramref name="input" />: "N", "D", "B", "P", or "X".
+        /// </param>
+        /// <param name="output">
+        ///     A <see cref="Uuid" /> instance to contain the parsed value. If the method returns <see langword="true" />,
+        ///     <paramref name="output" /> contains a valid <see cref="Uuid" />. If the method returns <see langword="false" />,
+        ///     <paramref name="output" /> equals <see cref="Empty" />.
+        /// </param>
+        /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
         public static bool TryParseExact(ReadOnlySpan<char> input, ReadOnlySpan<char> format, out Uuid output)
         {
             if (format.Length != 1)

@@ -3,6 +3,9 @@ using Dodo.Primitives.Internal;
 
 namespace Dodo.Primitives
 {
+    /// <summary>
+    ///     Utility methods to work with hexadecimal strings.
+    /// </summary>
     [SuppressMessage("ReSharper", "RedundantNameQualifier")]
     public static unsafe class Hex
     {
@@ -16,6 +19,11 @@ namespace Dodo.Primitives
             TableFromHexToBytes = InternalHexTables.TableFromHexToBytes;
         }
 
+        /// <summary>
+        ///     Checks that provided string is hexadecimal.
+        /// </summary>
+        /// <param name="possibleHexString">String to check.</param>
+        /// <returns></returns>
         public static bool IsHexString(string? possibleHexString)
         {
             if (string.IsNullOrWhiteSpace(possibleHexString))
@@ -56,6 +64,11 @@ namespace Dodo.Primitives
             return true;
         }
 
+        /// <summary>
+        ///     Returns bytes of hexadecimal string.
+        /// </summary>
+        /// <param name="hexString">Hexadecimal string</param>
+        /// <returns></returns>
         public static byte[]? GetBytes(string hexString)
         {
             if (string.IsNullOrWhiteSpace(hexString))
@@ -103,6 +116,12 @@ namespace Dodo.Primitives
             return result;
         }
 
+        /// <summary>
+        ///     Return hexadecimal string representation of provided bytes.
+        /// </summary>
+        /// <param name="bytes">Bytes that need to be presented as hexadecimal string.</param>
+        /// <returns></returns>
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
         public static string? GetString(byte[] bytes)
         {
             if (bytes == null)

@@ -7,16 +7,45 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NuspecFile>Package.nuspec</NuspecFile>
+        <ImplicitUsings>false</ImplicitUsings>
+        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+        <EnableSourceLink>true</EnableSourceLink>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <DebugType>portable</DebugType>
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+        <Deterministic Condition="'$(GITHUB_ACTIONS)' == 'true'">True</Deterministic>
+        <EmbedAllSources>true</EmbedAllSources>
+        <PackageId>Dodo.Primitives</PackageId>
+        <Authors>Roman Bukin</Authors>
+        <Company>Dodo Engineering</Company>
+        <Copyright>Copyright 2021 Dodo Engineering</Copyright>
+        <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
+        <PackageTags>Uuid Hex Dodo</PackageTags>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>logo.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/dodopizza/primitives</PackageProjectUrl>
+        <PackageReleaseNotes>https://github.com/dodopizza/primitives/releases</PackageReleaseNotes>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../.github/images/logo.png" Pack="true" Visible="false" PackagePath="" />
+    </ItemGroup>
 
     <PropertyGroup>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    </ItemGroup>
+
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-        <PackageReference Include="System.Text.Json" Version="5.0.2"/>
+        <PackageReference Include="System.Text.Json" Version="5.0.2" />
     </ItemGroup>
 
 </Project>

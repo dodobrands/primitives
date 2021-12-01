@@ -7,6 +7,10 @@ jobs:
   compare-version:
     name: Compare versions in current branch and main
     runs-on: ubuntu-20.04
+    if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v2
@@ -94,11 +98,22 @@ jobs:
     needs: compare-version
     runs-on: windows-2019
     if: ${{ !contains(github.event.commits[0].message, '[skip ci]') }}
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
+      - name: Setup .NET Core SDK 3.1.415
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.415
+      - name: Setup .NET Core SDK 5.0.403
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.403
       - name: Setup .NET Core SDK 6.0.100
         uses: actions/setup-dotnet@v1
         with:

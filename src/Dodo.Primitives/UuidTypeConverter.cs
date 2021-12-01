@@ -7,6 +7,9 @@ using System.Reflection;
 
 namespace Dodo.Primitives
 {
+    /// <summary>
+    ///     Converter that used to convert between <see cref="Uuid" /> structure and another data types.
+    /// </summary>
     public class UuidTypeConverter : TypeConverter
     {
         private static readonly ConstructorInfo UuidStringCtor = typeof(Uuid)
@@ -27,6 +30,7 @@ namespace Dodo.Primitives
                 return false;
             });
 
+        /// <inheritdoc />
         public override bool CanConvertFrom(
             ITypeDescriptorContext? context,
             Type sourceType)
@@ -34,6 +38,7 @@ namespace Dodo.Primitives
             return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
+        /// <inheritdoc />
         public override bool CanConvertTo(
             ITypeDescriptorContext? context,
             Type? destinationType)
@@ -41,6 +46,7 @@ namespace Dodo.Primitives
             return destinationType == typeof(InstanceDescriptor) || base.CanConvertTo(context, destinationType);
         }
 
+        /// <inheritdoc />
         public override object? ConvertFrom(
             ITypeDescriptorContext? context,
             CultureInfo? culture,
@@ -64,6 +70,7 @@ namespace Dodo.Primitives
             return base.ConvertFrom(context, culture, value);
         }
 
+        /// <inheritdoc />
         public override object? ConvertTo(
             ITypeDescriptorContext? context,
             CultureInfo? culture,

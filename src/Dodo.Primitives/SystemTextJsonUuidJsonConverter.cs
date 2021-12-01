@@ -4,8 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace Dodo.Primitives
 {
+    /// <summary>
+    ///     System.Text.Json converter for <see cref="Uuid" />.
+    /// </summary>
     public class SystemTextJsonUuidJsonConverter : JsonConverter<Uuid>
     {
+        /// <inheritdoc />
         public override Uuid Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
@@ -14,6 +18,7 @@ namespace Dodo.Primitives
             return reader.GetUuid();
         }
 
+        /// <inheritdoc />
         public override void Write(
             Utf8JsonWriter writer,
             Uuid value,
