@@ -22,7 +22,7 @@ jobs:
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net5.0 /p:CoverletOutput=../../coverage/cover_net50 /p:MergeWith=../../coverage/cover_netcoreapp31.netcoreapp3.1.json /p:CoverletOutputFormat=json
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net6.0 /p:MergeWith=../../coverage/cover_net50.net5.0.json /p:CoverletOutput=../../coverage/cover_full /p:CoverletOutputFormat=lcov
       - name: Publish coverage report to coveralls.io
-        uses: coverallsapp/github-action@v1.1.3
+        uses: coverallsapp/github-action@1.1.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./coverage/cover_full.net6.0.info
