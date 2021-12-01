@@ -18,6 +18,7 @@ jobs:
           ref: ${{ github.sha }}
       - name: Get source branch version
         id: source-version
+        shell: bash
         run: |
           version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
           version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
@@ -39,6 +40,7 @@ jobs:
           ref: ${{ github.base_ref }}
       - name: Get target branch version
         id: target-version
+        shell: bash
         run: |
           version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
           version_suffix=$(cat ./src/Directory.Build.props | grep "<VersionSuffix>" | sed -e "s/ *<\/*VersionSuffix>//g")
@@ -63,6 +65,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
       - name: Compare versions
+        shell: bash
         run: |
           dotnet publish -c Release ./tools/Dodo.Primitives.Tools.CompareVersions/Dodo.Primitives.Tools.CompareVersions.csproj
           source_more_than_target=$(dotnet ./tools/Dodo.Primitives.Tools.CompareVersions/bin/Release/net6.0/publish/Dodo.Primitives.Tools.CompareVersions.dll "${source_version}" "${target_version}")
@@ -119,6 +122,7 @@ jobs:
         with:
           dotnet-version: 6.0.100
       - name: Run tests
+        shell: pwsh
         run: |
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net462 /p:CoverletOutput=../../coverage/cover_netstandard20 /p:CoverletOutputFormat=json
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/cover_netcoreapp31 /p:MergeWith=../../coverage/cover_netstandard20.net462.json /p:CoverletOutputFormat=json

@@ -27,6 +27,7 @@ jobs:
         with:
           dotnet-version: 6.0.100
       - name: Run tests
+        shell: pwsh
         run: |
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net462 /p:CoverletOutput=../../coverage/cover_netstandard20 /p:CoverletOutputFormat=json
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f netcoreapp3.1 /p:CoverletOutput=../../coverage/cover_netcoreapp31 /p:MergeWith=../../coverage/cover_netstandard20.net462.json /p:CoverletOutputFormat=json
@@ -38,13 +39,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./coverage/cover_full.net6.0.info
       - name: Build and publish library to NuGet
+        shell: pwsh
         run: |
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f netcoreapp3.1
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f netstandard2.0
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net5.0
           dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net6.0
-          dotnet pack -c Release --no-restore --no-build --output out/ ./src/Dodo.Primitives/Dodo.Primitives.csproj
-          dotnet nuget push (Get-ChildItem ./out/ -Filter *.symbols.nupkg | Select-Object -First 1 | % { $_.FullName }) --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet pack -c Release --no-restore --no-build --output out/tmp ./src/Dodo.Primitives/Dodo.Primitives.csproj
+          (Get-Item (Get-ChildItem ./out/tmp -Filter *.symbols.nupkg | Select-Object -First 1 | % { $_.FullName })) | Move-Item -Destination { $_.Directory.Parent.FullName }
+          Remove-Item ./out/tmp -Force -Recurse
+          Get-Item (Get-ChildItem ./out/ -Filter *.nupkg | Select-Object -First 1 | % { $_.FullName }) | Rename-Item -NewName {$_.name -replace ".symbols.nupkg",".nupkg"}
+          dotnet nuget push (Get-ChildItem ./out/ -Filter *.nupkg | Select-Object -First 1 | % { $_.FullName }) --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
       - uses: actions/upload-artifact@v2
         with:
           name: NuGet package
@@ -60,6 +65,7 @@ jobs:
           path: out
       - name: Get package
         id: get-package
+        shell: bash
         run: |
           echo "::set-output name=package::$(ls out/)"
       - name: Upload release assets
