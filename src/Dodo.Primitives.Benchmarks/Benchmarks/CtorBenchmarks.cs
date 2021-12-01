@@ -17,7 +17,7 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
         [Arguments(new byte[] {253, 47, 238, 170, 214, 83, 143, 78, 140, 107, 139, 132, 94, 5, 145, 199})]
         public Guid guid_CtorByteArray(byte[] guidBytes)
         {
-            return new(guidBytes);
+            return new Guid(guidBytes);
         }
 
         [Benchmark]
@@ -25,7 +25,7 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
         [Arguments(new byte[] {170, 238, 47, 253, 83, 214, 78, 143, 140, 107, 139, 132, 94, 5, 145, 199})]
         public Uuid uuid_CtorByteArray(byte[] uuidBytes)
         {
-            return new(uuidBytes);
+            return new Uuid(uuidBytes);
         }
 
         // ReadOnlySpan<byte>

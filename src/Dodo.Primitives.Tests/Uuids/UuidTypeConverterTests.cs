@@ -41,7 +41,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<string>(actualValue);
-            Assert.AreEqual(expectedValue, (string) actualValue);
+            Assert.AreEqual(expectedValue, (string?) actualValue);
             Assert.AreEqual(1, notUuid.ToStringCalls);
         }
 
@@ -56,7 +56,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<string>(actualValue);
-            Assert.AreEqual(expectedValue, (string) actualValue);
+            Assert.AreEqual(expectedValue, (string?) actualValue);
         }
 
         [Test]
@@ -71,10 +71,10 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<InstanceDescriptor>(actualValue);
-            var actualDescriptor = (InstanceDescriptor) actualValue;
-            Assert.AreEqual(expectedValue.MemberInfo, actualDescriptor.MemberInfo);
-            Assert.AreEqual(expectedValue.IsComplete, actualDescriptor.IsComplete);
-            Assert.AreEqual(expectedValue.Arguments, actualDescriptor.Arguments);
+            var actualDescriptor = (InstanceDescriptor?) actualValue;
+            Assert.AreEqual(expectedValue.MemberInfo, actualDescriptor?.MemberInfo);
+            Assert.AreEqual(expectedValue.IsComplete, actualDescriptor?.IsComplete);
+            Assert.AreEqual(expectedValue.Arguments, actualDescriptor?.Arguments);
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<Uuid>(actualValue);
-            Assert.AreEqual(expectedValue, (Uuid) actualValue);
+            Assert.AreEqual(expectedValue, (Uuid) actualValue!);
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace Dodo.Primitives.Tests.Uuids
 
             Assert.NotNull(actualValue);
             Assert.IsInstanceOf<Uuid>(actualValue);
-            Assert.AreEqual(expectedValue, (Uuid) actualValue);
+            Assert.AreEqual(expectedValue, (Uuid) actualValue!);
         }
 
         [Test]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 
@@ -109,25 +110,25 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks
             return guid.Equals(differentTypeValue);
         }
 
-#nullable disable
         // Equals with null
         [Benchmark]
         [BenchmarkCategory("Equals_null")]
         [ArgumentsSource(nameof(UuidArgs))]
         [SuppressMessage("ReSharper", "RedundantCast")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public bool uuid_EqualsWithNull(Uuid uuid)
         {
-            return uuid.Equals((object) null);
+            return uuid.Equals((object?) null);
         }
 
         [Benchmark]
         [BenchmarkCategory("Equals_null")]
         [ArgumentsSource(nameof(GuidArgs))]
         [SuppressMessage("ReSharper", "RedundantCast")]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public bool guid_EqualsWithNull(Guid guid)
         {
-            return guid.Equals((object) null);
+            return guid.Equals((object?) null);
         }
-#nullable restore
     }
 }

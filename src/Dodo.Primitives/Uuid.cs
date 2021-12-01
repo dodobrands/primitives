@@ -329,17 +329,12 @@ namespace Dodo.Primitives
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         public override bool Equals(object? obj)
         {
-            Uuid other;
-            if (obj == null || !(obj is Uuid))
+            if (obj is Uuid other)
             {
-                return false;
-            }
-            else
-            {
-                other = (Uuid) obj;
+                return _ulong0 == other._ulong0 && _ulong8 == other._ulong8;
             }
 
-            return _ulong0 == other._ulong0 && _ulong8 == other._ulong8;
+            return false;
         }
 
         public bool Equals(Uuid other)

@@ -7,7 +7,7 @@ namespace Dodo.Primitives
     [SuppressMessage("ReSharper", "RedundantNameQualifier")]
     public static class Utf8JsonReaderUuidExtensions
     {
-        // https://github.com/dotnet/runtime/blob/v5.0.0-preview.3.20214.6/src/libraries/System.Text.Json/src/System/Text/Json/ThrowHelper.cs#L14
+        // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Text.Json/src/System/Text/Json/ThrowHelper.cs#L13
         private const string ExceptionSourceValueToRethrowAsJsonException = "System.Text.Json.Rethrowable";
 
         public static Uuid GetUuid(this ref Utf8JsonReader reader)

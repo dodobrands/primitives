@@ -11,10 +11,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.sha }}
-      - name: Setup .NET Core SDK 6.0.100-preview.1.21103.13
+      - name: Setup .NET Core SDK 6.0.100
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.100-preview.1.21103.13
+          dotnet-version: 6.0.100
       - name: Run tests
         run: |
           dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj /p:CollectCoverage=true -f net462 /p:CoverletOutput=../../coverage/cover_netstandard20 /p:CoverletOutputFormat=json
@@ -40,7 +40,7 @@ jobs:
           path: out/
   upload-release-assets:
     name: Upload release assets
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: build-test-and-publish
     steps:
       - uses: actions/download-artifact@v2

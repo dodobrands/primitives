@@ -10,11 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dodo.Primitives\Dodo.Primitives.csproj" />
+        <ProjectReference Include="..\Dodo.Primitives\Dodo.Primitives.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1"/>
     </ItemGroup>
 
 </Project>

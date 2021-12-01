@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Dodo.Primitives.Tests.Uuids.Data.Models;
 
 #endif
+
 #if NETFRAMEWORK
 using System;
 using System.Collections.Generic;
