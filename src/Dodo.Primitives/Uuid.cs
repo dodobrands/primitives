@@ -728,11 +728,6 @@ namespace Dodo.Primitives
         {
             format ??= "N";
 
-            if (string.IsNullOrEmpty(format))
-            {
-                format = "N";
-            }
-
             if (format.Length != 1)
             {
                 throw new FormatException(
