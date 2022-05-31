@@ -726,7 +726,10 @@ namespace Dodo.Primitives
         /// </exception>
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            format ??= "N";
+            if (string.IsNullOrEmpty(format))
+            {
+                format = "N";
+            }
 
             if (format.Length != 1)
             {
