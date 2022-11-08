@@ -1,28 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net462;net5.0;net6.0</TargetFrameworks>
+        <TargetFramework>net7.0</TargetFramework>
         <ProjectGuid>4c9485a5-fcb5-4361-8c46-c99669d5b22e</ProjectGuid>
-        <LangVersion>9.0</LangVersion>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>11.0</LangVersion>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <IsPackable>false</IsPackable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.msbuild" Version="3.1.0">
+        <PackageReference Include="coverlet.msbuild" Version="3.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
-        <PackageReference Include="nunit" Version="3.13.2"/>
-        <PackageReference Include="NUnit3TestAdapter" Version="4.1.0"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="NuGet.Frameworks" Version="6.3.1" />
+        <PackageReference Include="nunit" Version="3.13.3" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+        <PackageReference Include="System.Reflection.Metadata" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Dodo.Primitives\Dodo.Primitives.csproj"/>
+        <ProjectReference Include="..\Dodo.Primitives\Dodo.Primitives.csproj" />
     </ItemGroup>
 
 </Project>

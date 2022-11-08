@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
+        <TargetFramework>net7.0</TargetFramework>
         <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
-        <LangVersion>9.0</LangVersion>
+        <LangVersion>11.0</LangVersion>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <ImplicitUsings>false</ImplicitUsings>
         <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
         <EnableSourceLink>true</EnableSourceLink>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -18,7 +19,7 @@
         <PackageId>Dodo.Primitives</PackageId>
         <Authors>Roman Bukin</Authors>
         <Company>Dodo Engineering</Company>
-        <Copyright>Copyright 2021 Dodo Engineering</Copyright>
+        <Copyright>Copyright 2022 Dodo Engineering</Copyright>
         <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
         <PackageTags>Uuid Hex Dodo</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

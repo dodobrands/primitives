@@ -1,16 +1,37 @@
-using System;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Dodo.Primitives.Tests.Uuids.Data;
 using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
 
-public class UuidTryParseTests
+public class UuidTryParseWithFormatProviderTests
 {
-    [Test]
-    public void TryParseNullStringShouldFalse()
+    public static IEnumerable GetFormatProviders()
     {
-        bool parsed = Uuid.TryParse((string?) null, out Uuid uuid);
+        foreach (var nullableFormatProvider in GetNullableFormatProviders())
+        {
+            yield return nullableFormatProvider;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "RedundantCast")]
+    public static IEnumerable<IFormatProvider?> GetNullableFormatProviders()
+    {
+        yield return (IFormatProvider?)CultureInfo.InvariantCulture;
+        yield return (IFormatProvider?)new CultureInfo("en-US");
+        yield return (IFormatProvider?)null!;
+    }
+
+    [Test]
+    public void TryParseNullStringShouldFalse([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
+    {
+        string? valueToParse = null;
+        bool parsed = Uuid.TryParse(valueToParse, formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -19,9 +40,9 @@ public class UuidTryParseTests
     }
 
     [Test]
-    public void TryParseEmptyStringShouldFalse()
+    public void TryParseEmptyStringShouldFalse([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
-        bool parsed = Uuid.TryParse(string.Empty, out Uuid uuid);
+        bool parsed = Uuid.TryParse(string.Empty, formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -30,9 +51,9 @@ public class UuidTryParseTests
     }
 
     [Test]
-    public void TryParseEmptySpanShouldFalse()
+    public void TryParseEmptySpanShouldFalse([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
-        bool parsed = Uuid.TryParse(new ReadOnlySpan<char>(new char[] { }), out Uuid uuid);
+        bool parsed = Uuid.TryParse(new ReadOnlySpan<char>(new char[] { }), formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -306,17 +327,18 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
+            foreach (var formatProvider in GetNullableFormatProviders())
             foreach (var correctString in correctStrings)
             {
                 string stringToParse = correctString.String;
                 byte[] expectedBytes = correctString.Bytes;
 
-                bool parsed = Uuid.TryParse(stringToParse, out Uuid uuid);
+                bool parsed = Uuid.TryParse(stringToParse, formatProvider, out Uuid uuid);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = uuid;
+                    *(Uuid*)pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);
@@ -329,17 +351,18 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
+            foreach (var formatProvider in GetNullableFormatProviders())
             foreach (var correctString in correctStrings)
             {
                 var spanToParse = new ReadOnlySpan<char>(correctString.String.ToCharArray());
                 byte[] expectedBytes = correctString.Bytes;
 
-                bool parsed = Uuid.TryParse(spanToParse, out Uuid uuid);
+                bool parsed = Uuid.TryParse(spanToParse, formatProvider, out Uuid uuid);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = uuid;
+                    *(Uuid*)pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);
@@ -352,9 +375,10 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
+            foreach (var formatProvider in GetNullableFormatProviders())
             foreach (var largeString in incorrectLargeStrings)
             {
-                Assert.False(Uuid.TryParse(largeString, out _));
+                Assert.False(Uuid.TryParse(largeString, formatProvider, out _));
             }
         });
     }
@@ -363,10 +387,11 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
+            foreach (var formatProvider in GetNullableFormatProviders())
             foreach (var largeString in incorrectLargeStrings)
             {
                 var largeSpan = new ReadOnlySpan<char>(largeString.ToCharArray());
-                Assert.False(Uuid.TryParse(largeSpan, out _));
+                Assert.False(Uuid.TryParse(largeSpan, formatProvider, out _));
             }
         });
     }
