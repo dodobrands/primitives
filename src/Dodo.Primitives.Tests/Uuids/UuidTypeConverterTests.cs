@@ -41,7 +41,7 @@ public class UuidTypeConverterTests
 
         Assert.NotNull(actualValue);
         Assert.IsInstanceOf<string>(actualValue);
-        Assert.AreEqual(expectedValue, (string?) actualValue);
+        Assert.AreEqual(expectedValue, (string?)actualValue);
         Assert.AreEqual(1, notUuid.ToStringCalls);
     }
 
@@ -56,14 +56,14 @@ public class UuidTypeConverterTests
 
         Assert.NotNull(actualValue);
         Assert.IsInstanceOf<string>(actualValue);
-        Assert.AreEqual(expectedValue, (string?) actualValue);
+        Assert.AreEqual(expectedValue, (string?)actualValue);
     }
 
     [Test]
     public void ConvertToInstanceDescriptor()
     {
-        ConstructorInfo? uuidCtor = typeof(Uuid)!.GetConstructor(new[] {typeof(string)});
-        var expectedValue = new InstanceDescriptor(uuidCtor, new object[] {"ee753afdd98a45678de9740de0441987"});
+        ConstructorInfo? uuidCtor = typeof(Uuid)!.GetConstructor(new[] { typeof(string) });
+        var expectedValue = new InstanceDescriptor(uuidCtor, new object[] { "ee753afdd98a45678de9740de0441987" });
         var uuid = new Uuid("ee753afd-d98a-4567-8de9-740de0441987");
         var converter = new UuidTypeConverter();
 
@@ -71,7 +71,7 @@ public class UuidTypeConverterTests
 
         Assert.NotNull(actualValue);
         Assert.IsInstanceOf<InstanceDescriptor>(actualValue);
-        var actualDescriptor = (InstanceDescriptor?) actualValue;
+        var actualDescriptor = (InstanceDescriptor?)actualValue;
         Assert.AreEqual(expectedValue.MemberInfo, actualDescriptor?.MemberInfo);
         Assert.AreEqual(expectedValue.IsComplete, actualDescriptor?.IsComplete);
         Assert.AreEqual(expectedValue.Arguments, actualDescriptor?.Arguments);
@@ -99,7 +99,7 @@ public class UuidTypeConverterTests
 
         Assert.NotNull(actualValue);
         Assert.IsInstanceOf<Uuid>(actualValue);
-        Assert.AreEqual(expectedValue, (Uuid) actualValue!);
+        Assert.AreEqual(expectedValue, (Uuid)actualValue!);
     }
 
     [Test]
@@ -107,22 +107,22 @@ public class UuidTypeConverterTests
     {
         var expectedValue = new Uuid("b28d9df8-fd78-429f-89c7-c669e82eb604");
         var converter = new UuidTypeConverter();
-        ConstructorInfo? uuidCtor = typeof(Uuid)!.GetConstructor(new[] {typeof(string)});
-        var descriptor = new InstanceDescriptor(uuidCtor, new object[] {"b28d9df8fd78429f89c7c669e82eb604"});
+        ConstructorInfo? uuidCtor = typeof(Uuid)!.GetConstructor(new[] { typeof(string) });
+        var descriptor = new InstanceDescriptor(uuidCtor, new object[] { "b28d9df8fd78429f89c7c669e82eb604" });
 
         object? actualValue = converter.ConvertFrom(descriptor);
 
         Assert.NotNull(actualValue);
         Assert.IsInstanceOf<Uuid>(actualValue);
-        Assert.AreEqual(expectedValue, (Uuid) actualValue!);
+        Assert.AreEqual(expectedValue, (Uuid)actualValue!);
     }
 
     [Test]
     public void ConvertFromInvalidInstanceDescriptor()
     {
         var converter = new UuidTypeConverter();
-        ConstructorInfo? guidCtor = typeof(Guid)!.GetConstructor(new[] {typeof(string)});
-        var descriptor = new InstanceDescriptor(guidCtor, new object[] {"b28d9df8fd78429f89c7c669e82eb604"});
+        ConstructorInfo? guidCtor = typeof(Guid)!.GetConstructor(new[] { typeof(string) });
+        var descriptor = new InstanceDescriptor(guidCtor, new object[] { "b28d9df8fd78429f89c7c669e82eb604" });
 
         Assert.Throws<NotSupportedException>(() =>
         {

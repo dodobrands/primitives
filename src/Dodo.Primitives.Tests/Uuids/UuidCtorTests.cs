@@ -1,5 +1,6 @@
 using System;
 using Dodo.Primitives.Tests.Uuids.Data;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
@@ -16,7 +17,7 @@ public class UuidCtorTests
         var uuidBytes = new byte[16];
         fixed (byte* pinnedUuidArray = uuidBytes)
         {
-            *(Uuid*) pinnedUuidArray = uuid;
+            *(Uuid*)pinnedUuidArray = uuid;
         }
 
         Assert.AreEqual(correctBytes, uuidBytes);
@@ -28,7 +29,7 @@ public class UuidCtorTests
 #nullable disable
         Assert.Throws<ArgumentNullException>(() =>
         {
-            var _ = new Uuid((byte[]) null);
+            var _ = new Uuid((byte[])null);
         });
 #nullable restore
     }
@@ -38,7 +39,7 @@ public class UuidCtorTests
     {
         Assert.Throws<ArgumentException>(() =>
         {
-            var _ = new Uuid(new byte[] {1, 2, 3});
+            var _ = new Uuid(new byte[] { 1, 2, 3 });
         });
     }
 
@@ -56,7 +57,7 @@ public class UuidCtorTests
         var uuidBytes = new byte[16];
         fixed (byte* pinnedUuidArray = uuidBytes)
         {
-            *(Uuid*) pinnedUuidArray = uuid;
+            *(Uuid*)pinnedUuidArray = uuid;
         }
 
         Assert.AreEqual(correctBytes, uuidBytes);
@@ -71,7 +72,7 @@ public class UuidCtorTests
         var uuidBytes = new byte[16];
         fixed (byte* pinnedUuidArray = uuidBytes)
         {
-            *(Uuid*) pinnedUuidArray = uuid;
+            *(Uuid*)pinnedUuidArray = uuid;
         }
 
         Assert.AreEqual(correctBytes, uuidBytes);
@@ -82,7 +83,7 @@ public class UuidCtorTests
     {
         Assert.Throws<ArgumentException>(() =>
         {
-            var span = new ReadOnlySpan<byte>(new byte[] {1, 2, 3});
+            var span = new ReadOnlySpan<byte>(new byte[] { 1, 2, 3 });
             var _ = new Uuid(span);
         });
     }
@@ -98,7 +99,7 @@ public class UuidCtorTests
         {
 #nullable disable
             // ReSharper disable once RedundantCast
-            var _ = new Uuid((string) null);
+            var _ = new Uuid((string)null);
 #nullable restore
         });
     }
@@ -127,7 +128,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 string nString = correctNString.String;
                 byte[] expectedBytes = correctNString.Bytes;
@@ -137,7 +138,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -150,7 +151,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 var nSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
                 byte[] expectedBytes = correctNString.Bytes;
@@ -160,7 +161,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -177,7 +178,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
             {
                 string dString = correctDString.String;
                 byte[] expectedBytes = correctDString.Bytes;
@@ -187,7 +188,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -200,7 +201,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
             {
                 var dSpan = new ReadOnlySpan<char>(correctDString.String.ToCharArray());
                 byte[] expectedBytes = correctDString.Bytes;
@@ -210,7 +211,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -227,7 +228,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctBString in UuidTestData.CorrectBStrings)
+            foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
             {
                 string bString = correctBString.String;
                 byte[] expectedBytes = correctBString.Bytes;
@@ -237,7 +238,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -250,7 +251,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctBString in UuidTestData.CorrectBStrings)
+            foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
             {
                 var bSpan = new ReadOnlySpan<char>(correctBString.String.ToCharArray());
                 byte[] expectedBytes = correctBString.Bytes;
@@ -260,7 +261,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -277,7 +278,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctPString in UuidTestData.CorrectPStrings)
+            foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
             {
                 string pString = correctPString.String;
                 byte[] expectedBytes = correctPString.Bytes;
@@ -287,7 +288,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -300,7 +301,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctPString in UuidTestData.CorrectPStrings)
+            foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
             {
                 var pSpan = new ReadOnlySpan<char>(correctPString.String.ToCharArray());
                 byte[] expectedBytes = correctPString.Bytes;
@@ -310,7 +311,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -327,7 +328,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctXString in UuidTestData.CorrectXStrings)
+            foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
             {
                 string xString = correctXString.String;
                 byte[] expectedBytes = correctXString.Bytes;
@@ -337,7 +338,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -350,7 +351,7 @@ public class UuidCtorTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctXString in UuidTestData.CorrectXStrings)
+            foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
             {
                 var xSpan = new ReadOnlySpan<char>(correctXString.String.ToCharArray());
                 byte[] expectedBytes = correctXString.Bytes;
@@ -360,7 +361,7 @@ public class UuidCtorTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = parsedUuid;
+                    *(Uuid*)pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);

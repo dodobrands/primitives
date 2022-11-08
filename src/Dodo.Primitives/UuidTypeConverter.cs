@@ -86,7 +86,7 @@ public class UuidTypeConverter : TypeConverter
 
             if (destinationType == typeof(InstanceDescriptor))
             {
-                return new InstanceDescriptor(UuidStringCtor, new object[] {uuidValue.ToString("N")});
+                return new InstanceDescriptor(UuidStringCtor, new object[] { uuidValue.ToString("N") });
             }
         }
 

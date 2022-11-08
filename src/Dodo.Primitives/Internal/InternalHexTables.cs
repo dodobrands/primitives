@@ -11,17 +11,17 @@ internal static unsafe class InternalHexTables
 
     static InternalHexTables()
     {
-        TableToHex = (uint*) Marshal.AllocHGlobal(sizeof(uint) * 256).ToPointer();
+        TableToHex = (uint*)Marshal.AllocHGlobal(sizeof(uint) * 256).ToPointer();
         for (var i = 0; i < 256; i++)
         {
             string chars = Convert.ToString(i, 16).PadLeft(2, '0');
-            TableToHex[i] = ((uint) chars[1] << 16) | chars[0];
+            TableToHex[i] = ((uint)chars[1] << 16) | chars[0];
         }
 
-        TableFromHexToBytes = (byte*) Marshal.AllocHGlobal(103).ToPointer();
+        TableFromHexToBytes = (byte*)Marshal.AllocHGlobal(103).ToPointer();
         for (var i = 0; i < 103; i++)
         {
-            TableFromHexToBytes[i] = (char) i switch
+            TableFromHexToBytes[i] = (char)i switch
             {
                 '0' => 0x0,
                 '1' => 0x1,

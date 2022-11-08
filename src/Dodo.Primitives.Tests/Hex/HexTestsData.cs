@@ -22,14 +22,14 @@ public static class HexTestsData
 
     public static readonly byte[][] ValidByteArrays =
     {
-        new byte[] {13, 37, 42},
-        new byte[] {42, 43, 43, 34, 35, 9, 12, 19, 93},
-        Enumerable.Repeat((byte) 42, 17935).Select((b, index) =>
+        new byte[] { 13, 37, 42 },
+        new byte[] { 42, 43, 43, 34, 35, 9, 12, 19, 93 },
+        Enumerable.Repeat((byte)42, 17935).Select((b, index) =>
         {
             byte result;
             unchecked
             {
-                result = (byte) (b + (byte) (index % byte.MaxValue));
+                result = (byte)(b + (byte)(index % byte.MaxValue));
             }
 
             return result;
@@ -44,7 +44,7 @@ public static class HexTestsData
             var brokenString = new string(strings[i].ToCharArray());
             fixed (char* brokenPtr = brokenString)
             {
-                var bytePtr = (byte*) brokenPtr;
+                var bytePtr = (byte*)brokenPtr;
                 int problemType = i % 3;
                 switch (problemType)
                 {

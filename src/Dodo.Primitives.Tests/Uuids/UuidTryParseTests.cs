@@ -10,7 +10,7 @@ public class UuidTryParseTests
     [Test]
     public void TryParseNullStringShouldFalse()
     {
-        bool parsed = Uuid.TryParse((string?) null, out Uuid uuid);
+        bool parsed = Uuid.TryParse((string?)null, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -306,7 +306,7 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctString in correctStrings)
+            foreach (UuidStringWithBytes correctString in correctStrings)
             {
                 string stringToParse = correctString.String;
                 byte[] expectedBytes = correctString.Bytes;
@@ -316,7 +316,7 @@ public class UuidTryParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = uuid;
+                    *(Uuid*)pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);
@@ -329,7 +329,7 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctString in correctStrings)
+            foreach (UuidStringWithBytes correctString in correctStrings)
             {
                 var spanToParse = new ReadOnlySpan<char>(correctString.String.ToCharArray());
                 byte[] expectedBytes = correctString.Bytes;
@@ -339,7 +339,7 @@ public class UuidTryParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = uuid;
+                    *(Uuid*)pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);
@@ -352,7 +352,7 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeString in incorrectLargeStrings)
+            foreach (string largeString in incorrectLargeStrings)
             {
                 Assert.False(Uuid.TryParse(largeString, out _));
             }
@@ -363,7 +363,7 @@ public class UuidTryParseTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeString in incorrectLargeStrings)
+            foreach (string largeString in incorrectLargeStrings)
             {
                 var largeSpan = new ReadOnlySpan<char>(largeString.ToCharArray());
                 Assert.False(Uuid.TryParse(largeSpan, out _));

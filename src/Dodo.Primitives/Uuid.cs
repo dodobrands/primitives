@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -3338,20 +3337,32 @@ public unsafe struct Uuid :
     //
 
     /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)" />
-    public static Uuid Parse(string s, IFormatProvider? provider) => Parse(s);
+    public static Uuid Parse(string s, IFormatProvider? provider)
+    {
+        return Parse(s);
+    }
 
     /// <inheritdoc cref="IParsable{TSelf}.TryParse(string?, IFormatProvider?, out TSelf)" />
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Uuid result) => TryParse(s, out result);
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Uuid result)
+    {
+        return TryParse(s, out result);
+    }
 
     //
     // ISpanParsable
     //
 
     /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)" />
-    public static Uuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider) => Parse(s);
+    public static Uuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+    {
+        return Parse(s);
+    }
 
     /// <inheritdoc cref="ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)" />
-    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Uuid result) => TryParse(s, out result);
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Uuid result)
+    {
+        return TryParse(s, out result);
+    }
 
     #region Generator
 

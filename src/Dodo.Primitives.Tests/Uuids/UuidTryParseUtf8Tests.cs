@@ -11,7 +11,7 @@ public class UuidTryParseUtf8Tests
     [Test]
     public void TryParseUtf8NullSpanShouldFalse()
     {
-        bool parsed = Uuid.TryParse((ReadOnlySpan<byte>) null, out Uuid uuid);
+        bool parsed = Uuid.TryParse((ReadOnlySpan<byte>)null, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -177,7 +177,7 @@ public class UuidTryParseUtf8Tests
         Assert.Multiple(() =>
         {
             Span<byte> utf8Buffer = stackalloc byte[8192];
-            foreach (var correctString in correctStrings)
+            foreach (UuidStringWithBytes correctString in correctStrings)
             {
                 int utf8Chars = GetUtf8BytesSpanFromString(correctString.String, utf8Buffer);
                 Span<byte> spanToParse = utf8Buffer.Slice(0, utf8Chars);
@@ -188,7 +188,7 @@ public class UuidTryParseUtf8Tests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*) pinnedActualBytes = uuid;
+                    *(Uuid*)pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);
@@ -202,7 +202,7 @@ public class UuidTryParseUtf8Tests
         Assert.Multiple(() =>
         {
             Span<byte> utf8Buffer = stackalloc byte[8192];
-            foreach (var largeString in incorrectLargeStrings)
+            foreach (string largeString in incorrectLargeStrings)
             {
                 int utf8Chars = GetUtf8BytesSpanFromString(largeString, utf8Buffer);
                 Span<byte> spanToParse = utf8Buffer.Slice(0, utf8Chars);

@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Text;
 using System.Text.Json;
 using Dodo.Primitives.Tests.Uuids.Data;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
@@ -53,7 +54,7 @@ public class Utf8JsonReaderUuidExtensionsTests
         var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
         string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
         byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-        var (head, tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
+        (MemorySegment head, MemorySegment tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
         var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
         var reader = new Utf8JsonReader(sequence);
         reader.Read(); // StartObject
@@ -69,7 +70,7 @@ public class Utf8JsonReaderUuidExtensionsTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
+            foreach (UuidBytesWithUtf8Bytes correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
             {
                 var expectedUuid = new Uuid(correctUtf8String.UuidBytes);
                 string json = "{\"value\":\"" + correctUtf8String.Utf8String + "\"}";
@@ -90,7 +91,7 @@ public class Utf8JsonReaderUuidExtensionsTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
+            foreach (UuidBytesWithUtf8Bytes correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
             {
                 var expectedUuid = new Uuid(correctUtf8EscapedString.UuidBytes);
                 string json = "{\"value\":\"" + correctUtf8EscapedString.Utf8String + "\"}";
@@ -111,12 +112,12 @@ public class Utf8JsonReaderUuidExtensionsTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
+            foreach (UuidBytesWithUtf8Bytes correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
             {
                 var expectedUuid = new Uuid(correctUtf8String.UuidBytes);
                 string json = "{\"value\":\"" + correctUtf8String.Utf8String + "\"}";
                 byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-                var (head, tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
+                (MemorySegment head, MemorySegment tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
                 var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
                 var reader = new Utf8JsonReader(sequence);
                 reader.Read(); // StartObject
@@ -134,12 +135,12 @@ public class Utf8JsonReaderUuidExtensionsTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
+            foreach (UuidBytesWithUtf8Bytes correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
             {
                 var expectedUuid = new Uuid(correctUtf8EscapedString.UuidBytes);
                 string json = "{\"value\":\"" + correctUtf8EscapedString.Utf8String + "\"}";
                 byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-                var (head, tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
+                (MemorySegment head, MemorySegment tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
                 var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
                 var reader = new Utf8JsonReader(sequence);
                 reader.Read(); // StartObject

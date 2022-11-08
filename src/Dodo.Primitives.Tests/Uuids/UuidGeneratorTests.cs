@@ -19,13 +19,13 @@ public class UuidGeneratorTests
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
         var uuid = Uuid.NewTimeBased();
         DateTimeOffset endDate = DateTimeOffset.UtcNow;
-        var uuidPtr = (byte*) &uuid;
+        var uuidPtr = (byte*)&uuid;
         long ticks = (endDate - startDate).Ticks + 1;
 
         for (var i = 0; i < ticks; i++)
         {
             long attemptTicks = startDate.Ticks + i - ChristianCalendarGregorianReformTicksDate;
-            var ticksPtr = (byte*) &attemptTicks;
+            var ticksPtr = (byte*)&attemptTicks;
             if (IsTimeBasedUuidForSpecifiedTime(ticksPtr, uuidPtr))
             {
                 Assert.Pass();
@@ -41,13 +41,13 @@ public class UuidGeneratorTests
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
         var uuid = Uuid.NewMySqlOptimized();
         DateTimeOffset endDate = DateTimeOffset.UtcNow;
-        var uuidPtr = (byte*) &uuid;
+        var uuidPtr = (byte*)&uuid;
         long ticks = (endDate - startDate).Ticks + 1;
 
         for (var i = 0; i < ticks; i++)
         {
             long attemptTicks = startDate.Ticks + i - ChristianCalendarGregorianReformTicksDate;
-            var ticksPtr = (byte*) &attemptTicks;
+            var ticksPtr = (byte*)&attemptTicks;
             if (IsMySqlOptimizedUuidForSpecifiedTime(ticksPtr, uuidPtr))
             {
                 Assert.Pass();
@@ -65,14 +65,14 @@ public class UuidGeneratorTests
                && uuidBytes[3] == ticksPtr[0]
                && uuidBytes[4] == ticksPtr[5]
                && uuidBytes[5] == ticksPtr[4]
-               && uuidBytes[6] == (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag)
+               && uuidBytes[6] == (byte)((ticksPtr[7] & ResetVersionMask) | Version1Flag)
                && uuidBytes[7] == ticksPtr[6]
-               && uuidBytes[8] == (byte) ((uuidBytes[8] & ResetReservedMask) | ReservedFlag);
+               && uuidBytes[8] == (byte)((uuidBytes[8] & ResetReservedMask) | ReservedFlag);
     }
 
     private unsafe bool IsMySqlOptimizedUuidForSpecifiedTime(byte* ticksPtr, byte* uuidBytes)
     {
-        return uuidBytes[0] == (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag)
+        return uuidBytes[0] == (byte)((ticksPtr[7] & ResetVersionMask) | Version1Flag)
                && uuidBytes[1] == ticksPtr[6]
                && uuidBytes[2] == ticksPtr[5]
                && uuidBytes[3] == ticksPtr[4]
@@ -80,6 +80,6 @@ public class UuidGeneratorTests
                && uuidBytes[5] == ticksPtr[2]
                && uuidBytes[6] == ticksPtr[1]
                && uuidBytes[7] == ticksPtr[0]
-               && uuidBytes[8] == (byte) ((uuidBytes[8] & ResetReservedMask) | ReservedFlag);
+               && uuidBytes[8] == (byte)((uuidBytes[8] & ResetReservedMask) | ReservedFlag);
     }
 }

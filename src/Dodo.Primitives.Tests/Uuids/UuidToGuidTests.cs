@@ -1,5 +1,6 @@
 ﻿using System;
 using Dodo.Primitives.Tests.Uuids.Data;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
@@ -11,7 +12,7 @@ public class UuidToGuidTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var nString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
             {
                 var uuid = new Uuid(nString.Bytes);
                 Guid guid = uuid.ToGuidByteLayout();
@@ -50,7 +51,7 @@ public class UuidToGuidTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var nString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
             {
                 var uuid = new Uuid(nString.Bytes);
                 Guid guid = uuid.ToGuidStringLayout();

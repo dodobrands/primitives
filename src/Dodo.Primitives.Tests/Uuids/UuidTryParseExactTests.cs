@@ -12,7 +12,7 @@ public class UuidTryParseExactTests
     [Test]
     public void TryParseExactNullStringCorrectFormatShouldFalse()
     {
-        foreach (var format in UuidTestData.Formats.All)
+        foreach (string format in UuidTestData.Formats.All)
         {
             bool parsed = Uuid.TryParseExact(NullString, format, out Uuid uuid);
             Assert.Multiple(() =>
@@ -28,7 +28,7 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
 #pragma warning disable 8625
                 bool parsed = Uuid.TryParseExact(correctNString.String, NullString, out Uuid uuid);
@@ -44,7 +44,7 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 bool parsed = Uuid.TryParseExact(correctNString.String, "Ъ", out Uuid uuid);
                 Assert.False(parsed);
@@ -58,7 +58,7 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var format in UuidTestData.Formats.All)
+            foreach (string format in UuidTestData.Formats.All)
             {
                 bool parsed = Uuid.TryParseExact(string.Empty, format, out Uuid uuid);
                 Assert.False(parsed);
@@ -72,7 +72,7 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var format in UuidTestData.Formats.All)
+            foreach (string format in UuidTestData.Formats.All)
             {
                 var stringSpan = new ReadOnlySpan<char>(new char[] { });
                 var formatSpan = new ReadOnlySpan<char>(format.ToCharArray());
@@ -88,7 +88,7 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 var stringSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
                 var formatSpan = new ReadOnlySpan<char>(new char[] { });
@@ -104,10 +104,10 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 var stringSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
-                var formatSpan = new ReadOnlySpan<char>(new[] {'Ъ'});
+                var formatSpan = new ReadOnlySpan<char>(new[] { 'Ъ' });
                 bool parsed = Uuid.TryParseExact(stringSpan, formatSpan, out Uuid uuid);
                 Assert.False(parsed);
                 Assert.AreEqual(Uuid.Empty, uuid);
@@ -304,8 +304,8 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctString in correctStrings)
-            foreach (var format in correctFormats)
+            foreach (UuidStringWithBytes correctString in correctStrings)
+            foreach (string format in correctFormats)
             {
                 bool isParsedFromString = Uuid.TryParseExact(
                     correctString.String,
@@ -320,8 +320,8 @@ public class UuidTryParseExactTests
                 var actualBytesSpan = new byte[16];
                 fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                 {
-                    *(Uuid*) pinnedString = parsedUuidFromString;
-                    *(Uuid*) pinnedSpan = parsedUuidFromSpan;
+                    *(Uuid*)pinnedString = parsedUuidFromString;
+                    *(Uuid*)pinnedSpan = parsedUuidFromSpan;
                 }
 
                 Assert.True(isParsedFromString);
@@ -332,7 +332,7 @@ public class UuidTryParseExactTests
         });
     }
 
-    private static readonly byte[] ExpectedEmptyUuidBytes = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private static readonly byte[] ExpectedEmptyUuidBytes = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     private unsafe void TryParseExactCorrectStringIncorrectFormat(
         UuidStringWithBytes[] correctStrings,
@@ -340,8 +340,8 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctString in correctStrings)
-            foreach (var incorrectFormat in incorrectFormats)
+            foreach (UuidStringWithBytes correctString in correctStrings)
+            foreach (string incorrectFormat in incorrectFormats)
             {
                 bool isParsedFromString = Uuid.TryParseExact(
                     correctString.String,
@@ -356,8 +356,8 @@ public class UuidTryParseExactTests
                 var actualBytesSpan = new byte[16];
                 fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                 {
-                    *(Uuid*) pinnedString = parsedUuidFromString;
-                    *(Uuid*) pinnedSpan = parsedUuidFromSpan;
+                    *(Uuid*)pinnedString = parsedUuidFromString;
+                    *(Uuid*)pinnedSpan = parsedUuidFromSpan;
                 }
 
                 Assert.False(isParsedFromString);
@@ -374,8 +374,8 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenString in brokenStrings)
-            foreach (var correctFormat in correctFormats)
+            foreach (string brokenString in brokenStrings)
+            foreach (string correctFormat in correctFormats)
             {
                 bool isParsedFromString = Uuid.TryParseExact(
                     brokenString,
@@ -390,8 +390,8 @@ public class UuidTryParseExactTests
                 var actualBytesSpan = new byte[16];
                 fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                 {
-                    *(Uuid*) pinnedString = parsedUuidFromString;
-                    *(Uuid*) pinnedSpan = parsedUuidFromSpan;
+                    *(Uuid*)pinnedString = parsedUuidFromString;
+                    *(Uuid*)pinnedSpan = parsedUuidFromSpan;
                 }
 
                 Assert.False(isParsedFromString);
@@ -408,8 +408,8 @@ public class UuidTryParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var otherFormatString in otherFormatStrings)
-            foreach (var correctFormat in correctFormats)
+            foreach (UuidStringWithBytes otherFormatString in otherFormatStrings)
+            foreach (string correctFormat in correctFormats)
             {
                 bool isParsedFromString = Uuid.TryParseExact(
                     otherFormatString.String,
@@ -424,8 +424,8 @@ public class UuidTryParseExactTests
                 var actualBytesSpan = new byte[16];
                 fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                 {
-                    *(Uuid*) pinnedString = parsedUuidFromString;
-                    *(Uuid*) pinnedSpan = parsedUuidFromSpan;
+                    *(Uuid*)pinnedString = parsedUuidFromString;
+                    *(Uuid*)pinnedSpan = parsedUuidFromSpan;
                 }
 
                 Assert.False(isParsedFromString);

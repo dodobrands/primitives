@@ -6,11 +6,9 @@ namespace Dodo.Primitives.Tests.Uuids.Data;
 
 public static class Utf8JsonTestData
 {
-    private static readonly UuidBytesWithUtf8Bytes[] NormalUtf8EscapedStrings = GetCorrectUtf8EscapedStrings();
-    private static readonly UuidBytesWithUtf8Bytes[] NormalUtf8UnescapedStrings = GetCorrectUtf8UnescapedStrings();
+    public static UuidBytesWithUtf8Bytes[] CorrectUtf8EscapedStrings { get; } = GetCorrectUtf8EscapedStrings();
 
-    public static UuidBytesWithUtf8Bytes[] CorrectUtf8EscapedStrings => NormalUtf8EscapedStrings;
-    public static UuidBytesWithUtf8Bytes[] CorrectUtf8UnescapedStrings => NormalUtf8UnescapedStrings;
+    public static UuidBytesWithUtf8Bytes[] CorrectUtf8UnescapedStrings { get; } = GetCorrectUtf8UnescapedStrings();
 
     private static UuidBytesWithUtf8Bytes[] GetCorrectUtf8EscapedStrings()
     {
@@ -65,7 +63,7 @@ public static class Utf8JsonTestData
         var escapedCharacters = new List<string>();
         foreach (char ch in uuidString)
         {
-            var intChar = (int) ch;
+            var intChar = (int)ch;
             escapedCharacters.Add("\\u" + intChar.ToString("x4"));
         }
 

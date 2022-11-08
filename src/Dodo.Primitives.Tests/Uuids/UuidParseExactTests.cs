@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Dodo.Primitives.Tests.Uuids.Data;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
@@ -14,7 +15,7 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var format in UuidTestData.Formats.All)
+            foreach (string format in UuidTestData.Formats.All)
             {
                 Assert.Throws<ArgumentNullException>(() =>
                 {
@@ -31,7 +32,7 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 Assert.Throws<ArgumentNullException>(() =>
                 {
@@ -48,7 +49,7 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -64,7 +65,7 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var format in UuidTestData.Formats.All)
+            foreach (string format in UuidTestData.Formats.All)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -79,7 +80,7 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var format in UuidTestData.Formats.All)
+            foreach (string format in UuidTestData.Formats.All)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -95,7 +96,7 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -113,12 +114,12 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
                     var nStringSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
-                    var formatSpan = new ReadOnlySpan<char>(new[] {'Ъ'});
+                    var formatSpan = new ReadOnlySpan<char>(new[] { 'Ъ' });
                     // ReSharper disable once RedundantCast
                     Uuid _ = Uuid.ParseExact(nStringSpan, formatSpan);
                 });
@@ -133,10 +134,10 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 var results = new List<byte[]>();
-                foreach (var format in UuidTestData.Formats.N)
+                foreach (string format in UuidTestData.Formats.N)
                 {
                     Uuid parsedUuidString = Uuid.ParseExact(correctNString.String, format);
                     Uuid parsedUuidSpan = Uuid.ParseExact(
@@ -147,15 +148,15 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*) pinnedString = parsedUuidString;
-                        *(Uuid*) pinnedSpan = parsedUuidSpan;
+                        *(Uuid*)pinnedString = parsedUuidString;
+                        *(Uuid*)pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
                     results.Add(actualBytesSpan);
                 }
 
-                foreach (var result in results)
+                foreach (byte[] result in results)
                 {
                     Assert.AreEqual(correctNString.Bytes, result);
                 }
@@ -168,8 +169,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
-            foreach (var format in UuidTestData.Formats.AllExceptN)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
+            foreach (string format in UuidTestData.Formats.AllExceptN)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -191,8 +192,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenNString in UuidTestData.BrokenNStrings)
-            foreach (var format in UuidTestData.Formats.N)
+            foreach (string brokenNString in UuidTestData.BrokenNStrings)
+            foreach (string format in UuidTestData.Formats.N)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -214,8 +215,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
-            foreach (var format in UuidTestData.Formats.N)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
+            foreach (string format in UuidTestData.Formats.N)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -241,10 +242,10 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
             {
                 var results = new List<byte[]>();
-                foreach (var format in UuidTestData.Formats.D)
+                foreach (string format in UuidTestData.Formats.D)
                 {
                     Uuid parsedUuidString = Uuid.ParseExact(correctDString.String, format);
                     Uuid parsedUuidSpan = Uuid.ParseExact(
@@ -255,15 +256,15 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*) pinnedString = parsedUuidString;
-                        *(Uuid*) pinnedSpan = parsedUuidSpan;
+                        *(Uuid*)pinnedString = parsedUuidString;
+                        *(Uuid*)pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
                     results.Add(actualBytesSpan);
                 }
 
-                foreach (var result in results)
+                foreach (byte[] result in results)
                 {
                     Assert.AreEqual(correctDString.Bytes, result);
                 }
@@ -276,8 +277,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
-            foreach (var format in UuidTestData.Formats.AllExceptD)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
+            foreach (string format in UuidTestData.Formats.AllExceptD)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -299,8 +300,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenDString in UuidTestData.BrokenDStrings)
-            foreach (var format in UuidTestData.Formats.D)
+            foreach (string brokenDString in UuidTestData.BrokenDStrings)
+            foreach (string format in UuidTestData.Formats.D)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -322,8 +323,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
-            foreach (var format in UuidTestData.Formats.D)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
+            foreach (string format in UuidTestData.Formats.D)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -349,10 +350,10 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctBString in UuidTestData.CorrectBStrings)
+            foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
             {
                 var results = new List<byte[]>();
-                foreach (var format in UuidTestData.Formats.B)
+                foreach (string format in UuidTestData.Formats.B)
                 {
                     Uuid parsedUuidString = Uuid.ParseExact(correctBString.String, format);
                     Uuid parsedUuidSpan = Uuid.ParseExact(
@@ -363,15 +364,15 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*) pinnedString = parsedUuidString;
-                        *(Uuid*) pinnedSpan = parsedUuidSpan;
+                        *(Uuid*)pinnedString = parsedUuidString;
+                        *(Uuid*)pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
                     results.Add(actualBytesSpan);
                 }
 
-                foreach (var result in results)
+                foreach (byte[] result in results)
                 {
                     Assert.AreEqual(correctBString.Bytes, result);
                 }
@@ -384,8 +385,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctBString in UuidTestData.CorrectBStrings)
-            foreach (var format in UuidTestData.Formats.AllExceptB)
+            foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
+            foreach (string format in UuidTestData.Formats.AllExceptB)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -407,8 +408,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenBString in UuidTestData.BrokenBStrings)
-            foreach (var format in UuidTestData.Formats.B)
+            foreach (string brokenBString in UuidTestData.BrokenBStrings)
+            foreach (string format in UuidTestData.Formats.B)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -430,8 +431,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
-            foreach (var format in UuidTestData.Formats.B)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
+            foreach (string format in UuidTestData.Formats.B)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -457,10 +458,10 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctPString in UuidTestData.CorrectPStrings)
+            foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
             {
                 var results = new List<byte[]>();
-                foreach (var format in UuidTestData.Formats.P)
+                foreach (string format in UuidTestData.Formats.P)
                 {
                     Uuid parsedUuidString = Uuid.ParseExact(correctPString.String, format);
                     Uuid parsedUuidSpan = Uuid.ParseExact(
@@ -471,15 +472,15 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*) pinnedString = parsedUuidString;
-                        *(Uuid*) pinnedSpan = parsedUuidSpan;
+                        *(Uuid*)pinnedString = parsedUuidString;
+                        *(Uuid*)pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
                     results.Add(actualBytesSpan);
                 }
 
-                foreach (var result in results)
+                foreach (byte[] result in results)
                 {
                     Assert.AreEqual(correctPString.Bytes, result);
                 }
@@ -492,8 +493,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctPString in UuidTestData.CorrectPStrings)
-            foreach (var format in UuidTestData.Formats.AllExceptP)
+            foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
+            foreach (string format in UuidTestData.Formats.AllExceptP)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -515,8 +516,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenPString in UuidTestData.BrokenPStrings)
-            foreach (var format in UuidTestData.Formats.P)
+            foreach (string brokenPString in UuidTestData.BrokenPStrings)
+            foreach (string format in UuidTestData.Formats.P)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -538,8 +539,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
-            foreach (var format in UuidTestData.Formats.P)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
+            foreach (string format in UuidTestData.Formats.P)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -565,10 +566,10 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctXString in UuidTestData.CorrectXStrings)
+            foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
             {
                 var results = new List<byte[]>();
-                foreach (var format in UuidTestData.Formats.X)
+                foreach (string format in UuidTestData.Formats.X)
                 {
                     Uuid parsedUuidString = Uuid.ParseExact(correctXString.String, format);
                     Uuid parsedUuidSpan = Uuid.ParseExact(
@@ -579,15 +580,15 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*) pinnedString = parsedUuidString;
-                        *(Uuid*) pinnedSpan = parsedUuidSpan;
+                        *(Uuid*)pinnedString = parsedUuidString;
+                        *(Uuid*)pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
                     results.Add(actualBytesSpan);
                 }
 
-                foreach (var result in results)
+                foreach (byte[] result in results)
                 {
                     Assert.AreEqual(correctXString.Bytes, result);
                 }
@@ -600,8 +601,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctXString in UuidTestData.CorrectXStrings)
-            foreach (var format in UuidTestData.Formats.AllExceptX)
+            foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
+            foreach (string format in UuidTestData.Formats.AllExceptX)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -623,8 +624,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenXString in UuidTestData.BrokenXStrings)
-            foreach (var format in UuidTestData.Formats.X)
+            foreach (string brokenXString in UuidTestData.BrokenXStrings)
+            foreach (string format in UuidTestData.Formats.X)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -646,8 +647,8 @@ public class UuidParseExactTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
-            foreach (var format in UuidTestData.Formats.X)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
+            foreach (string format in UuidTestData.Formats.X)
             {
                 Assert.Throws<FormatException>(() =>
                 {

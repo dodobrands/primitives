@@ -13,7 +13,7 @@ public class UuidTryParseWithFormatProviderTests
 {
     public static IEnumerable GetFormatProviders()
     {
-        foreach (var nullableFormatProvider in GetNullableFormatProviders())
+        foreach (IFormatProvider? nullableFormatProvider in GetNullableFormatProviders())
         {
             yield return nullableFormatProvider;
         }
@@ -327,8 +327,8 @@ public class UuidTryParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var formatProvider in GetNullableFormatProviders())
-            foreach (var correctString in correctStrings)
+            foreach (IFormatProvider? formatProvider in GetNullableFormatProviders())
+            foreach (UuidStringWithBytes correctString in correctStrings)
             {
                 string stringToParse = correctString.String;
                 byte[] expectedBytes = correctString.Bytes;
@@ -351,8 +351,8 @@ public class UuidTryParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var formatProvider in GetNullableFormatProviders())
-            foreach (var correctString in correctStrings)
+            foreach (IFormatProvider? formatProvider in GetNullableFormatProviders())
+            foreach (UuidStringWithBytes correctString in correctStrings)
             {
                 var spanToParse = new ReadOnlySpan<char>(correctString.String.ToCharArray());
                 byte[] expectedBytes = correctString.Bytes;
@@ -375,8 +375,8 @@ public class UuidTryParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var formatProvider in GetNullableFormatProviders())
-            foreach (var largeString in incorrectLargeStrings)
+            foreach (IFormatProvider? formatProvider in GetNullableFormatProviders())
+            foreach (string largeString in incorrectLargeStrings)
             {
                 Assert.False(Uuid.TryParse(largeString, formatProvider, out _));
             }
@@ -387,8 +387,8 @@ public class UuidTryParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var formatProvider in GetNullableFormatProviders())
-            foreach (var largeString in incorrectLargeStrings)
+            foreach (IFormatProvider? formatProvider in GetNullableFormatProviders())
+            foreach (string largeString in incorrectLargeStrings)
             {
                 var largeSpan = new ReadOnlySpan<char>(largeString.ToCharArray());
                 Assert.False(Uuid.TryParse(largeSpan, formatProvider, out _));

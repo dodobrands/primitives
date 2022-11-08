@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Dodo.Primitives.Tests.Uuids.Data;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
@@ -55,7 +56,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 string nString = correctNString.String;
                 byte[] expectedBytes = correctNString.Bytes;
@@ -78,7 +79,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctNString in UuidTestData.CorrectNStrings)
+            foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 var nSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
                 byte[] expectedBytes = correctNString.Bytes;
@@ -101,7 +102,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeNString in UuidTestData.LargeNStrings)
+            foreach (string largeNString in UuidTestData.LargeNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -116,7 +117,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeNString in UuidTestData.LargeNStrings)
+            foreach (string largeNString in UuidTestData.LargeNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -132,7 +133,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallNString in UuidTestData.SmallNStrings)
+            foreach (string smallNString in UuidTestData.SmallNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -147,7 +148,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallNString in UuidTestData.SmallNStrings)
+            foreach (string smallNString in UuidTestData.SmallNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -163,7 +164,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenNString in UuidTestData.BrokenNStrings)
+            foreach (string brokenNString in UuidTestData.BrokenNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -178,7 +179,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenNString in UuidTestData.BrokenNStrings)
+            foreach (string brokenNString in UuidTestData.BrokenNStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -198,7 +199,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
             {
                 string dString = correctDString.String;
                 byte[] expectedBytes = correctDString.Bytes;
@@ -221,7 +222,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctDString in UuidTestData.CorrectDStrings)
+            foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
             {
                 var dSpan = new ReadOnlySpan<char>(correctDString.String.ToCharArray());
                 byte[] expectedBytes = correctDString.Bytes;
@@ -244,7 +245,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeDString in UuidTestData.LargeDStrings)
+            foreach (string largeDString in UuidTestData.LargeDStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -259,7 +260,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeDString in UuidTestData.LargeDStrings)
+            foreach (string largeDString in UuidTestData.LargeDStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -275,7 +276,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallDString in UuidTestData.SmallDStrings)
+            foreach (string smallDString in UuidTestData.SmallDStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -290,7 +291,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallDString in UuidTestData.SmallDStrings)
+            foreach (string smallDString in UuidTestData.SmallDStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -306,7 +307,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenDString in UuidTestData.BrokenDStrings)
+            foreach (string brokenDString in UuidTestData.BrokenDStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -321,7 +322,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenDString in UuidTestData.BrokenDStrings)
+            foreach (string brokenDString in UuidTestData.BrokenDStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -341,7 +342,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctBString in UuidTestData.CorrectBStrings)
+            foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
             {
                 string bString = correctBString.String;
                 byte[] expectedBytes = correctBString.Bytes;
@@ -364,7 +365,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctBString in UuidTestData.CorrectBStrings)
+            foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
             {
                 var bSpan = new ReadOnlySpan<char>(correctBString.String.ToCharArray());
                 byte[] expectedBytes = correctBString.Bytes;
@@ -387,7 +388,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeBString in UuidTestData.LargeBStrings)
+            foreach (string largeBString in UuidTestData.LargeBStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -402,7 +403,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeBString in UuidTestData.LargeBStrings)
+            foreach (string largeBString in UuidTestData.LargeBStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -418,7 +419,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallBString in UuidTestData.SmallBStrings)
+            foreach (string smallBString in UuidTestData.SmallBStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -433,7 +434,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallBString in UuidTestData.SmallBStrings)
+            foreach (string smallBString in UuidTestData.SmallBStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -449,7 +450,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenBString in UuidTestData.BrokenBStrings)
+            foreach (string brokenBString in UuidTestData.BrokenBStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -464,7 +465,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenBString in UuidTestData.BrokenBStrings)
+            foreach (string brokenBString in UuidTestData.BrokenBStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -484,7 +485,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctPString in UuidTestData.CorrectPStrings)
+            foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
             {
                 string pString = correctPString.String;
                 byte[] expectedBytes = correctPString.Bytes;
@@ -507,7 +508,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctPString in UuidTestData.CorrectPStrings)
+            foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
             {
                 var pSpan = new ReadOnlySpan<char>(correctPString.String.ToCharArray());
                 byte[] expectedBytes = correctPString.Bytes;
@@ -530,7 +531,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largePString in UuidTestData.LargePStrings)
+            foreach (string largePString in UuidTestData.LargePStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -545,7 +546,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largePString in UuidTestData.LargePStrings)
+            foreach (string largePString in UuidTestData.LargePStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -561,7 +562,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallPString in UuidTestData.SmallPStrings)
+            foreach (string smallPString in UuidTestData.SmallPStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -576,7 +577,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallPString in UuidTestData.SmallPStrings)
+            foreach (string smallPString in UuidTestData.SmallPStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -592,7 +593,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenPString in UuidTestData.BrokenPStrings)
+            foreach (string brokenPString in UuidTestData.BrokenPStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -607,7 +608,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenPString in UuidTestData.BrokenPStrings)
+            foreach (string brokenPString in UuidTestData.BrokenPStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -627,7 +628,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctXString in UuidTestData.CorrectXStrings)
+            foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
             {
                 string xString = correctXString.String;
                 byte[] expectedBytes = correctXString.Bytes;
@@ -650,7 +651,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var correctXString in UuidTestData.CorrectXStrings)
+            foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
             {
                 var xSpan = new ReadOnlySpan<char>(correctXString.String.ToCharArray());
                 byte[] expectedBytes = correctXString.Bytes;
@@ -673,7 +674,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeXString in UuidTestData.LargeXStrings)
+            foreach (string largeXString in UuidTestData.LargeXStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -688,7 +689,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var largeXString in UuidTestData.LargeXStrings)
+            foreach (string largeXString in UuidTestData.LargeXStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -704,7 +705,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallXString in UuidTestData.SmallXStrings)
+            foreach (string smallXString in UuidTestData.SmallXStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -719,7 +720,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var smallXString in UuidTestData.SmallXStrings)
+            foreach (string smallXString in UuidTestData.SmallXStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -735,7 +736,7 @@ public class UuidParseWithFormatProviderTests
     {
         Assert.Multiple(() =>
         {
-            foreach (var brokenXString in UuidTestData.BrokenXStrings)
+            foreach (string brokenXString in UuidTestData.BrokenXStrings)
             {
                 Assert.Throws<FormatException>(() =>
                 {
@@ -748,7 +749,7 @@ public class UuidParseWithFormatProviderTests
     [Test]
     public void ParseIncorrectXSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
-        foreach (var brokenXString in UuidTestData.BrokenXStrings)
+        foreach (string brokenXString in UuidTestData.BrokenXStrings)
         {
             Assert.Throws<FormatException>(() =>
             {

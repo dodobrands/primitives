@@ -8,12 +8,6 @@ namespace Dodo.Primitives.Tests.Uuids.Data;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public static class UuidTestData
 {
-    private static readonly UuidStringWithBytes[] NStrings = UuidTestsUtils.GenerateNStrings();
-    private static readonly UuidStringWithBytes[] DStrings = UuidTestsUtils.GenerateDStrings();
-    private static readonly UuidStringWithBytes[] BStrings = UuidTestsUtils.GenerateBStrings();
-    private static readonly UuidStringWithBytes[] PStrings = UuidTestsUtils.GeneratePStrings();
-    private static readonly UuidStringWithBytes[] XStrings = UuidTestsUtils.GenerateXStrings();
-
     public static object[] CorrectUuidBytesArrays { get; } =
     {
         new object[] { new byte[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160 } },
@@ -26,54 +20,6 @@ public static class UuidTestData
         new object[] { new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0 } },
         new object[] { new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255 } }
     };
-
-    public static object[] LeftLessThanRight()
-    {
-        var src = CorrectCompareToArraysAndResult;
-        var results = new List<object>();
-        foreach (var arg in src)
-        {
-            var args = (object[])arg;
-            var left = (byte[])args[0];
-            var right = (byte[])args[1];
-            var flag = (int)args[2];
-            if (flag == -1)
-            {
-                var outputArgs = new object[]
-                {
-                    new Uuid(left),
-                    new Uuid(right)
-                };
-                results.Add(outputArgs);
-            }
-        }
-
-        return results.ToArray();
-    }
-
-    public static object[] RightLessThanLeft()
-    {
-        var src = CorrectCompareToArraysAndResult;
-        var results = new List<object>();
-        foreach (var arg in src)
-        {
-            var args = (object[])arg;
-            var left = (byte[])args[0];
-            var right = (byte[])args[1];
-            var flag = (int)args[2];
-            if (flag == 1)
-            {
-                var outputArgs = new object[]
-                {
-                    new Uuid(left),
-                    new Uuid(right)
-                };
-                results.Add(outputArgs);
-            }
-        }
-
-        return results.ToArray();
-    }
 
     public static object[] CorrectCompareToArraysAndResult { get; } =
     {
@@ -308,13 +254,13 @@ public static class UuidTestData
     // ---------
     // --- N ---
     // ---------
-    public static UuidStringWithBytes[] CorrectNStrings => NStrings;
+    public static UuidStringWithBytes[] CorrectNStrings { get; } = UuidTestsUtils.GenerateNStrings();
 
-    public static string[] LargeNStrings { get; } = NStrings
+    public static string[] LargeNStrings { get; } = CorrectNStrings
         .Select(x => x.String + "f")
         .ToArray();
 
-    public static string[] SmallNStrings { get; } = NStrings
+    public static string[] SmallNStrings { get; } = CorrectNStrings
         .Select(x => x.String.Substring(x.String.Length / 2))
         .ToArray();
 
@@ -323,13 +269,13 @@ public static class UuidTestData
     // ---------
     // --- D ---
     // ---------
-    public static UuidStringWithBytes[] CorrectDStrings => DStrings;
+    public static UuidStringWithBytes[] CorrectDStrings { get; } = UuidTestsUtils.GenerateDStrings();
 
-    public static string[] LargeDStrings { get; } = DStrings
+    public static string[] LargeDStrings { get; } = CorrectDStrings
         .Select(x => x.String + "f")
         .ToArray();
 
-    public static string[] SmallDStrings { get; } = DStrings
+    public static string[] SmallDStrings { get; } = CorrectDStrings
         .Select(x => x.String.Substring(x.String.Length / 2))
         .ToArray();
 
@@ -338,13 +284,13 @@ public static class UuidTestData
     // ---------
     // --- B ---
     // ---------
-    public static UuidStringWithBytes[] CorrectBStrings => BStrings;
+    public static UuidStringWithBytes[] CorrectBStrings { get; } = UuidTestsUtils.GenerateBStrings();
 
-    public static string[] LargeBStrings { get; } = BStrings
+    public static string[] LargeBStrings { get; } = CorrectBStrings
         .Select(x => x.String + "f")
         .ToArray();
 
-    public static string[] SmallBStrings { get; } = BStrings
+    public static string[] SmallBStrings { get; } = CorrectBStrings
         .Select(x => x.String.Substring(x.String.Length / 2))
         .ToArray();
 
@@ -353,13 +299,13 @@ public static class UuidTestData
     // ---------
     // --- P ---
     // ---------
-    public static UuidStringWithBytes[] CorrectPStrings => PStrings;
+    public static UuidStringWithBytes[] CorrectPStrings { get; } = UuidTestsUtils.GeneratePStrings();
 
-    public static string[] LargePStrings { get; } = PStrings
+    public static string[] LargePStrings { get; } = CorrectPStrings
         .Select(x => x.String + "f")
         .ToArray();
 
-    public static string[] SmallPStrings { get; } = PStrings
+    public static string[] SmallPStrings { get; } = CorrectPStrings
         .Select(x => x.String.Substring(x.String.Length / 2))
         .ToArray();
 
@@ -368,17 +314,65 @@ public static class UuidTestData
     // ---------
     // --- X ---
     // ---------
-    public static UuidStringWithBytes[] CorrectXStrings => XStrings;
+    public static UuidStringWithBytes[] CorrectXStrings { get; } = UuidTestsUtils.GenerateXStrings();
 
-    public static string[] LargeXStrings { get; } = XStrings
+    public static string[] LargeXStrings { get; } = CorrectXStrings
         .Select(x => x.String + "f")
         .ToArray();
 
-    public static string[] SmallXStrings { get; } = XStrings
+    public static string[] SmallXStrings { get; } = CorrectXStrings
         .Select(x => x.String.Substring(x.String.Length / 2))
         .ToArray();
 
     public static string[] BrokenXStrings { get; } = UuidTestsUtils.GenerateBrokenXStringsArray();
+
+    public static object[] LeftLessThanRight()
+    {
+        object[] src = CorrectCompareToArraysAndResult;
+        var results = new List<object>();
+        foreach (object arg in src)
+        {
+            var args = (object[])arg;
+            var left = (byte[])args[0];
+            var right = (byte[])args[1];
+            var flag = (int)args[2];
+            if (flag == -1)
+            {
+                var outputArgs = new object[]
+                {
+                    new Uuid(left),
+                    new Uuid(right)
+                };
+                results.Add(outputArgs);
+            }
+        }
+
+        return results.ToArray();
+    }
+
+    public static object[] RightLessThanLeft()
+    {
+        object[] src = CorrectCompareToArraysAndResult;
+        var results = new List<object>();
+        foreach (object arg in src)
+        {
+            var args = (object[])arg;
+            var left = (byte[])args[0];
+            var right = (byte[])args[1];
+            var flag = (int)args[2];
+            if (flag == 1)
+            {
+                var outputArgs = new object[]
+                {
+                    new Uuid(left),
+                    new Uuid(right)
+                };
+                results.Add(outputArgs);
+            }
+        }
+
+        return results.ToArray();
+    }
 
     // ReSharper disable once InconsistentNaming
     public static class Formats
