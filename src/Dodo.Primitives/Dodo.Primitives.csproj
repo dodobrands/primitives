@@ -12,7 +12,7 @@
         <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
         <EnableSourceLink>true</EnableSourceLink>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <DebugType>portable</DebugType>
+        <DebugType>embedded</DebugType>
         <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
         <Deterministic Condition="'$(GITHUB_ACTIONS)' == 'true'">True</Deterministic>
         <EmbedAllSources>true</EmbedAllSources>
