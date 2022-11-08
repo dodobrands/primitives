@@ -21,9 +21,10 @@ public unsafe struct Uuid :
     ISpanFormattable,
     IComparable,
     IComparable<Uuid>,
-    IEquatable<Uuid>,
-    ISpanParsable<Uuid>,
-    IComparisonOperators<Uuid, Uuid, bool>
+    IEquatable<Uuid>
+#if !NET6_0
+    , ISpanParsable<Uuid>, IComparisonOperators<Uuid, Uuid, bool>
+#endif
 {
     static Uuid()
     {
@@ -341,12 +342,13 @@ public unsafe struct Uuid :
     {
         if (obj is Uuid other)
         {
+#if !NET6_0
             if (Vector128.IsHardwareAccelerated)
             {
                 return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in this)))
                        == Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in other)));
             }
-
+#endif
             ref long rA = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in this));
             ref long rB = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in other));
 
@@ -364,12 +366,13 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if <paramref name="other" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
     public bool Equals(Uuid other)
     {
+#if !NET6_0
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in this)))
                    == Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in other)));
         }
-
+#endif
         ref long rA = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in this));
         ref long rB = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in other));
 
@@ -395,12 +398,13 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <see langword="false" />.</returns>
     public static bool operator ==(Uuid left, Uuid right)
     {
+#if !NET6_0
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in left)))
                    == Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in right)));
         }
-
+#endif
         ref long rA = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in left));
         ref long rB = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in right));
 
@@ -419,12 +423,13 @@ public unsafe struct Uuid :
     /// </returns>
     public static bool operator !=(Uuid left, Uuid right)
     {
+#if !NET6_0
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in left)))
                    != Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in right)));
         }
-
+#endif
         ref long rA = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in left));
         ref long rB = ref Unsafe.As<Uuid, long>(ref Unsafe.AsRef(in right));
 
@@ -450,7 +455,9 @@ public unsafe struct Uuid :
     public bool TryFormat(
         Span<char> destination,
         out int charsWritten,
+#if !NET6_0
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
         ReadOnlySpan<char> format,
         IFormatProvider? provider)
     {
@@ -572,7 +579,9 @@ public unsafe struct Uuid :
     public bool TryFormat(
         Span<char> destination,
         out int charsWritten,
+#if !NET6_0
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
         ReadOnlySpan<char> format = default)
     {
         if (format.Length == 0)
@@ -693,7 +702,11 @@ public unsafe struct Uuid :
     ///     be "N", "D", "B", "P", or "X". If format is <see langword="null" /> or an empty string (""), "N" is used.
     /// </param>
     /// <returns>The value of this <see cref="Uuid" />, represented as a series of lowercase hexadecimal digits in the specified format.</returns>
-    public string ToString([StringSyntax(StringSyntaxAttribute.GuidFormat)] string? format)
+    public string ToString(
+#if !NET6_0
+        [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
+        string? format)
     {
         // ReSharper disable once IntroduceOptionalParameters.Global
         return ToString(format, null);
@@ -713,7 +726,12 @@ public unsafe struct Uuid :
     ///     The value of <paramref name="format" /> is not <see langword="null" />, an empty string (""), "N", "D",
     ///     "B", "P", or "X".
     /// </exception>
-    public string ToString([StringSyntax(StringSyntaxAttribute.GuidFormat)] string? format, IFormatProvider? formatProvider)
+    public string ToString(
+#if !NET6_0
+        [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
+        string? format,
+        IFormatProvider? formatProvider)
     {
         format ??= "N";
 
@@ -989,6 +1007,7 @@ public unsafe struct Uuid :
     /// </summary>
     /// <param name="input">A string that contains a UUID.</param>
     /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" />.</exception>
+    /// <exception cref="FormatException"><paramref name="input" /> is not in the correct format.</exception>
     public Uuid(string input)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -1031,6 +1050,7 @@ public unsafe struct Uuid :
     /// <param name="input">The string to convert.</param>
     /// <returns>A structure that contains the value that was parsed.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="input" /> is <see langword="null" />.</exception>
+    /// <exception cref="FormatException"><paramref name="input" /> is not in the correct format.</exception>
     public static Uuid Parse(string input)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -1079,7 +1099,12 @@ public unsafe struct Uuid :
     /// <returns>A structure that contains the value that was parsed.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="input" /> or <paramref name="format" /> is <see langword="null" />.</exception>
     /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
-    public static Uuid ParseExact(string input, [StringSyntax(StringSyntaxAttribute.GuidFormat)] string format)
+    public static Uuid ParseExact(
+        string input,
+#if !NET6_0
+        [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
+        string format)
     {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(format);
@@ -1152,7 +1177,12 @@ public unsafe struct Uuid :
     /// </param>
     /// <returns>A structure that contains the value that was parsed.</returns>
     /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
-    public static Uuid ParseExact(ReadOnlySpan<char> input, [StringSyntax(StringSyntaxAttribute.GuidFormat)] ReadOnlySpan<char> format)
+    public static Uuid ParseExact(
+        ReadOnlySpan<char> input,
+#if !NET6_0
+        [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
+        ReadOnlySpan<char> format)
     {
         if (input.IsEmpty)
         {
@@ -1340,7 +1370,9 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
     public static bool TryParseExact(
         [NotNullWhen(true)] string? input,
+#if !NET6_0
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
         string format,
         out Uuid output)
     {
@@ -1429,7 +1461,9 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
     public static bool TryParseExact(
         ReadOnlySpan<char> input,
+#if !NET6_0
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
+#endif
         ReadOnlySpan<char> format,
         out Uuid output)
     {
@@ -2987,8 +3021,16 @@ public unsafe struct Uuid :
     //
     // IComparisonOperators
     //
-
-    /// <inheritdoc cref="IComparisonOperators{TSelf, TOther, TResult}.op_LessThan(TSelf, TOther)" />
+#if !NET6_0
+    /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_LessThan(TSelf, TOther)" />
+#else
+    /// <summary>
+    ///     Compares two values to determine which is less.
+    /// </summary>
+    /// <param name="left">The value to compare with <paramref name="right" />.</param>
+    /// <param name="right">The value to compare with <paramref name="left" />.</param>
+    /// <returns><see langword="true" /> if <paramref name="left" /> is less than <paramref name="right" />; otherwise, <see langword="false" />.</returns>
+#endif
     public static bool operator <(Uuid left, Uuid right)
     {
         if (left._byte0 != right._byte0)
@@ -3074,7 +3116,19 @@ public unsafe struct Uuid :
         return false;
     }
 
-    /// <inheritdoc cref="IComparisonOperators{TSelf, TOther, TResult}.op_LessThanOrEqual(TSelf, TOther)" />
+#if !NET6_0
+    /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_LessThanOrEqual(TSelf, TOther)" />
+#else
+    /// <summary>
+    ///     Compares two values to determine which is less or equal.
+    /// </summary>
+    /// <param name="left">The value to compare with <paramref name="right" />.</param>
+    /// <param name="right">The value to compare with <paramref name="left" />.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise,
+    ///     <see langword="false" />.
+    /// </returns>
+#endif
     public static bool operator <=(Uuid left, Uuid right)
     {
         if (left._byte0 != right._byte0)
@@ -3160,7 +3214,19 @@ public unsafe struct Uuid :
         return true;
     }
 
-    /// <inheritdoc cref="IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThan(TSelf, TOther)" />
+#if !NET6_0
+    /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThan(TSelf, TOther)" />
+#else
+    /// <summary>
+    ///     Compares two values to determine which is greater.
+    /// </summary>
+    /// <param name="left">The value to compare with <paramref name="right" />.</param>
+    /// <param name="right">The value to compare with <paramref name="left" />.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, <see langword="false" />
+    ///     .
+    /// </returns>
+#endif
     public static bool operator >(Uuid left, Uuid right)
     {
         if (left._byte0 != right._byte0)
@@ -3246,7 +3312,19 @@ public unsafe struct Uuid :
         return false;
     }
 
-    /// <inheritdoc cref="IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThanOrEqual(TSelf, TOther)" />
+#if !NET6_0
+    /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThanOrEqual(TSelf, TOther)" />
+#else
+    /// <summary>
+    ///     Compares two values to determine which is greater or equal.
+    /// </summary>
+    /// <param name="left">The value to compare with <paramref name="right" />.</param>
+    /// <param name="right">The value to compare with <paramref name="left" />.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="left" /> is greater than or equal to <paramref name="right" />; otherwise,
+    ///     <see langword="false" />.
+    /// </returns>
+#endif
     public static bool operator >=(Uuid left, Uuid right)
     {
         if (left._byte0 != right._byte0)
@@ -3335,14 +3413,33 @@ public unsafe struct Uuid :
     //
     // IParsable
     //
-
+#if !NET6_0
     /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)" />
+#else
+    /// <summary>
+    ///     Parses a string into a value.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="s" /> is <see langword="null" />.</exception>
+    /// <exception cref="FormatException"><paramref name="s" /> is not in the correct format.</exception>
+#endif
     public static Uuid Parse(string s, IFormatProvider? provider)
     {
         return Parse(s);
     }
 
+#if !NET6_0
     /// <inheritdoc cref="IParsable{TSelf}.TryParse(string?, IFormatProvider?, out TSelf)" />
+#else
+    /// <summary>
+    ///     Tries to parses a string into a value.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
+    /// <param name="result">On return, contains the result of successfully parsing <paramref name="s" /> or an undefined value on failure.</param>
+    /// <returns><see langword="true" /> if <paramref name="s" /> was successfully parsed; otherwise, <see langword="false" />.</returns>
+#endif
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Uuid result)
     {
         return TryParse(s, out result);
@@ -3351,14 +3448,32 @@ public unsafe struct Uuid :
     //
     // ISpanParsable
     //
-
+#if !NET6_0
     /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)" />
+#else
+    /// <summary>
+    ///     Parses a span of characters into a value.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
+    /// <exception cref="FormatException"><paramref name="s" /> is not in a recognized format.</exception>
+#endif
     public static Uuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
     {
         return Parse(s);
     }
 
+#if !NET6_0
     /// <inheritdoc cref="ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)" />
+#else
+    /// <summary>
+    ///     Tries to parses a span of characters into a value.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
+    /// <param name="result">On return, contains the result of successfully parsing <paramref name="s" /> or an undefined value on failure.</param>
+    /// <returns><see langword="true" /> if <paramref name="s" /> was successfully parsed; otherwise, <see langword="false" />.</returns>
+#endif
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Uuid result)
     {
         return TryParse(s, out result);
