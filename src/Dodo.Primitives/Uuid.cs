@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
 using System.Text.Json.Serialization;
 using Dodo.Primitives.Internal;
+#if !NET6_0
+using System.Numerics;
+using System.Runtime.Intrinsics;
+#endif
 
 namespace Dodo.Primitives;
 
