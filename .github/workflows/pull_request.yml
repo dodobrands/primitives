@@ -158,7 +158,9 @@ jobs:
               shell: bash
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net7.0
+                  sleep 10s
                   PATH_TO_COVERAGE=$(readlink -f ./coverage/*.info)
+                  echo "Path to lcov: ${PATH_TO_COVERAGE}"
                   echo "::set-output name=path_to_coverage::$PATH_TO_COVERAGE"
             - name: Publish coverage report to coveralls.io
               uses: coverallsapp/github-action@1.1.3
