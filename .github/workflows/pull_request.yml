@@ -17,7 +17,6 @@ jobs:
               with:
                   ref: ${{ github.sha }}
             - name: Get source branch version
-              id: source-version
               shell: bash
               run: |
                   version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
@@ -32,14 +31,13 @@ jobs:
                       version_with_suffix="${version_prefix}-${version_suffix}"
                       has_suffix="true"
                   fi
-                  echo "::set-output name=version_with_suffix::$version_with_suffix"
-                  echo "::set-output name=has_suffix::$has_suffix"
+                  echo "version_with_suffix_src=${version_with_suffix}" >> $GITHUB_ENV
+                  echo "has_suffix_src=${has_suffix}" >> $GITHUB_ENV
             - name: Checkout target branch
               uses: actions/checkout@v3
               with:
                   ref: ${{ github.base_ref }}
             - name: Get target branch version
-              id: target-version
               shell: bash
               run: |
                   version_prefix=$(cat ./src/Directory.Build.props | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
@@ -54,8 +52,8 @@ jobs:
                       version_with_suffix="${version_prefix}-${version_suffix}"
                       has_suffix="true"
                   fi
-                  echo "::set-output name=version_with_suffix::$version_with_suffix"
-                  echo "::set-output name=has_suffix::$has_suffix"
+                  echo "version_with_suffix_dst=${version_with_suffix}" >> $GITHUB_ENV
+                  echo "has_suffix_dst=${has_suffix}" >> $GITHUB_ENV
             - name: Setup .NET Core SDK 7.0.100
               uses: actions/setup-dotnet@v3
               with:
@@ -94,8 +92,8 @@ jobs:
                     exit 1
                   fi
               env:
-                  source_version: ${{ steps.source-version.outputs.version_with_suffix }}
-                  target_version: ${{ steps.target-version.outputs.version_with_suffix }}
+                  source_version: ${{ env.version_with_suffix_src }}
+                  target_version: ${{ env.version_with_suffix_dst }}
     run-tests:
         name: Run tests
         needs: compare-version
@@ -117,13 +115,34 @@ jobs:
               uses: actions/setup-dotnet@v3
               with:
                   dotnet-version: 7.0.100
+            - name: Create coverage directory and promote absolute paths to env
+              shell: bash
+              run: |
+                  mkdir coverage
+                  PATH_TO_COVERAGE_DIRECTORY=$(realpath coverage)
+
+                  PATH_NET6_NOHW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net6nohw"
+                  echo "cover_net6_nohw=${PATH_NET6_NOHW}" >> $GITHUB_ENV
+                  echo "cover_net6_nohw_merge=${PATH_NET6_NOHW}.net6.0.json" >> $GITHUB_ENV
+
+                  PATH_NET6_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net6hw"
+                  echo "cover_net6_hw=${PATH_NET6_HW}" >> $GITHUB_ENV
+                  echo "cover_net6_hw_merge=${PATH_NET6_HW}.net6.0.json" >> $GITHUB_ENV
+
+                  PATH_NET7_NOHW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net7nohw"
+                  echo "cover_net7_nohw=${PATH_NET7_NOHW}" >> $GITHUB_ENV
+                  echo "cover_net7_nohw_merge=${PATH_NET7_NOHW}.net7.0.json" >> $GITHUB_ENV
+
+                  PATH_NET7_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net7hw"
+                  echo "cover_net7_hw=${PATH_NET7_HW}" >> $GITHUB_ENV
+                  echo "cover_net7_hw_merge=${PATH_NET7_HW}.net7.0.info" >> $GITHUB_ENV
             - name: Run .NET 6 tests without Hardware Intrinsics
               env:
                   COMPlus_EnableHWIntrinsic: "0"
                   COMPlus_ReadyToRun: "0"
                   CollectCoverage": "true"
                   CoverletOutputFormat: "json"
-                  CoverletOutput: "../../coverage/cover_net6nohw"
+                  CoverletOutput: ${{ env.cover_net6_nohw }}
               shell: bash
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
@@ -132,8 +151,8 @@ jobs:
                   COMPlus_EnableHWIntrinsic: "1"
                   CollectCoverage": "true"
                   CoverletOutputFormat: "json"
-                  CoverletOutput: "../../coverage/cover_net6hw"
-                  MergeWith: "../../coverage/cover_net6nohw.net6.0.json"
+                  CoverletOutput: ${{ env.cover_net6_hw }}
+                  MergeWith: ${{ env.cover_net6_nohw_merge }}
               shell: bash
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
@@ -142,37 +161,31 @@ jobs:
                   COMPlus_EnableHWIntrinsic: "0"
                   CollectCoverage": "true"
                   CoverletOutputFormat: "json"
-                  CoverletOutput: "../../coverage/cover_net7nohw"
-                  MergeWith: "../../coverage/cover_net6hw.net6.0.json"
+                  CoverletOutput: ${{ env.cover_net7_nohw }}
+                  MergeWith: ${{ env.cover_net6_hw_merge }}
               shell: bash
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net7.0
             - name: Run .NET 7 tests with Hardware Intrinsics
-              id: final-test
               env:
                   COMPlus_EnableHWIntrinsic: "1"
                   CollectCoverage": "true"
                   CoverletOutputFormat: "lcov"
-                  CoverletOutput: "../../coverage/cover_full"
-                  MergeWith: "../../coverage/cover_net7nohw.net7.0.json"
+                  CoverletOutput: ${{ env.cover_net7_hw }}
+                  MergeWith: ${{ env.cover_net7_nohw_merge }}
               shell: bash
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net7.0
             - name: Run .NET 7 tests with Hardware Intrinsics
-              id: coverage-info
+              env:
+                  COVERAGE_FILE: ${{ env.cover_net7_hw_merge }}
               shell: bash
               run: |
-                  pwd
-                  ls -la .
-                  ls -la ../
-                  ls -la ../../
                   ls -la ./coverage
-                  PATH_TO_COVERAGE=$(readlink -f ./coverage/*.info)
-                  echo "Path to lcov: ${PATH_TO_COVERAGE}"
-                  echo "::set-output name=coverage_file::$PATH_TO_COVERAGE"
-            - name: Publish coverage report to coveralls.io
-              uses: coverallsapp/github-action@1.1.3
-              with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  path-to-lcov: ${{ steps.coverage-info.outputs.coverage_file }}
+                  cat $COVERAGE_FILE
+            # - name: Publish coverage report to coveralls.io
+            #   uses: coverallsapp/github-action@1.1.3
+            #   with:
+            #       github-token: ${{ secrets.GITHUB_TOKEN }}
+            #       path-to-lcov: ${{ steps.coverage-info.outputs.coverage_file }}
 
