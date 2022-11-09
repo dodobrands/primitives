@@ -1,7 +1,7 @@
 # Dodo.Primitives
 
-[![Latest release](https://img.shields.io/badge/nuget-2.0.0-alpha3-blue?&kill_cache=1)](https://www.nuget.org/packages/Dodo.Primitives/2.0.0-alpha3)
-[![Coverage Status](https://coveralls.io/repos/github/dodopizza/primitives/badge.svg?branch=refs/tags/2.0.0-alpha3&kill_cache=1)](https://coveralls.io/github/dodopizza/primitives?branch=refs/tags/2.0.0-alpha3)
+[![Latest release](https://img.shields.io/badge/nuget-2.0.0-blue?&kill_cache=1)](https://www.nuget.org/packages/Dodo.Primitives/2.0.0)
+[![Coverage Status](https://coveralls.io/repos/github/dodopizza/primitives/badge.svg?branch=refs/tags/2.0.0&kill_cache=1)](https://coveralls.io/github/dodopizza/primitives?branch=refs/tags/2.0.0)
 
 Library provides .NET primitive types:
 
@@ -37,3 +37,4 @@ Our goal is to provide Uuid fully compliant with RFC4122 (big-endian layout) and
 
 -   [Prerequisites, build and development](https://github.com/dodopizza/primitives/wiki/Prerequisites,-build-and-development)
 -   [Benchmarks](https://github.com/dodopizza/primitives/wiki/Benchmarks)
+
