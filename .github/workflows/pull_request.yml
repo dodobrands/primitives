@@ -164,6 +164,8 @@ jobs:
               run: |
                   pwd
                   ls -la .
+                  ls -la ../
+                  ls -la ../../
                   ls -la ./coverage
                   PATH_TO_COVERAGE=$(readlink -f ./coverage/*.info)
                   echo "Path to lcov: ${PATH_TO_COVERAGE}"
