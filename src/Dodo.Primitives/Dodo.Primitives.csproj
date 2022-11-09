@@ -1,24 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
-        <LangVersion>9.0</LangVersion>
+        <LangVersion>11.0</LangVersion>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <ImplicitUsings>false</ImplicitUsings>
         <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
         <EnableSourceLink>true</EnableSourceLink>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <DebugType>portable</DebugType>
+        <DebugType>embedded</DebugType>
         <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
         <Deterministic Condition="'$(GITHUB_ACTIONS)' == 'true'">True</Deterministic>
         <EmbedAllSources>true</EmbedAllSources>
         <PackageId>Dodo.Primitives</PackageId>
         <Authors>Roman Bukin</Authors>
         <Company>Dodo Engineering</Company>
-        <Copyright>Copyright 2021 Dodo Engineering</Copyright>
+        <Copyright>Copyright 2022 Dodo Engineering</Copyright>
         <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
         <PackageTags>Uuid Hex Dodo</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -31,8 +32,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
-        <None Include="../../.github/images/logo.png" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../.github/images/logo.png" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
 
     <PropertyGroup>
@@ -41,11 +42,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-        <PackageReference Include="System.Text.Json" Version="5.0.2" />
+        <PackageReference Include="System.Text.Json" Version="5.0.2"/>
     </ItemGroup>
 
 </Project>

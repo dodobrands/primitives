@@ -1,47 +1,58 @@
-using System;
+﻿using System;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Dodo.Primitives.Tests.Uuids.Data;
 using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
 
-public class UuidParseTests
+public class UuidParseWithFormatProviderTests
 {
     private const string? NullString = null;
 
+    [SuppressMessage("ReSharper", "RedundantCast")]
+    public static IEnumerable GetFormatProviders()
+    {
+        yield return (IFormatProvider?)CultureInfo.InvariantCulture;
+        yield return (IFormatProvider?)new CultureInfo("en-US");
+        yield return (IFormatProvider?)null!;
+    }
+
     [Test]
-    public void ParseNullStringShouldThrows()
+    public void ParseNullStringShouldThrows([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Throws<ArgumentNullException>(() =>
         {
 #nullable disable
-            Uuid _ = Uuid.Parse(NullString!);
+            Uuid _ = Uuid.Parse(NullString!, formatProvider);
 #nullable restore
         });
     }
 
     [Test]
-    public void ParseEmptyStringShouldThrows()
+    public void ParseEmptyStringShouldThrows([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Throws<FormatException>(() =>
         {
-            Uuid _ = Uuid.Parse(string.Empty);
+            Uuid _ = Uuid.Parse(string.Empty, formatProvider);
         });
     }
 
     [Test]
-    public void ParseEmptySpanShouldThrows()
+    public void ParseEmptySpanShouldThrows([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Throws<FormatException>(() =>
         {
-            Uuid _ = Uuid.Parse(new ReadOnlySpan<char>(new char[] { }));
+            Uuid _ = Uuid.Parse(new ReadOnlySpan<char>(new char[] { }), formatProvider);
         });
     }
 
     #region ParseN
 
     [Test]
-    public unsafe void ParseCorrectNString()
+    public unsafe void ParseCorrectNString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -50,7 +61,7 @@ public class UuidParseTests
                 string nString = correctNString.String;
                 byte[] expectedBytes = correctNString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(nString);
+                Uuid parsedUuid = Uuid.Parse(nString, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -64,7 +75,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public unsafe void ParseCorrectNSpan()
+    public unsafe void ParseCorrectNSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -73,7 +84,7 @@ public class UuidParseTests
                 var nSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
                 byte[] expectedBytes = correctNString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(nSpan);
+                Uuid parsedUuid = Uuid.Parse(nSpan, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -87,7 +98,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public void ParseNIncorrectLargeString()
+    public void ParseNIncorrectLargeString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -95,14 +106,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(largeNString);
+                    Uuid _ = Uuid.Parse(largeNString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseNIncorrectLargeSpan()
+    public void ParseNIncorrectLargeSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -111,14 +122,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var largeNSpan = new ReadOnlySpan<char>(largeNString.ToCharArray());
-                    Uuid _ = Uuid.Parse(largeNSpan);
+                    Uuid _ = Uuid.Parse(largeNSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseNIncorrectSmallString()
+    public void ParseNIncorrectSmallString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -126,14 +137,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(smallNString);
+                    Uuid _ = Uuid.Parse(smallNString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseNIncorrectSmallSpan()
+    public void ParseNIncorrectSmallSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -142,14 +153,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var smallNSpan = new ReadOnlySpan<char>(smallNString.ToCharArray());
-                    Uuid _ = Uuid.Parse(smallNSpan);
+                    Uuid _ = Uuid.Parse(smallNSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectNString()
+    public void ParseIncorrectNString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -157,14 +168,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(brokenNString);
+                    Uuid _ = Uuid.Parse(brokenNString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectNSpan()
+    public void ParseIncorrectNSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -173,7 +184,7 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var brokenNSpan = new ReadOnlySpan<char>(brokenNString.ToCharArray());
-                    Uuid _ = Uuid.Parse(brokenNSpan);
+                    Uuid _ = Uuid.Parse(brokenNSpan, formatProvider);
                 });
             }
         });
@@ -184,7 +195,7 @@ public class UuidParseTests
     #region ParseD
 
     [Test]
-    public unsafe void ParseCorrectDString()
+    public unsafe void ParseCorrectDString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -193,7 +204,7 @@ public class UuidParseTests
                 string dString = correctDString.String;
                 byte[] expectedBytes = correctDString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(dString);
+                Uuid parsedUuid = Uuid.Parse(dString, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -207,7 +218,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public unsafe void ParseCorrectDSpan()
+    public unsafe void ParseCorrectDSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -216,7 +227,7 @@ public class UuidParseTests
                 var dSpan = new ReadOnlySpan<char>(correctDString.String.ToCharArray());
                 byte[] expectedBytes = correctDString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(dSpan);
+                Uuid parsedUuid = Uuid.Parse(dSpan, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -230,7 +241,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public void ParseDIncorrectLargeString()
+    public void ParseDIncorrectLargeString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -238,14 +249,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(largeDString);
+                    Uuid _ = Uuid.Parse(largeDString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseDIncorrectLargeSpan()
+    public void ParseDIncorrectLargeSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -254,14 +265,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var largeDSpan = new ReadOnlySpan<char>(largeDString.ToCharArray());
-                    Uuid _ = Uuid.Parse(largeDSpan);
+                    Uuid _ = Uuid.Parse(largeDSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseDIncorrectSmallString()
+    public void ParseDIncorrectSmallString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -269,14 +280,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(smallDString);
+                    Uuid _ = Uuid.Parse(smallDString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseDIncorrectSmallSpan()
+    public void ParseDIncorrectSmallSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -285,14 +296,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var smallDSpan = new ReadOnlySpan<char>(smallDString.ToCharArray());
-                    Uuid _ = Uuid.Parse(smallDSpan);
+                    Uuid _ = Uuid.Parse(smallDSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectDString()
+    public void ParseIncorrectDString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -300,14 +311,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(brokenDString);
+                    Uuid _ = Uuid.Parse(brokenDString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectDSpan()
+    public void ParseIncorrectDSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -316,7 +327,7 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var brokenDSpan = new ReadOnlySpan<char>(brokenDString.ToCharArray());
-                    Uuid _ = Uuid.Parse(brokenDSpan);
+                    Uuid _ = Uuid.Parse(brokenDSpan, formatProvider);
                 });
             }
         });
@@ -327,7 +338,7 @@ public class UuidParseTests
     #region ParseB
 
     [Test]
-    public unsafe void ParseCorrectBString()
+    public unsafe void ParseCorrectBString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -336,7 +347,7 @@ public class UuidParseTests
                 string bString = correctBString.String;
                 byte[] expectedBytes = correctBString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(bString);
+                Uuid parsedUuid = Uuid.Parse(bString, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -350,7 +361,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public unsafe void ParseCorrectBSpan()
+    public unsafe void ParseCorrectBSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -359,7 +370,7 @@ public class UuidParseTests
                 var bSpan = new ReadOnlySpan<char>(correctBString.String.ToCharArray());
                 byte[] expectedBytes = correctBString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(bSpan);
+                Uuid parsedUuid = Uuid.Parse(bSpan, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -373,7 +384,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public void ParseBIncorrectLargeString()
+    public void ParseBIncorrectLargeString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -381,14 +392,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(largeBString);
+                    Uuid _ = Uuid.Parse(largeBString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseBIncorrectLargeSpan()
+    public void ParseBIncorrectLargeSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -397,14 +408,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var largeBSpan = new ReadOnlySpan<char>(largeBString.ToCharArray());
-                    Uuid _ = Uuid.Parse(largeBSpan);
+                    Uuid _ = Uuid.Parse(largeBSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseBIncorrectSmallString()
+    public void ParseBIncorrectSmallString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -412,14 +423,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(smallBString);
+                    Uuid _ = Uuid.Parse(smallBString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseBIncorrectSmallSpan()
+    public void ParseBIncorrectSmallSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -428,14 +439,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var smallBSpan = new ReadOnlySpan<char>(smallBString.ToCharArray());
-                    Uuid _ = Uuid.Parse(smallBSpan);
+                    Uuid _ = Uuid.Parse(smallBSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectBString()
+    public void ParseIncorrectBString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -443,14 +454,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(brokenBString);
+                    Uuid _ = Uuid.Parse(brokenBString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectBSpan()
+    public void ParseIncorrectBSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -459,7 +470,7 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var brokenBSpan = new ReadOnlySpan<char>(brokenBString.ToCharArray());
-                    Uuid _ = Uuid.Parse(brokenBSpan);
+                    Uuid _ = Uuid.Parse(brokenBSpan, formatProvider);
                 });
             }
         });
@@ -470,7 +481,7 @@ public class UuidParseTests
     #region ParseP
 
     [Test]
-    public unsafe void ParseCorrectPString()
+    public unsafe void ParseCorrectPString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -479,7 +490,7 @@ public class UuidParseTests
                 string pString = correctPString.String;
                 byte[] expectedBytes = correctPString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(pString);
+                Uuid parsedUuid = Uuid.Parse(pString, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -493,7 +504,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public unsafe void ParseCorrectPSpan()
+    public unsafe void ParseCorrectPSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -502,7 +513,7 @@ public class UuidParseTests
                 var pSpan = new ReadOnlySpan<char>(correctPString.String.ToCharArray());
                 byte[] expectedBytes = correctPString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(pSpan);
+                Uuid parsedUuid = Uuid.Parse(pSpan, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -516,7 +527,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public void ParsePIncorrectLargeString()
+    public void ParsePIncorrectLargeString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -524,14 +535,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(largePString);
+                    Uuid _ = Uuid.Parse(largePString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParsePIncorrectLargeSpan()
+    public void ParsePIncorrectLargeSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -540,14 +551,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var largePSpan = new ReadOnlySpan<char>(largePString.ToCharArray());
-                    Uuid _ = Uuid.Parse(largePSpan);
+                    Uuid _ = Uuid.Parse(largePSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParsePIncorrectSmallString()
+    public void ParsePIncorrectSmallString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -555,14 +566,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(smallPString);
+                    Uuid _ = Uuid.Parse(smallPString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParsePIncorrectSmallSpan()
+    public void ParsePIncorrectSmallSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -571,14 +582,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var smallPSpan = new ReadOnlySpan<char>(smallPString.ToCharArray());
-                    Uuid _ = Uuid.Parse(smallPSpan);
+                    Uuid _ = Uuid.Parse(smallPSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectPString()
+    public void ParseIncorrectPString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -586,14 +597,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(brokenPString);
+                    Uuid _ = Uuid.Parse(brokenPString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectPSpan()
+    public void ParseIncorrectPSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -602,7 +613,7 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var brokenPSpan = new ReadOnlySpan<char>(brokenPString.ToCharArray());
-                    Uuid _ = Uuid.Parse(brokenPSpan);
+                    Uuid _ = Uuid.Parse(brokenPSpan, formatProvider);
                 });
             }
         });
@@ -613,7 +624,7 @@ public class UuidParseTests
     #region ParseX
 
     [Test]
-    public unsafe void ParseCorrectXString()
+    public unsafe void ParseCorrectXString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -622,7 +633,7 @@ public class UuidParseTests
                 string xString = correctXString.String;
                 byte[] expectedBytes = correctXString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(xString);
+                Uuid parsedUuid = Uuid.Parse(xString, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -636,7 +647,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public unsafe void ParseCorrectXSpan()
+    public unsafe void ParseCorrectXSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -645,7 +656,7 @@ public class UuidParseTests
                 var xSpan = new ReadOnlySpan<char>(correctXString.String.ToCharArray());
                 byte[] expectedBytes = correctXString.Bytes;
 
-                Uuid parsedUuid = Uuid.Parse(xSpan);
+                Uuid parsedUuid = Uuid.Parse(xSpan, formatProvider);
 
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
@@ -659,7 +670,7 @@ public class UuidParseTests
     }
 
     [Test]
-    public void ParseXIncorrectLargeString()
+    public void ParseXIncorrectLargeString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -667,14 +678,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(largeXString);
+                    Uuid _ = Uuid.Parse(largeXString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseXIncorrectLargeSpan()
+    public void ParseXIncorrectLargeSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -683,14 +694,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var largeXSpan = new ReadOnlySpan<char>(largeXString.ToCharArray());
-                    Uuid _ = Uuid.Parse(largeXSpan);
+                    Uuid _ = Uuid.Parse(largeXSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseXIncorrectSmallString()
+    public void ParseXIncorrectSmallString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -698,14 +709,14 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(smallXString);
+                    Uuid _ = Uuid.Parse(smallXString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseXIncorrectSmallSpan()
+    public void ParseXIncorrectSmallSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -714,14 +725,14 @@ public class UuidParseTests
                 Assert.Throws<FormatException>(() =>
                 {
                     var smallXSpan = new ReadOnlySpan<char>(smallXString.ToCharArray());
-                    Uuid _ = Uuid.Parse(smallXSpan);
+                    Uuid _ = Uuid.Parse(smallXSpan, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectXString()
+    public void ParseIncorrectXString([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         Assert.Multiple(() =>
         {
@@ -729,21 +740,21 @@ public class UuidParseTests
             {
                 Assert.Throws<FormatException>(() =>
                 {
-                    Uuid _ = Uuid.Parse(brokenXString);
+                    Uuid _ = Uuid.Parse(brokenXString, formatProvider);
                 });
             }
         });
     }
 
     [Test]
-    public void ParseIncorrectXSpan()
+    public void ParseIncorrectXSpan([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
         foreach (string brokenXString in UuidTestData.BrokenXStrings)
         {
             Assert.Throws<FormatException>(() =>
             {
                 var brokenXSpan = new ReadOnlySpan<char>(brokenXString.ToCharArray());
-                Uuid _ = Uuid.Parse(brokenXSpan);
+                Uuid _ = Uuid.Parse(brokenXSpan, formatProvider);
             });
         }
     }

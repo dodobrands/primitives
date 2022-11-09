@@ -1,18 +1,17 @@
 using Dodo.Primitives.Tests.Uuids.Data;
 using NUnit.Framework;
 
-namespace Dodo.Primitives.Tests.Uuids
+namespace Dodo.Primitives.Tests.Uuids;
+
+public class UuidToByteArrayTests
 {
-    public class UuidToByteArrayTests
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToByteArray(byte[] correctBytes)
     {
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToByteArray(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
+        var uuid = new Uuid(correctBytes);
 
-            byte[] uuidBytes = uuid.ToByteArray();
+        byte[] uuidBytes = uuid.ToByteArray();
 
-            Assert.AreEqual(correctBytes, uuidBytes);
-        }
+        Assert.AreEqual(correctBytes, uuidBytes);
     }
 }

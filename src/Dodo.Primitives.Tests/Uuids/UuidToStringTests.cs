@@ -2,118 +2,117 @@ using System;
 using Dodo.Primitives.Tests.Uuids.Data;
 using NUnit.Framework;
 
-namespace Dodo.Primitives.Tests.Uuids
+namespace Dodo.Primitives.Tests.Uuids;
+
+public class UuidToStringTests
 {
-    public class UuidToStringTests
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToString(byte[] correctBytes)
     {
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToString(byte[] correctBytes)
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+
+        var actualString = uuid.ToString();
+
+        Assert.AreEqual(expectedString, actualString);
+    }
+
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringNullFormat(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+
+        var actualString = uuid.ToString(null);
+
+        Assert.AreEqual(expectedString, actualString);
+    }
+
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringEmptyFormat(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+
+        var actualString = uuid.ToString(string.Empty);
+
+        Assert.AreEqual(expectedString, actualString);
+    }
+
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringIncorrectFormat(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+
+        Assert.Throws<FormatException>(() =>
         {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            var _ = uuid.ToString("Ъ");
+        });
+    }
 
-            var actualString = uuid.ToString();
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringTooLongFormat(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
 
-            Assert.AreEqual(expectedString, actualString);
-        }
-
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringNullFormat(byte[] correctBytes)
+        Assert.Throws<FormatException>(() =>
         {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+            var _ = uuid.ToString("NN");
+        });
+    }
 
-            var actualString = uuid.ToString(null);
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringN(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringN(correctBytes);
 
-            Assert.AreEqual(expectedString, actualString);
-        }
+        var actualString = uuid.ToString("N");
 
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringEmptyFormat(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+        Assert.AreEqual(expectedString, actualString);
+    }
 
-            var actualString = uuid.ToString(string.Empty);
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringD(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringD(correctBytes);
 
-            Assert.AreEqual(expectedString, actualString);
-        }
+        var actualString = uuid.ToString("D");
 
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringIncorrectFormat(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
+        Assert.AreEqual(expectedString, actualString);
+    }
 
-            Assert.Throws<FormatException>(() =>
-            {
-                var _ = uuid.ToString("Ъ");
-            });
-        }
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringB(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringB(correctBytes);
 
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringTooLongFormat(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
+        var actualString = uuid.ToString("B");
 
-            Assert.Throws<FormatException>(() =>
-            {
-                var _ = uuid.ToString("NN");
-            });
-        }
+        Assert.AreEqual(expectedString, actualString);
+    }
 
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringN(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringN(correctBytes);
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringP(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringP(correctBytes);
 
-            var actualString = uuid.ToString("N");
+        var actualString = uuid.ToString("P");
 
-            Assert.AreEqual(expectedString, actualString);
-        }
+        Assert.AreEqual(expectedString, actualString);
+    }
 
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringD(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringD(correctBytes);
+    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
+    public void ToStringX(byte[] correctBytes)
+    {
+        var uuid = new Uuid(correctBytes);
+        string expectedString = UuidTestsUtils.GetStringX(correctBytes);
 
-            var actualString = uuid.ToString("D");
+        var actualString = uuid.ToString("X");
 
-            Assert.AreEqual(expectedString, actualString);
-        }
-
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringB(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringB(correctBytes);
-
-            var actualString = uuid.ToString("B");
-
-            Assert.AreEqual(expectedString, actualString);
-        }
-
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringP(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringP(correctBytes);
-
-            var actualString = uuid.ToString("P");
-
-            Assert.AreEqual(expectedString, actualString);
-        }
-
-        [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-        public void ToStringX(byte[] correctBytes)
-        {
-            var uuid = new Uuid(correctBytes);
-            string expectedString = UuidTestsUtils.GetStringX(correctBytes);
-
-            var actualString = uuid.ToString("X");
-
-            Assert.AreEqual(expectedString, actualString);
-        }
+        Assert.AreEqual(expectedString, actualString);
     }
 }

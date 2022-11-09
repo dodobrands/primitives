@@ -3,239 +3,239 @@ using System.Buffers;
 using System.Text;
 using System.Text.Json;
 using Dodo.Primitives.Tests.Uuids.Data;
+using Dodo.Primitives.Tests.Uuids.Data.Models;
 using NUnit.Framework;
 
-namespace Dodo.Primitives.Tests.Uuids
-{
-    public class Utf8JsonReaderUuidExtensionsTests
-    {
-        private const int MaxExpansionFactorWhileEscaping = 6;
-        private const int MaximumFormatUuidLength = 68;
-        private const int MaximumEscapedUuidLength = MaxExpansionFactorWhileEscaping * MaximumFormatUuidLength;
+namespace Dodo.Primitives.Tests.Uuids;
 
-        [Test]
-        public void GetUuidTokenTypeStringButNotUuidThrowsFormatException()
+public class Utf8JsonReaderUuidExtensionsTests
+{
+    private const int MaxExpansionFactorWhileEscaping = 6;
+    private const int MaximumFormatUuidLength = 68;
+    private const int MaximumEscapedUuidLength = MaxExpansionFactorWhileEscaping * MaximumFormatUuidLength;
+
+    [Test]
+    public void GetUuidTokenTypeStringButNotUuidThrowsFormatException()
+    {
+        var ex = Assert.Throws<FormatException>(() =>
         {
-            var ex = Assert.Throws<FormatException>(() =>
+            byte[] data = Encoding.UTF8.GetBytes("{ \"value\": \"hsadgfhygsdaf\" }");
+            var reader = new Utf8JsonReader(data);
+            reader.Read(); // StartObject
+            reader.Read(); // "value"
+            reader.Read(); // "hsadgfhygsdaf"
+            reader.GetUuid();
+        });
+        Assert.AreEqual("System.Text.Json.Rethrowable", ex?.Source);
+    }
+
+    [Test]
+    public void TryGetUuidTokenTypeStartObjectThrowsInvalidOperationException()
+    {
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+        {
+            byte[] data = Encoding.UTF8.GetBytes("{ \"value\": 42 }");
+            var reader = new Utf8JsonReader(data);
+            reader.Read();
+            reader.TryGetUuid(out _);
+        });
+        Assert.AreEqual("System.Text.Json.Rethrowable", ex?.Source);
+    }
+
+    [Test]
+    public void TryGetUuidTooLongInputStringWithValueSequenceNotParsed()
+    {
+        var longUnescapedJsonStringBuilder = new StringBuilder(MaximumEscapedUuidLength + 1);
+        for (var i = 0; i < MaximumEscapedUuidLength + 1; i++)
+        {
+            longUnescapedJsonStringBuilder.Append('0');
+        }
+
+        var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
+        string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
+        byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+        (MemorySegment head, MemorySegment tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
+        var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
+        var reader = new Utf8JsonReader(sequence);
+        reader.Read(); // StartObject
+        reader.Read(); // "value"
+        reader.Read(); // UuidTooLongEscapedValue
+
+        Assert.False(reader.TryGetUuid(out Uuid actualUuid));
+        Assert.AreEqual(Uuid.Empty, actualUuid);
+    }
+
+    [Test]
+    public void TryGetUuidCorrectUnescapedStringNoValueSequence()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (UuidBytesWithUtf8Bytes correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
             {
-                byte[] data = Encoding.UTF8.GetBytes("{ \"value\": \"hsadgfhygsdaf\" }");
-                var reader = new Utf8JsonReader(data);
+                var expectedUuid = new Uuid(correctUtf8String.UuidBytes);
+                string json = "{\"value\":\"" + correctUtf8String.Utf8String + "\"}";
+                byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+                var reader = new Utf8JsonReader(utf8JsonBytes);
                 reader.Read(); // StartObject
                 reader.Read(); // "value"
-                reader.Read(); // "hsadgfhygsdaf"
-                reader.GetUuid();
-            });
-            Assert.AreEqual("System.Text.Json.Rethrowable", ex?.Source);
-        }
+                reader.Read(); // UuidEscapedValue
 
-        [Test]
-        public void TryGetUuidTokenTypeStartObjectThrowsInvalidOperationException()
-        {
-            var ex = Assert.Throws<InvalidOperationException>(() =>
-            {
-                byte[] data = Encoding.UTF8.GetBytes("{ \"value\": 42 }");
-                var reader = new Utf8JsonReader(data);
-                reader.Read();
-                reader.TryGetUuid(out _);
-            });
-            Assert.AreEqual("System.Text.Json.Rethrowable", ex?.Source);
-        }
-
-        [Test]
-        public void TryGetUuidTooLongInputStringWithValueSequenceNotParsed()
-        {
-            var longUnescapedJsonStringBuilder = new StringBuilder(MaximumEscapedUuidLength + 1);
-            for (var i = 0; i < MaximumEscapedUuidLength + 1; i++)
-            {
-                longUnescapedJsonStringBuilder.Append('0');
+                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
+                Assert.AreEqual(expectedUuid, actualUuid);
             }
+        });
+    }
 
-            var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
-            string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
-            byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-            var (head, tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
-            var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
-            var reader = new Utf8JsonReader(sequence);
-            reader.Read(); // StartObject
-            reader.Read(); // "value"
-            reader.Read(); // UuidTooLongEscapedValue
-
-            Assert.False(reader.TryGetUuid(out Uuid actualUuid));
-            Assert.AreEqual(Uuid.Empty, actualUuid);
-        }
-
-        [Test]
-        public void TryGetUuidCorrectUnescapedStringNoValueSequence()
+    [Test]
+    public void TryGetUuidCorrectEscapedStringNoValueSequence()
+    {
+        Assert.Multiple(() =>
         {
-            Assert.Multiple(() =>
+            foreach (UuidBytesWithUtf8Bytes correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
             {
-                foreach (var correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
-                {
-                    var expectedUuid = new Uuid(correctUtf8String.UuidBytes);
-                    string json = "{\"value\":\"" + correctUtf8String.Utf8String + "\"}";
-                    byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-                    var reader = new Utf8JsonReader(utf8JsonBytes);
-                    reader.Read(); // StartObject
-                    reader.Read(); // "value"
-                    reader.Read(); // UuidEscapedValue
+                var expectedUuid = new Uuid(correctUtf8EscapedString.UuidBytes);
+                string json = "{\"value\":\"" + correctUtf8EscapedString.Utf8String + "\"}";
+                byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+                var reader = new Utf8JsonReader(utf8JsonBytes);
+                reader.Read(); // StartObject
+                reader.Read(); // "value"
+                reader.Read(); // UuidEscapedValue
 
-                    Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                    Assert.AreEqual(expectedUuid, actualUuid);
-                }
-            });
-        }
-
-        [Test]
-        public void TryGetUuidCorrectEscapedStringNoValueSequence()
-        {
-            Assert.Multiple(() =>
-            {
-                foreach (var correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
-                {
-                    var expectedUuid = new Uuid(correctUtf8EscapedString.UuidBytes);
-                    string json = "{\"value\":\"" + correctUtf8EscapedString.Utf8String + "\"}";
-                    byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-                    var reader = new Utf8JsonReader(utf8JsonBytes);
-                    reader.Read(); // StartObject
-                    reader.Read(); // "value"
-                    reader.Read(); // UuidEscapedValue
-
-                    Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                    Assert.AreEqual(expectedUuid, actualUuid);
-                }
-            });
-        }
-
-        [Test]
-        public void TryGetUuidCorrectUnescapedStringWithValueSequence()
-        {
-            Assert.Multiple(() =>
-            {
-                foreach (var correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
-                {
-                    var expectedUuid = new Uuid(correctUtf8String.UuidBytes);
-                    string json = "{\"value\":\"" + correctUtf8String.Utf8String + "\"}";
-                    byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-                    var (head, tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
-                    var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
-                    var reader = new Utf8JsonReader(sequence);
-                    reader.Read(); // StartObject
-                    reader.Read(); // "value"
-                    reader.Read(); // UuidEscapedValue
-
-                    Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                    Assert.AreEqual(expectedUuid, actualUuid);
-                }
-            });
-        }
-
-        [Test]
-        public void TryGetUuidCorrectEscapedStringWithValueSequence()
-        {
-            Assert.Multiple(() =>
-            {
-                foreach (var correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
-                {
-                    var expectedUuid = new Uuid(correctUtf8EscapedString.UuidBytes);
-                    string json = "{\"value\":\"" + correctUtf8EscapedString.Utf8String + "\"}";
-                    byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-                    var (head, tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
-                    var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
-                    var reader = new Utf8JsonReader(sequence);
-                    reader.Read(); // StartObject
-                    reader.Read(); // "value"
-                    reader.Read(); // UuidEscapedValue
-
-                    Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                    Assert.AreEqual(expectedUuid, actualUuid);
-                }
-            });
-        }
-
-        private static (MemorySegment head, MemorySegment tail) SplitByteArrayIntoSegments(byte[] bytes, int splitBy)
-        {
-            int parts = bytes.Length / splitBy;
-            if (parts * splitBy < bytes.Length)
-            {
-                parts += 1;
+                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
+                Assert.AreEqual(expectedUuid, actualUuid);
             }
+        });
+    }
 
-            var head = new MemorySegment(new ReadOnlyMemory<byte>());
-            MemorySegment tail = head;
-            for (var i = 0; i < parts; i++)
+    [Test]
+    public void TryGetUuidCorrectUnescapedStringWithValueSequence()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (UuidBytesWithUtf8Bytes correctUtf8String in Utf8JsonTestData.CorrectUtf8UnescapedStrings)
             {
-                int offset = i * splitBy;
-                int memoryLength = offset + splitBy > bytes.Length
-                    ? splitBy - (offset + splitBy - bytes.Length)
-                    : splitBy;
+                var expectedUuid = new Uuid(correctUtf8String.UuidBytes);
+                string json = "{\"value\":\"" + correctUtf8String.Utf8String + "\"}";
+                byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+                (MemorySegment head, MemorySegment tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
+                var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
+                var reader = new Utf8JsonReader(sequence);
+                reader.Read(); // StartObject
+                reader.Read(); // "value"
+                reader.Read(); // UuidEscapedValue
 
-                var memory = new ReadOnlyMemory<byte>(bytes, offset, memoryLength);
-                tail = tail.Append(memory);
+                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
+                Assert.AreEqual(expectedUuid, actualUuid);
             }
+        });
+    }
 
-            return (head, tail);
+    [Test]
+    public void TryGetUuidCorrectEscapedStringWithValueSequence()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (UuidBytesWithUtf8Bytes correctUtf8EscapedString in Utf8JsonTestData.CorrectUtf8EscapedStrings)
+            {
+                var expectedUuid = new Uuid(correctUtf8EscapedString.UuidBytes);
+                string json = "{\"value\":\"" + correctUtf8EscapedString.Utf8String + "\"}";
+                byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+                (MemorySegment head, MemorySegment tail) = SplitByteArrayIntoSegments(utf8JsonBytes, 13);
+                var sequence = new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
+                var reader = new Utf8JsonReader(sequence);
+                reader.Read(); // StartObject
+                reader.Read(); // "value"
+                reader.Read(); // UuidEscapedValue
+
+                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
+                Assert.AreEqual(expectedUuid, actualUuid);
+            }
+        });
+    }
+
+    private static (MemorySegment head, MemorySegment tail) SplitByteArrayIntoSegments(byte[] bytes, int splitBy)
+    {
+        int parts = bytes.Length / splitBy;
+        if (parts * splitBy < bytes.Length)
+        {
+            parts += 1;
         }
 
-        [Test]
-        public void TryGetUuidTooLongEscapedStringAfterUnescapeNotParsed()
+        var head = new MemorySegment(new ReadOnlyMemory<byte>());
+        MemorySegment tail = head;
+        for (var i = 0; i < parts; i++)
         {
-            string escapedString = Utf8JsonTestData.ToUtf8EscapedString(new Uuid("f91c971cf7ab404e9a24546b133533dd"), "N");
-            int charsToAppend = MaximumEscapedUuidLength - escapedString.Length;
-            var longUnescapedJsonStringBuilder = new StringBuilder(escapedString, MaximumEscapedUuidLength);
-            for (var i = 0; i < charsToAppend; i++)
-            {
-                longUnescapedJsonStringBuilder.Append('0');
-            }
+            int offset = i * splitBy;
+            int memoryLength = offset + splitBy > bytes.Length
+                ? splitBy - (offset + splitBy - bytes.Length)
+                : splitBy;
 
-            var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
-            string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
-            byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-            var reader = new Utf8JsonReader(utf8JsonBytes);
-            reader.Read(); // StartObject
-            reader.Read(); // "value"
-            reader.Read(); // UuidTooLongEscapedValue
-
-            Assert.False(reader.TryGetUuid(out Uuid actualUuid));
-            Assert.AreEqual(Uuid.Empty, actualUuid);
+            var memory = new ReadOnlyMemory<byte>(bytes, offset, memoryLength);
+            tail = tail.Append(memory);
         }
 
-        [Test]
-        public void TryGetUuidTooLongInputStringNotParsed()
+        return (head, tail);
+    }
+
+    [Test]
+    public void TryGetUuidTooLongEscapedStringAfterUnescapeNotParsed()
+    {
+        string escapedString = Utf8JsonTestData.ToUtf8EscapedString(new Uuid("f91c971cf7ab404e9a24546b133533dd"), "N");
+        int charsToAppend = MaximumEscapedUuidLength - escapedString.Length;
+        var longUnescapedJsonStringBuilder = new StringBuilder(escapedString, MaximumEscapedUuidLength);
+        for (var i = 0; i < charsToAppend; i++)
         {
-            var longUnescapedJsonStringBuilder = new StringBuilder(MaximumEscapedUuidLength + 1);
-            for (var i = 0; i < MaximumEscapedUuidLength + 1; i++)
-            {
-                longUnescapedJsonStringBuilder.Append('0');
-            }
-
-            var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
-            string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
-            byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
-            var reader = new Utf8JsonReader(utf8JsonBytes);
-            reader.Read(); // StartObject
-            reader.Read(); // "value"
-            reader.Read(); // UuidTooLongEscapedValue
-
-            Assert.False(reader.TryGetUuid(out Uuid actualUuid));
-            Assert.AreEqual(Uuid.Empty, actualUuid);
+            longUnescapedJsonStringBuilder.Append('0');
         }
 
-        internal class MemorySegment : ReadOnlySequenceSegment<byte>
-        {
-            public MemorySegment(ReadOnlyMemory<byte> memory)
-            {
-                Memory = memory;
-            }
+        var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
+        string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
+        byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+        var reader = new Utf8JsonReader(utf8JsonBytes);
+        reader.Read(); // StartObject
+        reader.Read(); // "value"
+        reader.Read(); // UuidTooLongEscapedValue
 
-            public MemorySegment Append(ReadOnlyMemory<byte> memory)
+        Assert.False(reader.TryGetUuid(out Uuid actualUuid));
+        Assert.AreEqual(Uuid.Empty, actualUuid);
+    }
+
+    [Test]
+    public void TryGetUuidTooLongInputStringNotParsed()
+    {
+        var longUnescapedJsonStringBuilder = new StringBuilder(MaximumEscapedUuidLength + 1);
+        for (var i = 0; i < MaximumEscapedUuidLength + 1; i++)
+        {
+            longUnescapedJsonStringBuilder.Append('0');
+        }
+
+        var longUnescapedJsonString = longUnescapedJsonStringBuilder.ToString();
+        string json = "{\"value\":\"" + longUnescapedJsonString + "\"}";
+        byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(json);
+        var reader = new Utf8JsonReader(utf8JsonBytes);
+        reader.Read(); // StartObject
+        reader.Read(); // "value"
+        reader.Read(); // UuidTooLongEscapedValue
+
+        Assert.False(reader.TryGetUuid(out Uuid actualUuid));
+        Assert.AreEqual(Uuid.Empty, actualUuid);
+    }
+
+    internal class MemorySegment : ReadOnlySequenceSegment<byte>
+    {
+        public MemorySegment(ReadOnlyMemory<byte> memory)
+        {
+            Memory = memory;
+        }
+
+        public MemorySegment Append(ReadOnlyMemory<byte> memory)
+        {
+            var segment = new MemorySegment(memory)
             {
-                var segment = new MemorySegment(memory)
-                {
-                    RunningIndex = RunningIndex + Memory.Length
-                };
-                Next = segment;
-                return segment;
-            }
+                RunningIndex = RunningIndex + Memory.Length
+            };
+            Next = segment;
+            return segment;
         }
     }
 }

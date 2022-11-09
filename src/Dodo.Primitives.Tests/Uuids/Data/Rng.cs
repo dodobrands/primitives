@@ -1,38 +1,37 @@
 using System;
 
-namespace Dodo.Primitives.Tests.Uuids.Data
+namespace Dodo.Primitives.Tests.Uuids.Data;
+
+public class UuidRng
 {
-    public class UuidRng
+    private const long A = 25214903917;
+    private const long C = 11;
+    private long _seed;
+
+    public UuidRng(long seed)
     {
-        private const long A = 25214903917;
-        private const long C = 11;
-        private long _seed;
-
-        public UuidRng(long seed)
+        if (seed < 0)
         {
-            if (seed < 0)
-            {
-                throw new Exception("Bad seed");
-            }
-
-            _seed = seed;
+            throw new Exception("Bad seed");
         }
 
-        private int Next(int bits) // helper
-        {
-            _seed = (_seed * A + C) & ((1L << 48) - 1);
-            return (int) (_seed >> (48 - bits));
-        }
+        _seed = seed;
+    }
 
-        public unsafe int Next()
-        {
-            double resultDouble = (((long) Next(26) << 27) + Next(27)) / (double) (1L << 53);
-            double* resultDoublePtr = &resultDouble;
-            var resultInt32Ptr = (int*) resultDoublePtr;
-            int hi = resultInt32Ptr[0];
-            int lo = resultInt32Ptr[1];
-            int result = hi ^ lo;
-            return result;
-        }
+    private int Next(int bits) // helper
+    {
+        _seed = (_seed * A + C) & ((1L << 48) - 1);
+        return (int)(_seed >> (48 - bits));
+    }
+
+    public unsafe int Next()
+    {
+        double resultDouble = (((long)Next(26) << 27) + Next(27)) / (double)(1L << 53);
+        double* resultDoublePtr = &resultDouble;
+        var resultInt32Ptr = (int*)resultDoublePtr;
+        int hi = resultInt32Ptr[0];
+        int lo = resultInt32Ptr[1];
+        int result = hi ^ lo;
+        return result;
     }
 }
