@@ -25,6 +25,7 @@ jobs:
             - name: Run .NET 6 tests without Hardware Intrinsics
               env:
                   COMPlus_EnableHWIntrinsic: "0"
+                  COMPlus_ReadyToRun: "0"
                   CollectCoverage": "true"
                   CoverletOutputFormat: "json"
                   CoverletOutput: "../../coverage/cover_net6nohw"
@@ -102,3 +103,4 @@ jobs:
                   asset_path: ./out/${{ steps.get-package.outputs.package }}
                   asset_name: ${{ steps.get-package.outputs.package }}
                   asset_content_type: application/zip
+
