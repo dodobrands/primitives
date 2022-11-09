@@ -162,6 +162,7 @@ jobs:
               id: coverage-info
               shell: bash
               run: |
+                  ls -la ./coverage
                   PATH_TO_COVERAGE=$(readlink -f ./coverage/*.info)
                   echo "Path to lcov: ${PATH_TO_COVERAGE}"
                   echo "::set-output name=coverage_file::$PATH_TO_COVERAGE"
