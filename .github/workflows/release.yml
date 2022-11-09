@@ -111,7 +111,7 @@ jobs:
             - name: Get package
               shell: bash
               run: |
-                  $OUT_PACKAGE_NAME=$(ls out/)
+                  OUT_PACKAGE_NAME="$(ls out/)"
                   echo "out_package_name=$OUT_PACKAGE_NAME" >> $GITHUB_ENV
             - name: Upload release assets
               uses: actions/upload-release-asset@v1
