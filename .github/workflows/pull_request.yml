@@ -148,6 +148,7 @@ jobs:
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net7.0
             - name: Run .NET 7 tests with Hardware Intrinsics
+              id: final-test
               env:
                   COMPlus_EnableHWIntrinsic: "1"
                   CollectCoverage": "true"
@@ -157,9 +158,11 @@ jobs:
               shell: bash
               run: |
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net7.0
+                  PATH_TO_COVERAGE=$(readlink -f ./coverage/*.info)
+                  echo "::set-output name=path_to_coverage::$PATH_TO_COVERAGE"
             - name: Publish coverage report to coveralls.io
               uses: coverallsapp/github-action@1.1.3
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
-                  path-to-lcov: ./coverage/cover_full.net7.0.info
+                  path-to-lcov: ${{ steps.final-test.outputs.path_to_coverage }}
 
