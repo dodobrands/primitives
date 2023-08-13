@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Dodo.Primitives.Internal;
-#if !NET6_0
+#if NET7_0_OR_GREATER
 using System.Numerics;
 using System.Runtime.Intrinsics;
 #endif
@@ -24,7 +24,7 @@ public unsafe struct Uuid :
     IComparable,
     IComparable<Uuid>,
     IEquatable<Uuid>
-#if !NET6_0
+#if NET7_0_OR_GREATER
     , ISpanParsable<Uuid>, IComparisonOperators<Uuid, Uuid, bool>
 #endif
 {
@@ -61,7 +61,7 @@ public unsafe struct Uuid :
     /// </summary>
     // ReSharper disable once RedundantDefaultMemberInitializer
     // ReSharper disable once MemberCanBePrivate.Global
-    public static readonly Uuid Empty = new();
+    public static readonly Uuid Empty = new Uuid();
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified array of bytes.
@@ -126,7 +126,7 @@ public unsafe struct Uuid :
     /// </returns>
     public bool TryWriteBytes(Span<byte> destination)
     {
-        if (Unsafe.SizeOf<Uuid>() > (uint)destination.Length)
+        if (Unsafe.SizeOf<Uuid>() > (uint) destination.Length)
         {
             return false;
         }
@@ -155,7 +155,7 @@ public unsafe struct Uuid :
             throw new ArgumentException("Object must be of type Uuid.", nameof(obj));
         }
 
-        var other = (Uuid)obj;
+        var other = (Uuid) obj;
         if (other._byte0 != _byte0)
         {
             return _byte0 < other._byte0 ? -1 : 1;
@@ -344,7 +344,7 @@ public unsafe struct Uuid :
     {
         if (obj is Uuid other)
         {
-#if !NET6_0
+#if NET7_0_OR_GREATER
             if (Vector128.IsHardwareAccelerated)
             {
                 return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in this)))
@@ -368,7 +368,7 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if <paramref name="other" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
     public bool Equals(Uuid other)
     {
-#if !NET6_0
+#if NET7_0_OR_GREATER
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in this)))
@@ -400,7 +400,7 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <see langword="false" />.</returns>
     public static bool operator ==(Uuid left, Uuid right)
     {
-#if !NET6_0
+#if NET7_0_OR_GREATER
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in left)))
@@ -425,7 +425,7 @@ public unsafe struct Uuid :
     /// </returns>
     public static bool operator !=(Uuid left, Uuid right)
     {
-#if !NET6_0
+#if NET7_0_OR_GREATER
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref Unsafe.AsRef(in left)))
@@ -457,7 +457,7 @@ public unsafe struct Uuid :
     public bool TryFormat(
         Span<char> destination,
         out int charsWritten,
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         ReadOnlySpan<char> format,
@@ -474,93 +474,93 @@ public unsafe struct Uuid :
             return false;
         }
 
-        switch ((char)(format[0] | 0x20))
+        switch ((char) (format[0] | 0x20))
         {
             case 'n':
-            {
-                if (destination.Length < 32)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 32)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatN(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatN(uuidChars);
+                    }
 
-                charsWritten = 32;
-                return true;
-            }
+                    charsWritten = 32;
+                    return true;
+                }
             case 'd':
-            {
-                if (destination.Length < 36)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 36)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatD(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatD(uuidChars);
+                    }
 
-                charsWritten = 36;
-                return true;
-            }
+                    charsWritten = 36;
+                    return true;
+                }
             case 'b':
-            {
-                if (destination.Length < 38)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 38)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatB(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatB(uuidChars);
+                    }
 
-                charsWritten = 38;
-                return true;
-            }
+                    charsWritten = 38;
+                    return true;
+                }
             case 'p':
-            {
-                if (destination.Length < 38)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 38)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatP(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatP(uuidChars);
+                    }
 
-                charsWritten = 38;
-                return true;
-            }
+                    charsWritten = 38;
+                    return true;
+                }
             case 'x':
-            {
-                if (destination.Length < 68)
+                {
+                    if (destination.Length < 68)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatX(uuidChars);
+                    }
+
+                    charsWritten = 68;
+                    return true;
+                }
+            default:
                 {
                     charsWritten = 0;
                     return false;
                 }
-
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatX(uuidChars);
-                }
-
-                charsWritten = 68;
-                return true;
-            }
-            default:
-            {
-                charsWritten = 0;
-                return false;
-            }
         }
     }
 
@@ -581,7 +581,7 @@ public unsafe struct Uuid :
     public bool TryFormat(
         Span<char> destination,
         out int charsWritten,
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         ReadOnlySpan<char> format = default)
@@ -597,93 +597,93 @@ public unsafe struct Uuid :
             return false;
         }
 
-        switch ((char)(format[0] | 0x20))
+        switch ((char) (format[0] | 0x20))
         {
             case 'n':
-            {
-                if (destination.Length < 32)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 32)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatN(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatN(uuidChars);
+                    }
 
-                charsWritten = 32;
-                return true;
-            }
+                    charsWritten = 32;
+                    return true;
+                }
             case 'd':
-            {
-                if (destination.Length < 36)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 36)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatD(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatD(uuidChars);
+                    }
 
-                charsWritten = 36;
-                return true;
-            }
+                    charsWritten = 36;
+                    return true;
+                }
             case 'b':
-            {
-                if (destination.Length < 38)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 38)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatB(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatB(uuidChars);
+                    }
 
-                charsWritten = 38;
-                return true;
-            }
+                    charsWritten = 38;
+                    return true;
+                }
             case 'p':
-            {
-                if (destination.Length < 38)
                 {
-                    charsWritten = 0;
-                    return false;
-                }
+                    if (destination.Length < 38)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
 
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatP(uuidChars);
-                }
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatP(uuidChars);
+                    }
 
-                charsWritten = 38;
-                return true;
-            }
+                    charsWritten = 38;
+                    return true;
+                }
             case 'x':
-            {
-                if (destination.Length < 68)
+                {
+                    if (destination.Length < 68)
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+
+                    fixed (char* uuidChars = &destination.GetPinnableReference())
+                    {
+                        FormatX(uuidChars);
+                    }
+
+                    charsWritten = 68;
+                    return true;
+                }
+            default:
                 {
                     charsWritten = 0;
                     return false;
                 }
-
-                fixed (char* uuidChars = &destination.GetPinnableReference())
-                {
-                    FormatX(uuidChars);
-                }
-
-                charsWritten = 68;
-                return true;
-            }
-            default:
-            {
-                charsWritten = 0;
-                return false;
-            }
         }
     }
 
@@ -705,7 +705,7 @@ public unsafe struct Uuid :
     /// </param>
     /// <returns>The value of this <see cref="Uuid" />, represented as a series of lowercase hexadecimal digits in the specified format.</returns>
     public string ToString(
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         string? format)
@@ -729,7 +729,7 @@ public unsafe struct Uuid :
     ///     "B", "P", or "X".
     /// </exception>
     public string ToString(
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         string? format,
@@ -748,58 +748,58 @@ public unsafe struct Uuid :
                 "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
         }
 
-        switch ((char)(format[0] | 0x20))
+        switch ((char) (format[0] | 0x20))
         {
             case 'n':
-            {
-                var uuidString = new string('\0', 32);
-                fixed (char* uuidChars = &uuidString.GetPinnableReference())
                 {
-                    FormatN(uuidChars);
-                }
+                    var uuidString = new string('\0', 32);
+                    fixed (char* uuidChars = &uuidString.GetPinnableReference())
+                    {
+                        FormatN(uuidChars);
+                    }
 
-                return uuidString;
-            }
+                    return uuidString;
+                }
             case 'd':
-            {
-                var uuidString = new string('\0', 36);
-                fixed (char* uuidChars = &uuidString.GetPinnableReference())
                 {
-                    FormatD(uuidChars);
-                }
+                    var uuidString = new string('\0', 36);
+                    fixed (char* uuidChars = &uuidString.GetPinnableReference())
+                    {
+                        FormatD(uuidChars);
+                    }
 
-                return uuidString;
-            }
+                    return uuidString;
+                }
             case 'b':
-            {
-                var uuidString = new string('\0', 38);
-                fixed (char* uuidChars = &uuidString.GetPinnableReference())
                 {
-                    FormatB(uuidChars);
-                }
+                    var uuidString = new string('\0', 38);
+                    fixed (char* uuidChars = &uuidString.GetPinnableReference())
+                    {
+                        FormatB(uuidChars);
+                    }
 
-                return uuidString;
-            }
+                    return uuidString;
+                }
             case 'p':
-            {
-                var uuidString = new string('\0', 38);
-                fixed (char* uuidChars = &uuidString.GetPinnableReference())
                 {
-                    FormatP(uuidChars);
-                }
+                    var uuidString = new string('\0', 38);
+                    fixed (char* uuidChars = &uuidString.GetPinnableReference())
+                    {
+                        FormatP(uuidChars);
+                    }
 
-                return uuidString;
-            }
+                    return uuidString;
+                }
             case 'x':
-            {
-                var uuidString = new string('\0', 68);
-                fixed (char* uuidChars = &uuidString.GetPinnableReference())
                 {
-                    FormatX(uuidChars);
-                }
+                    var uuidString = new string('\0', 68);
+                    fixed (char* uuidChars = &uuidString.GetPinnableReference())
+                    {
+                        FormatX(uuidChars);
+                    }
 
-                return uuidString;
-            }
+                    return uuidString;
+                }
             default:
                 throw new FormatException(
                     "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
@@ -810,7 +810,7 @@ public unsafe struct Uuid :
     private void FormatN(char* dest)
     {
         // dddddddddddddddddddddddddddddddd
-        var destUints = (uint*)dest;
+        var destUints = (uint*) dest;
         destUints[0] = TableToHex[_byte0];
         destUints[1] = TableToHex[_byte1];
         destUints[2] = TableToHex[_byte2];
@@ -833,8 +833,8 @@ public unsafe struct Uuid :
     private void FormatD(char* dest)
     {
         // dddddddd-dddd-dddd-dddd-dddddddddddd
-        var destUints = (uint*)dest;
-        var destUintsAsChars = (char**)&destUints;
+        var destUints = (uint*) dest;
+        var destUintsAsChars = (char**) &destUints;
         dest[8] = dest[13] = dest[18] = dest[23] = '-';
         destUints[0] = TableToHex[_byte0];
         destUints[1] = TableToHex[_byte1];
@@ -859,8 +859,8 @@ public unsafe struct Uuid :
     private void FormatB(char* dest)
     {
         // {dddddddd-dddd-dddd-dddd-dddddddddddd}
-        var destUints = (uint*)dest;
-        var destUintsAsChars = (char**)&destUints;
+        var destUints = (uint*) dest;
+        var destUintsAsChars = (char**) &destUints;
         dest[0] = '{';
         dest[9] = dest[14] = dest[19] = dest[24] = '-';
         dest[37] = '}';
@@ -887,8 +887,8 @@ public unsafe struct Uuid :
     private void FormatP(char* dest)
     {
         // (dddddddd-dddd-dddd-dddd-dddddddddddd)
-        var destUints = (uint*)dest;
-        var destUintsAsChars = (char**)&destUints;
+        var destUints = (uint*) dest;
+        var destUintsAsChars = (char**) &destUints;
         dest[0] = '(';
         dest[9] = dest[14] = dest[19] = dest[24] = '-';
         dest[37] = ')';
@@ -919,8 +919,8 @@ public unsafe struct Uuid :
     private void FormatX(char* dest)
     {
         // {0xdddddddd,0xdddd,0xdddd,{0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd}}
-        var destUints = (uint*)dest;
-        var uintDestAsChars = (char**)&destUints;
+        var destUints = (uint*) dest;
+        var uintDestAsChars = (char**) &destUints;
         dest[0] = '{';
         dest[11] = dest[18] = dest[31] = dest[36] = dest[41] = dest[46] = dest[51] = dest[56] = dest[61] = ',';
         destUints[6] = destUints[16] = destUints[21] = destUints[26] = destUints[31] = ZeroX; // 0x
@@ -955,7 +955,7 @@ public unsafe struct Uuid :
     {
         var result = new Guid();
         Guid* resultPtr = &result;
-        var resultPtrBytes = (byte*)resultPtr;
+        var resultPtrBytes = (byte*) resultPtr;
         resultPtrBytes[0] = _byte0;
         resultPtrBytes[1] = _byte1;
         resultPtrBytes[2] = _byte2;
@@ -984,7 +984,7 @@ public unsafe struct Uuid :
     {
         var result = new Guid();
         Guid* resultPtr = &result;
-        var resultPtrBytes = (byte*)resultPtr;
+        var resultPtrBytes = (byte*) resultPtr;
         resultPtrBytes[0] = _byte3;
         resultPtrBytes[1] = _byte2;
         resultPtrBytes[2] = _byte1;
@@ -1014,7 +1014,7 @@ public unsafe struct Uuid :
     {
         ArgumentNullException.ThrowIfNull(input);
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (char* uuidStringPtr = &input.GetPinnableReference())
         {
             ParseWithExceptions(new ReadOnlySpan<char>(uuidStringPtr, input.Length), uuidStringPtr, resultPtr);
@@ -1037,7 +1037,7 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (char* uuidStringPtr = &input.GetPinnableReference())
         {
             ParseWithExceptions(input, uuidStringPtr, resultPtr);
@@ -1057,7 +1057,7 @@ public unsafe struct Uuid :
     {
         ArgumentNullException.ThrowIfNull(input);
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (char* uuidStringPtr = &input.GetPinnableReference())
         {
             ParseWithExceptions(new ReadOnlySpan<char>(uuidStringPtr, input.Length), uuidStringPtr, resultPtr);
@@ -1080,7 +1080,7 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (char* uuidStringPtr = &input.GetPinnableReference())
         {
             ParseWithExceptions(input, uuidStringPtr, resultPtr);
@@ -1103,7 +1103,7 @@ public unsafe struct Uuid :
     /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
     public static Uuid ParseExact(
         string input,
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         string format)
@@ -1112,59 +1112,59 @@ public unsafe struct Uuid :
         ArgumentNullException.ThrowIfNull(format);
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
-        switch ((char)(format[0] | 0x20))
+        var resultPtr = (byte*) &result;
+        switch ((char) (format[0] | 0x20))
         {
             case 'n':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsN((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'd':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsD((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'b':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsB((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'p':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsP((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'x':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsX((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             default:
-            {
-                throw new FormatException(
-                    "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
-            }
+                {
+                    throw new FormatException(
+                        "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
+                }
         }
     }
 
@@ -1181,7 +1181,7 @@ public unsafe struct Uuid :
     /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
     public static Uuid ParseExact(
         ReadOnlySpan<char> input,
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         ReadOnlySpan<char> format)
@@ -1198,59 +1198,59 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
-        switch ((char)(format[0] | 0x20))
+        var resultPtr = (byte*) &result;
+        switch ((char) (format[0] | 0x20))
         {
             case 'n':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsN((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'd':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsD((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'b':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsB((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'p':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsP((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             case 'x':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    ParseWithExceptionsX((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        ParseWithExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                return result;
-            }
+                    return result;
+                }
             default:
-            {
-                throw new FormatException(
-                    "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
-            }
+                {
+                    throw new FormatException(
+                        "Format string can be only \"N\", \"n\", \"D\", \"d\", \"P\", \"p\", \"B\", \"b\", \"X\" or \"x\".");
+                }
         }
     }
 
@@ -1273,7 +1273,7 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (char* uuidStringPtr = &input.GetPinnableReference())
         {
             if (ParseWithoutExceptions(input.AsSpan(), uuidStringPtr, resultPtr))
@@ -1307,7 +1307,7 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (char* uuidStringPtr = &input.GetPinnableReference())
         {
             if (ParseWithoutExceptions(input, uuidStringPtr, resultPtr))
@@ -1341,7 +1341,7 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         fixed (byte* uuidUtf8StringPtr = &uuidUtf8String.GetPinnableReference())
         {
             if (ParseWithoutExceptionsUtf8(uuidUtf8String, uuidUtf8StringPtr, resultPtr))
@@ -1372,68 +1372,68 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
     public static bool TryParseExact(
         [NotNullWhen(true)] string? input,
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         string format,
         out Uuid output)
     {
-        if (input == null || format?.Length != 1)
+        if (input == null || string.IsNullOrEmpty(format) || format.Length != 1)
         {
             output = default;
             return false;
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         var parsed = false;
-        switch ((char)(format[0] | 0x20))
+        switch ((char) (format[0] | 0x20))
         {
             case 'd':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsD((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'n':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsN((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'b':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsB((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'p':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsP((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'x':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsX((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
 
         if (parsed)
@@ -1463,7 +1463,7 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
     public static bool TryParseExact(
         ReadOnlySpan<char> input,
-#if !NET6_0
+#if NET7_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
 #endif
         ReadOnlySpan<char> format,
@@ -1476,55 +1476,55 @@ public unsafe struct Uuid :
         }
 
         var result = new Uuid();
-        var resultPtr = (byte*)&result;
+        var resultPtr = (byte*) &result;
         var parsed = false;
-        switch ((char)(format[0] | 0x20))
+        switch ((char) (format[0] | 0x20))
         {
             case 'd':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsD((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'n':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsN((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'b':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsB((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'p':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsP((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'x':
-            {
-                fixed (char* uuidStringPtr = &input.GetPinnableReference())
                 {
-                    parsed = ParseWithoutExceptionsX((uint)input.Length, uuidStringPtr, resultPtr);
-                }
+                    fixed (char* uuidStringPtr = &input.GetPinnableReference())
+                    {
+                        parsed = ParseWithoutExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
 
         if (parsed)
@@ -1539,7 +1539,7 @@ public unsafe struct Uuid :
 
     private static bool ParseWithoutExceptions(ReadOnlySpan<char> uuidString, char* uuidStringPtr, byte* resultPtr)
     {
-        var length = (uint)uuidString.Length;
+        var length = (uint) uuidString.Length;
         if (length == 0u)
         {
             return false;
@@ -1551,21 +1551,21 @@ public unsafe struct Uuid :
         switch (uuidString[0])
         {
             case '(':
-            {
-                return ParseWithoutExceptionsP(length, uuidStringPtr, resultPtr);
-            }
+                {
+                    return ParseWithoutExceptionsP(length, uuidStringPtr, resultPtr);
+                }
             case '{':
-            {
-                return uuidString.Contains(dashSpan, StringComparison.Ordinal)
-                    ? ParseWithoutExceptionsB(length, uuidStringPtr, resultPtr)
-                    : ParseWithoutExceptionsX(length, uuidStringPtr, resultPtr);
-            }
+                {
+                    return uuidString.Contains(dashSpan, StringComparison.Ordinal)
+                        ? ParseWithoutExceptionsB(length, uuidStringPtr, resultPtr)
+                        : ParseWithoutExceptionsX(length, uuidStringPtr, resultPtr);
+                }
             default:
-            {
-                return uuidString.Contains(dashSpan, StringComparison.Ordinal)
-                    ? ParseWithoutExceptionsD(length, uuidStringPtr, resultPtr)
-                    : ParseWithoutExceptionsN(length, uuidStringPtr, resultPtr);
-            }
+                {
+                    return uuidString.Contains(dashSpan, StringComparison.Ordinal)
+                        ? ParseWithoutExceptionsD(length, uuidStringPtr, resultPtr)
+                        : ParseWithoutExceptionsN(length, uuidStringPtr, resultPtr);
+                }
         }
     }
 
@@ -1721,25 +1721,25 @@ public unsafe struct Uuid :
 
     private static bool ParseWithoutExceptionsUtf8(ReadOnlySpan<byte> uuidUtf8String, byte* uuidUtf8StringPtr, byte* resultPtr)
     {
-        var length = (uint)uuidUtf8String.Length;
+        var length = (uint) uuidUtf8String.Length;
         switch (uuidUtf8String[0])
         {
             case Utf8LeftParenthesis: // (
-            {
-                return ParseWithoutExceptionsPUtf8(length, uuidUtf8StringPtr, resultPtr);
-            }
+                {
+                    return ParseWithoutExceptionsPUtf8(length, uuidUtf8StringPtr, resultPtr);
+                }
             case Utf8LeftCurlyBracket:
-            {
-                return uuidUtf8String.Contains(Utf8HyphenMinus)
-                    ? ParseWithoutExceptionsBUtf8(length, uuidUtf8StringPtr, resultPtr)
-                    : ParseWithoutExceptionsXUtf8(length, uuidUtf8StringPtr, resultPtr);
-            }
+                {
+                    return uuidUtf8String.Contains(Utf8HyphenMinus)
+                        ? ParseWithoutExceptionsBUtf8(length, uuidUtf8StringPtr, resultPtr)
+                        : ParseWithoutExceptionsXUtf8(length, uuidUtf8StringPtr, resultPtr);
+                }
             default:
-            {
-                return uuidUtf8String.IndexOf(Utf8HyphenMinus) >= 0
-                    ? ParseWithoutExceptionsDUtf8(length, uuidUtf8StringPtr, resultPtr)
-                    : ParseWithoutExceptionsNUtf8(length, uuidUtf8StringPtr, resultPtr);
-            }
+                {
+                    return uuidUtf8String.IndexOf(Utf8HyphenMinus) >= 0
+                        ? ParseWithoutExceptionsDUtf8(length, uuidUtf8StringPtr, resultPtr)
+                        : ParseWithoutExceptionsNUtf8(length, uuidUtf8StringPtr, resultPtr);
+                }
         }
     }
 
@@ -1860,7 +1860,7 @@ public unsafe struct Uuid :
 
     private static void ParseWithExceptions(ReadOnlySpan<char> uuidString, char* uuidStringPtr, byte* resultPtr)
     {
-        var length = (uint)uuidString.Length;
+        var length = (uint) uuidString.Length;
         if (length == 0u)
         {
             throw new FormatException("Unrecognized Uuid format.");
@@ -1872,32 +1872,32 @@ public unsafe struct Uuid :
         switch (uuidStringPtr[0])
         {
             case '(':
-            {
-                ParseWithExceptionsP(length, uuidStringPtr, resultPtr);
-                break;
-            }
+                {
+                    ParseWithExceptionsP(length, uuidStringPtr, resultPtr);
+                    break;
+                }
             case '{':
-            {
-                if (uuidString.Contains(dashSpan, StringComparison.Ordinal))
                 {
-                    ParseWithExceptionsB(length, uuidStringPtr, resultPtr);
+                    if (uuidString.Contains(dashSpan, StringComparison.Ordinal))
+                    {
+                        ParseWithExceptionsB(length, uuidStringPtr, resultPtr);
+                        break;
+                    }
+
+                    ParseWithExceptionsX(length, uuidStringPtr, resultPtr);
                     break;
                 }
-
-                ParseWithExceptionsX(length, uuidStringPtr, resultPtr);
-                break;
-            }
             default:
-            {
-                if (uuidString.Contains(dashSpan, StringComparison.Ordinal))
                 {
-                    ParseWithExceptionsD(length, uuidStringPtr, resultPtr);
+                    if (uuidString.Contains(dashSpan, StringComparison.Ordinal))
+                    {
+                        ParseWithExceptionsD(length, uuidStringPtr, resultPtr);
+                        break;
+                    }
+
+                    ParseWithExceptionsN(length, uuidStringPtr, resultPtr);
                     break;
                 }
-
-                ParseWithExceptionsN(length, uuidStringPtr, resultPtr);
-                break;
-            }
         }
     }
 
@@ -2064,112 +2064,112 @@ public unsafe struct Uuid :
             && value[1] < MaximalChar
             && (lo = TableFromHexToBytes[value[1]]) != 0xFF)
         {
-            resultPtr[0] = (byte)((byte)(hi << 4) | lo);
+            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
             // 1 byte
             if (value[2] < MaximalChar
                 && (hi = TableFromHexToBytes[value[2]]) != 0xFF
                 && value[3] < MaximalChar
                 && (lo = TableFromHexToBytes[value[3]]) != 0xFF)
             {
-                resultPtr[1] = (byte)((byte)(hi << 4) | lo);
+                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
                 // 2 byte
                 if (value[4] < MaximalChar
                     && (hi = TableFromHexToBytes[value[4]]) != 0xFF
                     && value[5] < MaximalChar
                     && (lo = TableFromHexToBytes[value[5]]) != 0xFF)
                 {
-                    resultPtr[2] = (byte)((byte)(hi << 4) | lo);
+                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
                     // 3 byte
                     if (value[6] < MaximalChar
                         && (hi = TableFromHexToBytes[value[6]]) != 0xFF
                         && value[7] < MaximalChar
                         && (lo = TableFromHexToBytes[value[7]]) != 0xFF)
                     {
-                        resultPtr[3] = (byte)((byte)(hi << 4) | lo);
+                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
                         // 4 byte
                         if (value[8] < MaximalChar
                             && (hi = TableFromHexToBytes[value[8]]) != 0xFF
                             && value[9] < MaximalChar
                             && (lo = TableFromHexToBytes[value[9]]) != 0xFF)
                         {
-                            resultPtr[4] = (byte)((byte)(hi << 4) | lo);
+                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
                             // 5 byte
                             if (value[10] < MaximalChar
                                 && (hi = TableFromHexToBytes[value[10]]) != 0xFF
                                 && value[11] < MaximalChar
                                 && (lo = TableFromHexToBytes[value[11]]) != 0xFF)
                             {
-                                resultPtr[5] = (byte)((byte)(hi << 4) | lo);
+                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
                                 // 6 byte
                                 if (value[12] < MaximalChar
                                     && (hi = TableFromHexToBytes[value[12]]) != 0xFF
                                     && value[13] < MaximalChar
                                     && (lo = TableFromHexToBytes[value[13]]) != 0xFF)
                                 {
-                                    resultPtr[6] = (byte)((byte)(hi << 4) | lo);
+                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
                                     // 7 byte
                                     if (value[14] < MaximalChar
                                         && (hi = TableFromHexToBytes[value[14]]) != 0xFF
                                         && value[15] < MaximalChar
                                         && (lo = TableFromHexToBytes[value[15]]) != 0xFF)
                                     {
-                                        resultPtr[7] = (byte)((byte)(hi << 4) | lo);
+                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
                                         // 8 byte
                                         if (value[16] < MaximalChar
                                             && (hi = TableFromHexToBytes[value[16]]) != 0xFF
                                             && value[17] < MaximalChar
                                             && (lo = TableFromHexToBytes[value[17]]) != 0xFF)
                                         {
-                                            resultPtr[8] = (byte)((byte)(hi << 4) | lo);
+                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
                                             // 9 byte
                                             if (value[18] < MaximalChar
                                                 && (hi = TableFromHexToBytes[value[18]]) != 0xFF
                                                 && value[19] < MaximalChar
                                                 && (lo = TableFromHexToBytes[value[19]]) != 0xFF)
                                             {
-                                                resultPtr[9] = (byte)((byte)(hi << 4) | lo);
+                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
                                                 // 10 byte
                                                 if (value[20] < MaximalChar
                                                     && (hi = TableFromHexToBytes[value[20]]) != 0xFF
                                                     && value[21] < MaximalChar
                                                     && (lo = TableFromHexToBytes[value[21]]) != 0xFF)
                                                 {
-                                                    resultPtr[10] = (byte)((byte)(hi << 4) | lo);
+                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
                                                     // 11 byte
                                                     if (value[22] < MaximalChar
                                                         && (hi = TableFromHexToBytes[value[22]]) != 0xFF
                                                         && value[23] < MaximalChar
                                                         && (lo = TableFromHexToBytes[value[23]]) != 0xFF)
                                                     {
-                                                        resultPtr[11] = (byte)((byte)(hi << 4) | lo);
+                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
                                                         // 12 byte
                                                         if (value[24] < MaximalChar
                                                             && (hi = TableFromHexToBytes[value[24]]) != 0xFF
                                                             && value[25] < MaximalChar
                                                             && (lo = TableFromHexToBytes[value[25]]) != 0xFF)
                                                         {
-                                                            resultPtr[12] = (byte)((byte)(hi << 4) | lo);
+                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
                                                             // 13 byte
                                                             if (value[26] < MaximalChar
                                                                 && (hi = TableFromHexToBytes[value[26]]) != 0xFF
                                                                 && value[27] < MaximalChar
                                                                 && (lo = TableFromHexToBytes[value[27]]) != 0xFF)
                                                             {
-                                                                resultPtr[13] = (byte)((byte)(hi << 4) | lo);
+                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
                                                                 // 14 byte
                                                                 if (value[28] < MaximalChar
                                                                     && (hi = TableFromHexToBytes[value[28]]) != 0xFF
                                                                     && value[29] < MaximalChar
                                                                     && (lo = TableFromHexToBytes[value[29]]) != 0xFF)
                                                                 {
-                                                                    resultPtr[14] = (byte)((byte)(hi << 4) | lo);
+                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
                                                                     // 15 byte
                                                                     if (value[30] < MaximalChar
                                                                         && (hi = TableFromHexToBytes[value[30]]) != 0xFF
                                                                         && value[31] < MaximalChar
                                                                         && (lo = TableFromHexToBytes[value[31]]) != 0xFF)
                                                                     {
-                                                                        resultPtr[15] = (byte)((byte)(hi << 4) | lo);
+                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
                                                                         return true;
                                                                     }
                                                                 }
@@ -2203,28 +2203,28 @@ public unsafe struct Uuid :
             && value[1] < MaximalChar
             && (lo = TableFromHexToBytes[value[1]]) != 0xFF)
         {
-            resultPtr[0] = (byte)((byte)(hi << 4) | lo);
+            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
             // 1 byte
             if (value[2] < MaximalChar
                 && (hi = TableFromHexToBytes[value[2]]) != 0xFF
                 && value[3] < MaximalChar
                 && (lo = TableFromHexToBytes[value[3]]) != 0xFF)
             {
-                resultPtr[1] = (byte)((byte)(hi << 4) | lo);
+                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
                 // 2 byte
                 if (value[4] < MaximalChar
                     && (hi = TableFromHexToBytes[value[4]]) != 0xFF
                     && value[5] < MaximalChar
                     && (lo = TableFromHexToBytes[value[5]]) != 0xFF)
                 {
-                    resultPtr[2] = (byte)((byte)(hi << 4) | lo);
+                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
                     // 3 byte
                     if (value[6] < MaximalChar
                         && (hi = TableFromHexToBytes[value[6]]) != 0xFF
                         && value[7] < MaximalChar
                         && (lo = TableFromHexToBytes[value[7]]) != 0xFF)
                     {
-                        resultPtr[3] = (byte)((byte)(hi << 4) | lo);
+                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
 
                         // value[8] == '-'
 
@@ -2234,14 +2234,14 @@ public unsafe struct Uuid :
                             && value[10] < MaximalChar
                             && (lo = TableFromHexToBytes[value[10]]) != 0xFF)
                         {
-                            resultPtr[4] = (byte)((byte)(hi << 4) | lo);
+                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
                             // 5 byte
                             if (value[11] < MaximalChar
                                 && (hi = TableFromHexToBytes[value[11]]) != 0xFF
                                 && value[12] < MaximalChar
                                 && (lo = TableFromHexToBytes[value[12]]) != 0xFF)
                             {
-                                resultPtr[5] = (byte)((byte)(hi << 4) | lo);
+                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
 
                                 // value[13] == '-'
 
@@ -2251,14 +2251,14 @@ public unsafe struct Uuid :
                                     && value[15] < MaximalChar
                                     && (lo = TableFromHexToBytes[value[15]]) != 0xFF)
                                 {
-                                    resultPtr[6] = (byte)((byte)(hi << 4) | lo);
+                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
                                     // 7 byte
                                     if (value[16] < MaximalChar
                                         && (hi = TableFromHexToBytes[value[16]]) != 0xFF
                                         && value[17] < MaximalChar
                                         && (lo = TableFromHexToBytes[value[17]]) != 0xFF)
                                     {
-                                        resultPtr[7] = (byte)((byte)(hi << 4) | lo);
+                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
 
                                         // value[18] == '-'
 
@@ -2268,14 +2268,14 @@ public unsafe struct Uuid :
                                             && value[20] < MaximalChar
                                             && (lo = TableFromHexToBytes[value[20]]) != 0xFF)
                                         {
-                                            resultPtr[8] = (byte)((byte)(hi << 4) | lo);
+                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
                                             // 9 byte
                                             if (value[21] < MaximalChar
                                                 && (hi = TableFromHexToBytes[value[21]]) != 0xFF
                                                 && value[22] < MaximalChar
                                                 && (lo = TableFromHexToBytes[value[22]]) != 0xFF)
                                             {
-                                                resultPtr[9] = (byte)((byte)(hi << 4) | lo);
+                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
 
                                                 // value[23] == '-'
 
@@ -2285,42 +2285,42 @@ public unsafe struct Uuid :
                                                     && value[25] < MaximalChar
                                                     && (lo = TableFromHexToBytes[value[25]]) != 0xFF)
                                                 {
-                                                    resultPtr[10] = (byte)((byte)(hi << 4) | lo);
+                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
                                                     // 11 byte
                                                     if (value[26] < MaximalChar
                                                         && (hi = TableFromHexToBytes[value[26]]) != 0xFF
                                                         && value[27] < MaximalChar
                                                         && (lo = TableFromHexToBytes[value[27]]) != 0xFF)
                                                     {
-                                                        resultPtr[11] = (byte)((byte)(hi << 4) | lo);
+                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
                                                         // 12 byte
                                                         if (value[28] < MaximalChar
                                                             && (hi = TableFromHexToBytes[value[28]]) != 0xFF
                                                             && value[29] < MaximalChar
                                                             && (lo = TableFromHexToBytes[value[29]]) != 0xFF)
                                                         {
-                                                            resultPtr[12] = (byte)((byte)(hi << 4) | lo);
+                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
                                                             // 13 byte
                                                             if (value[30] < MaximalChar
                                                                 && (hi = TableFromHexToBytes[value[30]]) != 0xFF
                                                                 && value[31] < MaximalChar
                                                                 && (lo = TableFromHexToBytes[value[31]]) != 0xFF)
                                                             {
-                                                                resultPtr[13] = (byte)((byte)(hi << 4) | lo);
+                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
                                                                 // 14 byte
                                                                 if (value[32] < MaximalChar
                                                                     && (hi = TableFromHexToBytes[value[32]]) != 0xFF
                                                                     && value[33] < MaximalChar
                                                                     && (lo = TableFromHexToBytes[value[33]]) != 0xFF)
                                                                 {
-                                                                    resultPtr[14] = (byte)((byte)(hi << 4) | lo);
+                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
                                                                     // 15 byte
                                                                     if (value[34] < MaximalChar
                                                                         && (hi = TableFromHexToBytes[value[34]]) != 0xFF
                                                                         && value[35] < MaximalChar
                                                                         && (lo = TableFromHexToBytes[value[35]]) != 0xFF)
                                                                     {
-                                                                        resultPtr[15] = (byte)((byte)(hi << 4) | lo);
+                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
                                                                         return true;
                                                                     }
                                                                 }
@@ -2358,28 +2358,28 @@ public unsafe struct Uuid :
             && value[4] < MaximalChar
             && (hexByteLow = TableFromHexToBytes[value[4]]) != 0xFF)
         {
-            resultPtr[0] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+            resultPtr[0] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
             // 1 byte
             if (value[5] < MaximalChar
                 && (hexByteHi = TableFromHexToBytes[value[5]]) != 0xFF
                 && value[6] < MaximalChar
                 && (hexByteLow = TableFromHexToBytes[value[6]]) != 0xFF)
             {
-                resultPtr[1] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                resultPtr[1] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                 // 2 byte
                 if (value[7] < MaximalChar
                     && (hexByteHi = TableFromHexToBytes[value[7]]) != 0xFF
                     && value[8] < MaximalChar
                     && (hexByteLow = TableFromHexToBytes[value[8]]) != 0xFF)
                 {
-                    resultPtr[2] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                    resultPtr[2] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                     // 3 byte
                     if (value[9] < MaximalChar
                         && (hexByteHi = TableFromHexToBytes[value[9]]) != 0xFF
                         && value[10] < MaximalChar
                         && (hexByteLow = TableFromHexToBytes[value[10]]) != 0xFF)
                     {
-                        resultPtr[3] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                        resultPtr[3] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                         // value[11] == ','
                         // value[12] == '0'
@@ -2391,14 +2391,14 @@ public unsafe struct Uuid :
                             && value[15] < MaximalChar
                             && (hexByteLow = TableFromHexToBytes[value[15]]) != 0xFF)
                         {
-                            resultPtr[4] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                            resultPtr[4] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                             // 5 byte
                             if (value[16] < MaximalChar
                                 && (hexByteHi = TableFromHexToBytes[value[16]]) != 0xFF
                                 && value[17] < MaximalChar
                                 && (hexByteLow = TableFromHexToBytes[value[17]]) != 0xFF)
                             {
-                                resultPtr[5] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                resultPtr[5] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                 // value[18] == ','
                                 // value[19] == '0'
@@ -2410,14 +2410,14 @@ public unsafe struct Uuid :
                                     && value[22] < MaximalChar
                                     && (hexByteLow = TableFromHexToBytes[value[22]]) != 0xFF)
                                 {
-                                    resultPtr[6] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                    resultPtr[6] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                                     // 7 byte
                                     if (value[23] < MaximalChar
                                         && (hexByteHi = TableFromHexToBytes[value[23]]) != 0xFF
                                         && value[24] < MaximalChar
                                         && (hexByteLow = TableFromHexToBytes[value[24]]) != 0xFF)
                                     {
-                                        resultPtr[7] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                        resultPtr[7] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                         // value[25] == ','
                                         // value[26] == '{'
@@ -2430,7 +2430,7 @@ public unsafe struct Uuid :
                                             && value[30] < MaximalChar
                                             && (hexByteLow = TableFromHexToBytes[value[30]]) != 0xFF)
                                         {
-                                            resultPtr[8] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                            resultPtr[8] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                             // value[31] == ','
                                             // value[32] == '0'
@@ -2442,7 +2442,7 @@ public unsafe struct Uuid :
                                                 && value[35] < MaximalChar
                                                 && (hexByteLow = TableFromHexToBytes[value[35]]) != 0xFF)
                                             {
-                                                resultPtr[9] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                resultPtr[9] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                 // value[36] == ','
                                                 // value[37] == '0'
@@ -2454,7 +2454,7 @@ public unsafe struct Uuid :
                                                     && value[40] < MaximalChar
                                                     && (hexByteLow = TableFromHexToBytes[value[40]]) != 0xFF)
                                                 {
-                                                    resultPtr[10] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                    resultPtr[10] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                     // value[41] == ','
                                                     // value[42] == '0'
@@ -2466,7 +2466,7 @@ public unsafe struct Uuid :
                                                         && value[45] < MaximalChar
                                                         && (hexByteLow = TableFromHexToBytes[value[45]]) != 0xFF)
                                                     {
-                                                        resultPtr[11] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                        resultPtr[11] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                         // value[46] == ','
                                                         // value[47] == '0'
@@ -2478,7 +2478,7 @@ public unsafe struct Uuid :
                                                             && value[50] < MaximalChar
                                                             && (hexByteLow = TableFromHexToBytes[value[50]]) != 0xFF)
                                                         {
-                                                            resultPtr[12] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                            resultPtr[12] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                             // value[51] == ','
                                                             // value[52] == '0'
@@ -2490,7 +2490,7 @@ public unsafe struct Uuid :
                                                                 && value[55] < MaximalChar
                                                                 && (hexByteLow = TableFromHexToBytes[value[55]]) != 0xFF)
                                                             {
-                                                                resultPtr[13] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                                resultPtr[13] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                                 // value[56] == ','
                                                                 // value[57] == '0'
@@ -2502,7 +2502,7 @@ public unsafe struct Uuid :
                                                                     && value[60] < MaximalChar
                                                                     && (hexByteLow = TableFromHexToBytes[value[60]]) != 0xFF)
                                                                 {
-                                                                    resultPtr[14] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                                    resultPtr[14] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                                     // value[61] == ','
                                                                     // value[62] == '0'
@@ -2514,7 +2514,7 @@ public unsafe struct Uuid :
                                                                         && value[65] < MaximalChar
                                                                         && (hexByteLow = TableFromHexToBytes[value[65]]) != 0xFF)
                                                                     {
-                                                                        resultPtr[15] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                                        resultPtr[15] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                                                                         return true;
                                                                     }
                                                                 }
@@ -2548,112 +2548,112 @@ public unsafe struct Uuid :
             && value[1] < MaximalChar
             && (lo = TableFromHexToBytes[value[1]]) != 0xFF)
         {
-            resultPtr[0] = (byte)((byte)(hi << 4) | lo);
+            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
             // 1 byte
             if (value[2] < MaximalChar
                 && (hi = TableFromHexToBytes[value[2]]) != 0xFF
                 && value[3] < MaximalChar
                 && (lo = TableFromHexToBytes[value[3]]) != 0xFF)
             {
-                resultPtr[1] = (byte)((byte)(hi << 4) | lo);
+                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
                 // 2 byte
                 if (value[4] < MaximalChar
                     && (hi = TableFromHexToBytes[value[4]]) != 0xFF
                     && value[5] < MaximalChar
                     && (lo = TableFromHexToBytes[value[5]]) != 0xFF)
                 {
-                    resultPtr[2] = (byte)((byte)(hi << 4) | lo);
+                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
                     // 3 byte
                     if (value[6] < MaximalChar
                         && (hi = TableFromHexToBytes[value[6]]) != 0xFF
                         && value[7] < MaximalChar
                         && (lo = TableFromHexToBytes[value[7]]) != 0xFF)
                     {
-                        resultPtr[3] = (byte)((byte)(hi << 4) | lo);
+                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
                         // 4 byte
                         if (value[8] < MaximalChar
                             && (hi = TableFromHexToBytes[value[8]]) != 0xFF
                             && value[9] < MaximalChar
                             && (lo = TableFromHexToBytes[value[9]]) != 0xFF)
                         {
-                            resultPtr[4] = (byte)((byte)(hi << 4) | lo);
+                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
                             // 5 byte
                             if (value[10] < MaximalChar
                                 && (hi = TableFromHexToBytes[value[10]]) != 0xFF
                                 && value[11] < MaximalChar
                                 && (lo = TableFromHexToBytes[value[11]]) != 0xFF)
                             {
-                                resultPtr[5] = (byte)((byte)(hi << 4) | lo);
+                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
                                 // 6 byte
                                 if (value[12] < MaximalChar
                                     && (hi = TableFromHexToBytes[value[12]]) != 0xFF
                                     && value[13] < MaximalChar
                                     && (lo = TableFromHexToBytes[value[13]]) != 0xFF)
                                 {
-                                    resultPtr[6] = (byte)((byte)(hi << 4) | lo);
+                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
                                     // 7 byte
                                     if (value[14] < MaximalChar
                                         && (hi = TableFromHexToBytes[value[14]]) != 0xFF
                                         && value[15] < MaximalChar
                                         && (lo = TableFromHexToBytes[value[15]]) != 0xFF)
                                     {
-                                        resultPtr[7] = (byte)((byte)(hi << 4) | lo);
+                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
                                         // 8 byte
                                         if (value[16] < MaximalChar
                                             && (hi = TableFromHexToBytes[value[16]]) != 0xFF
                                             && value[17] < MaximalChar
                                             && (lo = TableFromHexToBytes[value[17]]) != 0xFF)
                                         {
-                                            resultPtr[8] = (byte)((byte)(hi << 4) | lo);
+                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
                                             // 9 byte
                                             if (value[18] < MaximalChar
                                                 && (hi = TableFromHexToBytes[value[18]]) != 0xFF
                                                 && value[19] < MaximalChar
                                                 && (lo = TableFromHexToBytes[value[19]]) != 0xFF)
                                             {
-                                                resultPtr[9] = (byte)((byte)(hi << 4) | lo);
+                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
                                                 // 10 byte
                                                 if (value[20] < MaximalChar
                                                     && (hi = TableFromHexToBytes[value[20]]) != 0xFF
                                                     && value[21] < MaximalChar
                                                     && (lo = TableFromHexToBytes[value[21]]) != 0xFF)
                                                 {
-                                                    resultPtr[10] = (byte)((byte)(hi << 4) | lo);
+                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
                                                     // 11 byte
                                                     if (value[22] < MaximalChar
                                                         && (hi = TableFromHexToBytes[value[22]]) != 0xFF
                                                         && value[23] < MaximalChar
                                                         && (lo = TableFromHexToBytes[value[23]]) != 0xFF)
                                                     {
-                                                        resultPtr[11] = (byte)((byte)(hi << 4) | lo);
+                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
                                                         // 12 byte
                                                         if (value[24] < MaximalChar
                                                             && (hi = TableFromHexToBytes[value[24]]) != 0xFF
                                                             && value[25] < MaximalChar
                                                             && (lo = TableFromHexToBytes[value[25]]) != 0xFF)
                                                         {
-                                                            resultPtr[12] = (byte)((byte)(hi << 4) | lo);
+                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
                                                             // 13 byte
                                                             if (value[26] < MaximalChar
                                                                 && (hi = TableFromHexToBytes[value[26]]) != 0xFF
                                                                 && value[27] < MaximalChar
                                                                 && (lo = TableFromHexToBytes[value[27]]) != 0xFF)
                                                             {
-                                                                resultPtr[13] = (byte)((byte)(hi << 4) | lo);
+                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
                                                                 // 14 byte
                                                                 if (value[28] < MaximalChar
                                                                     && (hi = TableFromHexToBytes[value[28]]) != 0xFF
                                                                     && value[29] < MaximalChar
                                                                     && (lo = TableFromHexToBytes[value[29]]) != 0xFF)
                                                                 {
-                                                                    resultPtr[14] = (byte)((byte)(hi << 4) | lo);
+                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
                                                                     // 15 byte
                                                                     if (value[30] < MaximalChar
                                                                         && (hi = TableFromHexToBytes[value[30]]) != 0xFF
                                                                         && value[31] < MaximalChar
                                                                         && (lo = TableFromHexToBytes[value[31]]) != 0xFF)
                                                                     {
-                                                                        resultPtr[15] = (byte)((byte)(hi << 4) | lo);
+                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
                                                                         return true;
                                                                     }
                                                                 }
@@ -2687,28 +2687,28 @@ public unsafe struct Uuid :
             && value[1] < MaximalChar
             && (lo = TableFromHexToBytes[value[1]]) != 0xFF)
         {
-            resultPtr[0] = (byte)((byte)(hi << 4) | lo);
+            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
             // 1 byte
             if (value[2] < MaximalChar
                 && (hi = TableFromHexToBytes[value[2]]) != 0xFF
                 && value[3] < MaximalChar
                 && (lo = TableFromHexToBytes[value[3]]) != 0xFF)
             {
-                resultPtr[1] = (byte)((byte)(hi << 4) | lo);
+                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
                 // 2 byte
                 if (value[4] < MaximalChar
                     && (hi = TableFromHexToBytes[value[4]]) != 0xFF
                     && value[5] < MaximalChar
                     && (lo = TableFromHexToBytes[value[5]]) != 0xFF)
                 {
-                    resultPtr[2] = (byte)((byte)(hi << 4) | lo);
+                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
                     // 3 byte
                     if (value[6] < MaximalChar
                         && (hi = TableFromHexToBytes[value[6]]) != 0xFF
                         && value[7] < MaximalChar
                         && (lo = TableFromHexToBytes[value[7]]) != 0xFF)
                     {
-                        resultPtr[3] = (byte)((byte)(hi << 4) | lo);
+                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
 
                         // value[8] == '-'
 
@@ -2718,14 +2718,14 @@ public unsafe struct Uuid :
                             && value[10] < MaximalChar
                             && (lo = TableFromHexToBytes[value[10]]) != 0xFF)
                         {
-                            resultPtr[4] = (byte)((byte)(hi << 4) | lo);
+                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
                             // 5 byte
                             if (value[11] < MaximalChar
                                 && (hi = TableFromHexToBytes[value[11]]) != 0xFF
                                 && value[12] < MaximalChar
                                 && (lo = TableFromHexToBytes[value[12]]) != 0xFF)
                             {
-                                resultPtr[5] = (byte)((byte)(hi << 4) | lo);
+                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
 
                                 // value[13] == '-'
 
@@ -2735,14 +2735,14 @@ public unsafe struct Uuid :
                                     && value[15] < MaximalChar
                                     && (lo = TableFromHexToBytes[value[15]]) != 0xFF)
                                 {
-                                    resultPtr[6] = (byte)((byte)(hi << 4) | lo);
+                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
                                     // 7 byte
                                     if (value[16] < MaximalChar
                                         && (hi = TableFromHexToBytes[value[16]]) != 0xFF
                                         && value[17] < MaximalChar
                                         && (lo = TableFromHexToBytes[value[17]]) != 0xFF)
                                     {
-                                        resultPtr[7] = (byte)((byte)(hi << 4) | lo);
+                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
 
                                         // value[18] == '-'
 
@@ -2752,14 +2752,14 @@ public unsafe struct Uuid :
                                             && value[20] < MaximalChar
                                             && (lo = TableFromHexToBytes[value[20]]) != 0xFF)
                                         {
-                                            resultPtr[8] = (byte)((byte)(hi << 4) | lo);
+                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
                                             // 9 byte
                                             if (value[21] < MaximalChar
                                                 && (hi = TableFromHexToBytes[value[21]]) != 0xFF
                                                 && value[22] < MaximalChar
                                                 && (lo = TableFromHexToBytes[value[22]]) != 0xFF)
                                             {
-                                                resultPtr[9] = (byte)((byte)(hi << 4) | lo);
+                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
 
                                                 // value[23] == '-'
 
@@ -2769,42 +2769,42 @@ public unsafe struct Uuid :
                                                     && value[25] < MaximalChar
                                                     && (lo = TableFromHexToBytes[value[25]]) != 0xFF)
                                                 {
-                                                    resultPtr[10] = (byte)((byte)(hi << 4) | lo);
+                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
                                                     // 11 byte
                                                     if (value[26] < MaximalChar
                                                         && (hi = TableFromHexToBytes[value[26]]) != 0xFF
                                                         && value[27] < MaximalChar
                                                         && (lo = TableFromHexToBytes[value[27]]) != 0xFF)
                                                     {
-                                                        resultPtr[11] = (byte)((byte)(hi << 4) | lo);
+                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
                                                         // 12 byte
                                                         if (value[28] < MaximalChar
                                                             && (hi = TableFromHexToBytes[value[28]]) != 0xFF
                                                             && value[29] < MaximalChar
                                                             && (lo = TableFromHexToBytes[value[29]]) != 0xFF)
                                                         {
-                                                            resultPtr[12] = (byte)((byte)(hi << 4) | lo);
+                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
                                                             // 13 byte
                                                             if (value[30] < MaximalChar
                                                                 && (hi = TableFromHexToBytes[value[30]]) != 0xFF
                                                                 && value[31] < MaximalChar
                                                                 && (lo = TableFromHexToBytes[value[31]]) != 0xFF)
                                                             {
-                                                                resultPtr[13] = (byte)((byte)(hi << 4) | lo);
+                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
                                                                 // 14 byte
                                                                 if (value[32] < MaximalChar
                                                                     && (hi = TableFromHexToBytes[value[32]]) != 0xFF
                                                                     && value[33] < MaximalChar
                                                                     && (lo = TableFromHexToBytes[value[33]]) != 0xFF)
                                                                 {
-                                                                    resultPtr[14] = (byte)((byte)(hi << 4) | lo);
+                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
                                                                     // 15 byte
                                                                     if (value[34] < MaximalChar
                                                                         && (hi = TableFromHexToBytes[value[34]]) != 0xFF
                                                                         && value[35] < MaximalChar
                                                                         && (lo = TableFromHexToBytes[value[35]]) != 0xFF)
                                                                     {
-                                                                        resultPtr[15] = (byte)((byte)(hi << 4) | lo);
+                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
                                                                         return true;
                                                                     }
                                                                 }
@@ -2842,28 +2842,28 @@ public unsafe struct Uuid :
             && value[4] < MaximalChar
             && (hexByteLow = TableFromHexToBytes[value[4]]) != 0xFF)
         {
-            resultPtr[0] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+            resultPtr[0] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
             // 1 byte
             if (value[5] < MaximalChar
                 && (hexByteHi = TableFromHexToBytes[value[5]]) != 0xFF
                 && value[6] < MaximalChar
                 && (hexByteLow = TableFromHexToBytes[value[6]]) != 0xFF)
             {
-                resultPtr[1] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                resultPtr[1] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                 // 2 byte
                 if (value[7] < MaximalChar
                     && (hexByteHi = TableFromHexToBytes[value[7]]) != 0xFF
                     && value[8] < MaximalChar
                     && (hexByteLow = TableFromHexToBytes[value[8]]) != 0xFF)
                 {
-                    resultPtr[2] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                    resultPtr[2] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                     // 3 byte
                     if (value[9] < MaximalChar
                         && (hexByteHi = TableFromHexToBytes[value[9]]) != 0xFF
                         && value[10] < MaximalChar
                         && (hexByteLow = TableFromHexToBytes[value[10]]) != 0xFF)
                     {
-                        resultPtr[3] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                        resultPtr[3] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                         // value[11] == ','
                         // value[12] == '0'
@@ -2875,14 +2875,14 @@ public unsafe struct Uuid :
                             && value[15] < MaximalChar
                             && (hexByteLow = TableFromHexToBytes[value[15]]) != 0xFF)
                         {
-                            resultPtr[4] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                            resultPtr[4] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                             // 5 byte
                             if (value[16] < MaximalChar
                                 && (hexByteHi = TableFromHexToBytes[value[16]]) != 0xFF
                                 && value[17] < MaximalChar
                                 && (hexByteLow = TableFromHexToBytes[value[17]]) != 0xFF)
                             {
-                                resultPtr[5] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                resultPtr[5] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                 // value[18] == ','
                                 // value[19] == '0'
@@ -2894,14 +2894,14 @@ public unsafe struct Uuid :
                                     && value[22] < MaximalChar
                                     && (hexByteLow = TableFromHexToBytes[value[22]]) != 0xFF)
                                 {
-                                    resultPtr[6] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                    resultPtr[6] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                                     // 7 byte
                                     if (value[23] < MaximalChar
                                         && (hexByteHi = TableFromHexToBytes[value[23]]) != 0xFF
                                         && value[24] < MaximalChar
                                         && (hexByteLow = TableFromHexToBytes[value[24]]) != 0xFF)
                                     {
-                                        resultPtr[7] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                        resultPtr[7] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                         // value[25] == ','
                                         // value[26] == '{'
@@ -2914,7 +2914,7 @@ public unsafe struct Uuid :
                                             && value[30] < MaximalChar
                                             && (hexByteLow = TableFromHexToBytes[value[30]]) != 0xFF)
                                         {
-                                            resultPtr[8] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                            resultPtr[8] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                             // value[31] == ','
                                             // value[32] == '0'
@@ -2926,7 +2926,7 @@ public unsafe struct Uuid :
                                                 && value[35] < MaximalChar
                                                 && (hexByteLow = TableFromHexToBytes[value[35]]) != 0xFF)
                                             {
-                                                resultPtr[9] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                resultPtr[9] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                 // value[36] == ','
                                                 // value[37] == '0'
@@ -2938,7 +2938,7 @@ public unsafe struct Uuid :
                                                     && value[40] < MaximalChar
                                                     && (hexByteLow = TableFromHexToBytes[value[40]]) != 0xFF)
                                                 {
-                                                    resultPtr[10] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                    resultPtr[10] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                     // value[41] == ','
                                                     // value[42] == '0'
@@ -2950,7 +2950,7 @@ public unsafe struct Uuid :
                                                         && value[45] < MaximalChar
                                                         && (hexByteLow = TableFromHexToBytes[value[45]]) != 0xFF)
                                                     {
-                                                        resultPtr[11] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                        resultPtr[11] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                         // value[46] == ','
                                                         // value[47] == '0'
@@ -2962,7 +2962,7 @@ public unsafe struct Uuid :
                                                             && value[50] < MaximalChar
                                                             && (hexByteLow = TableFromHexToBytes[value[50]]) != 0xFF)
                                                         {
-                                                            resultPtr[12] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                            resultPtr[12] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                             // value[51] == ','
                                                             // value[52] == '0'
@@ -2974,7 +2974,7 @@ public unsafe struct Uuid :
                                                                 && value[55] < MaximalChar
                                                                 && (hexByteLow = TableFromHexToBytes[value[55]]) != 0xFF)
                                                             {
-                                                                resultPtr[13] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                                resultPtr[13] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                                 // value[56] == ','
                                                                 // value[57] == '0'
@@ -2986,7 +2986,7 @@ public unsafe struct Uuid :
                                                                     && value[60] < MaximalChar
                                                                     && (hexByteLow = TableFromHexToBytes[value[60]]) != 0xFF)
                                                                 {
-                                                                    resultPtr[14] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                                    resultPtr[14] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
 
                                                                     // value[61] == ','
                                                                     // value[62] == '0'
@@ -2998,7 +2998,7 @@ public unsafe struct Uuid :
                                                                         && value[65] < MaximalChar
                                                                         && (hexByteLow = TableFromHexToBytes[value[65]]) != 0xFF)
                                                                     {
-                                                                        resultPtr[15] = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                                                                        resultPtr[15] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                                                                         return true;
                                                                     }
                                                                 }
@@ -3023,7 +3023,7 @@ public unsafe struct Uuid :
     //
     // IComparisonOperators
     //
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_LessThan(TSelf, TOther)" />
 #else
     /// <summary>
@@ -3118,7 +3118,7 @@ public unsafe struct Uuid :
         return false;
     }
 
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_LessThanOrEqual(TSelf, TOther)" />
 #else
     /// <summary>
@@ -3216,7 +3216,7 @@ public unsafe struct Uuid :
         return true;
     }
 
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThan(TSelf, TOther)" />
 #else
     /// <summary>
@@ -3314,7 +3314,7 @@ public unsafe struct Uuid :
         return false;
     }
 
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThanOrEqual(TSelf, TOther)" />
 #else
     /// <summary>
@@ -3415,7 +3415,7 @@ public unsafe struct Uuid :
     //
     // IParsable
     //
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)" />
 #else
     /// <summary>
@@ -3431,7 +3431,7 @@ public unsafe struct Uuid :
         return Parse(s);
     }
 
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="IParsable{TSelf}.TryParse(string?, IFormatProvider?, out TSelf)" />
 #else
     /// <summary>
@@ -3450,7 +3450,7 @@ public unsafe struct Uuid :
     //
     // ISpanParsable
     //
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)" />
 #else
     /// <summary>
@@ -3465,7 +3465,7 @@ public unsafe struct Uuid :
         return Parse(s);
     }
 
-#if !NET6_0
+#if NET7_0_OR_GREATER
     /// <inheritdoc cref="ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)" />
 #else
     /// <summary>
@@ -3498,20 +3498,20 @@ public unsafe struct Uuid :
     public static Uuid NewTimeBased()
     {
         byte* resultPtr = stackalloc byte[16];
-        var resultAsGuidPtr = (Guid*)resultPtr;
+        var resultAsGuidPtr = (Guid*) resultPtr;
         var guid = Guid.NewGuid();
         resultAsGuidPtr[0] = guid;
         long currentTicks = DateTime.UtcNow.Ticks - ChristianCalendarGregorianReformTicksDate;
-        var ticksPtr = (byte*)&currentTicks;
+        var ticksPtr = (byte*) &currentTicks;
         resultPtr[0] = ticksPtr[3];
         resultPtr[1] = ticksPtr[2];
         resultPtr[2] = ticksPtr[1];
         resultPtr[3] = ticksPtr[0];
         resultPtr[4] = ticksPtr[5];
         resultPtr[5] = ticksPtr[4];
-        resultPtr[6] = (byte)((ticksPtr[7] & ResetVersionMask) | Version1Flag);
+        resultPtr[6] = (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag);
         resultPtr[7] = ticksPtr[6];
-        resultPtr[8] = (byte)((resultPtr[8] & ResetReservedMask) | ReservedFlag);
+        resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
         return new Uuid(resultPtr);
     }
 
@@ -3522,12 +3522,12 @@ public unsafe struct Uuid :
     public static Uuid NewMySqlOptimized()
     {
         byte* resultPtr = stackalloc byte[16];
-        var resultAsGuidPtr = (Guid*)resultPtr;
+        var resultAsGuidPtr = (Guid*) resultPtr;
         var guid = Guid.NewGuid();
         resultAsGuidPtr[0] = guid;
         long currentTicks = DateTime.UtcNow.Ticks - ChristianCalendarGregorianReformTicksDate;
-        var ticksPtr = (byte*)&currentTicks;
-        resultPtr[0] = (byte)((ticksPtr[7] & ResetVersionMask) | Version1Flag);
+        var ticksPtr = (byte*) &currentTicks;
+        resultPtr[0] = (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag);
         resultPtr[1] = ticksPtr[6];
         resultPtr[2] = ticksPtr[5];
         resultPtr[3] = ticksPtr[4];
@@ -3535,7 +3535,7 @@ public unsafe struct Uuid :
         resultPtr[5] = ticksPtr[2];
         resultPtr[6] = ticksPtr[1];
         resultPtr[7] = ticksPtr[0];
-        resultPtr[8] = (byte)((resultPtr[8] & ResetReservedMask) | ReservedFlag);
+        resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
         return new Uuid(resultPtr);
     }
 

@@ -10,7 +10,7 @@ public class UuidTryParseTests
     [Test]
     public void TryParseNullStringShouldFalse()
     {
-        bool parsed = Uuid.TryParse((string?)null, out Uuid uuid);
+        bool parsed = Uuid.TryParse((string?) null, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -316,7 +316,7 @@ public class UuidTryParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = uuid;
+                    *(Uuid*) pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);
@@ -339,7 +339,7 @@ public class UuidTryParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = uuid;
+                    *(Uuid*) pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);

@@ -14,6 +14,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{D54C1753-031A-4F30-B892-0C6456E3D7D6}"
 ProjectSection(SolutionItems) = preProject
 	Directory.Build.props = Directory.Build.props
+	..\.editorconfig = ..\.editorconfig
+	..\.gitattributes = ..\.gitattributes
+	..\.gitignore = ..\.gitignore
+	..\global.json = ..\global.json
+	..\README.md = ..\README.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{021B24DA-238D-4E15-B27D-9DA9191F0ED0}"
@@ -46,6 +51,9 @@ Global
 		{B9ECDB73-D6F3-4EC4-B4B4-A7ED2AE781B7} = {56E0CBC4-2555-4231-B28A-A0193DDB9F88}
 		{4C9485A5-FCB5-4361-8C46-C99669D5B22E} = {23740544-1379-49B7-8654-AEC78FB10D75}
 		{288CCF26-65FB-4CC8-932B-01F0A458940A} = {021B24DA-238D-4E15-B27D-9DA9191F0ED0}
+		{56E0CBC4-2555-4231-B28A-A0193DDB9F88} = {D54C1753-031A-4F30-B892-0C6456E3D7D6}
+		{23740544-1379-49B7-8654-AEC78FB10D75} = {D54C1753-031A-4F30-B892-0C6456E3D7D6}
+		{021B24DA-238D-4E15-B27D-9DA9191F0ED0} = {D54C1753-031A-4F30-B892-0C6456E3D7D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD7CBDA7-367E-4456-8A78-BD65663C7340}

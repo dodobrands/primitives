@@ -90,7 +90,7 @@ public static unsafe class Hex
                     && stringPtr[i + 1] < MaximalChar
                     && (hexByteLow = TableFromHexToBytes[stringPtr[i + 1]]) != 0xFF)
                 {
-                    var resultByte = (byte)((byte)(hexByteHi << 4) | hexByteLow);
+                    var resultByte = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                     resultPtr[resultIndex] = resultByte;
                     i += 2;
                     resultIndex += 1;
@@ -126,7 +126,7 @@ public static unsafe class Hex
         var resultString = new string('\0', bytes.Length * 2);
         fixed (char* stringPtr = &resultString.GetPinnableReference())
         {
-            var destUints = (uint*)stringPtr;
+            var destUints = (uint*) stringPtr;
             for (var i = 0; i < bytes.Length; i++)
             {
                 destUints[i] = TableToHex[bytes[i]];

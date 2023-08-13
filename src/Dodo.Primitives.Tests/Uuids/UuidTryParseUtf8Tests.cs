@@ -11,7 +11,7 @@ public class UuidTryParseUtf8Tests
     [Test]
     public void TryParseUtf8NullSpanShouldFalse()
     {
-        bool parsed = Uuid.TryParse((ReadOnlySpan<byte>)null, out Uuid uuid);
+        bool parsed = Uuid.TryParse((ReadOnlySpan<byte>) null, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.False(parsed);
@@ -188,7 +188,7 @@ public class UuidTryParseUtf8Tests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = uuid;
+                    *(Uuid*) pinnedActualBytes = uuid;
                 }
 
                 Assert.True(parsed);

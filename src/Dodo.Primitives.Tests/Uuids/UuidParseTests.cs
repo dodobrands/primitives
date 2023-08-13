@@ -55,7 +55,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -78,7 +78,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -198,7 +198,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -221,7 +221,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -341,7 +341,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -364,7 +364,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -484,7 +484,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -507,7 +507,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -627,7 +627,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -650,7 +650,7 @@ public class UuidParseTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);

@@ -13,10 +13,10 @@ public class SystemTextJsonUuidJsonConverterDictionaryPropertyTests
     {
         var expectedUuid = new Uuid("d0bec403-3323-44df-9dd4-4456121ab00b");
 
-        JsonSerializerOptions options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions();
         options.Converters.Add(new SystemTextJsonUuidJsonConverter());
 
-        await using var stream = GenerateStreamFromString("""{"d0bec403332344df9dd44456121ab00b": 1}""");
+        await using Stream stream = GenerateStreamFromString("""{"d0bec403332344df9dd44456121ab00b": 1}""");
 
         var result = await JsonSerializer.DeserializeAsync<Dictionary<Uuid, int>>(
             stream,
@@ -35,15 +35,15 @@ public class SystemTextJsonUuidJsonConverterDictionaryPropertyTests
     {
         var expectedValue = """{"d0bec403332344df9dd44456121ab00b":1}""";
 
-        var target = new Dictionary<Uuid, int>()
+        var target = new Dictionary<Uuid, int>
         {
-            {new Uuid("d0bec403332344df9dd44456121ab00b"), 1}
+            { new Uuid("d0bec403332344df9dd44456121ab00b"), 1 }
         };
 
-        JsonSerializerOptions options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions();
         options.Converters.Add(new SystemTextJsonUuidJsonConverter());
 
-        var actualValue = JsonSerializer.Serialize<Dictionary<Uuid, int>>(target, options);
+        string actualValue = JsonSerializer.Serialize(target, options);
 
         Assert.AreEqual(expectedValue, actualValue);
     }
