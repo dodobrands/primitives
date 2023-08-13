@@ -20,15 +20,15 @@ public class UuidRng
 
     private int Next(int bits) // helper
     {
-        _seed = (_seed * A + C) & ((1L << 48) - 1);
-        return (int)(_seed >> (48 - bits));
+        _seed = ((_seed * A) + C) & ((1L << 48) - 1);
+        return (int) (_seed >> (48 - bits));
     }
 
     public unsafe int Next()
     {
-        double resultDouble = (((long)Next(26) << 27) + Next(27)) / (double)(1L << 53);
+        double resultDouble = (((long) Next(26) << 27) + Next(27)) / (double) (1L << 53);
         double* resultDoublePtr = &resultDouble;
-        var resultInt32Ptr = (int*)resultDoublePtr;
+        var resultInt32Ptr = (int*) resultDoublePtr;
         int hi = resultInt32Ptr[0];
         int lo = resultInt32Ptr[1];
         int result = hi ^ lo;

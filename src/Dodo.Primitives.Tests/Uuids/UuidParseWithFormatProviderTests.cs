@@ -15,9 +15,9 @@ public class UuidParseWithFormatProviderTests
     [SuppressMessage("ReSharper", "RedundantCast")]
     public static IEnumerable GetFormatProviders()
     {
-        yield return (IFormatProvider?)CultureInfo.InvariantCulture;
-        yield return (IFormatProvider?)new CultureInfo("en-US");
-        yield return (IFormatProvider?)null!;
+        yield return (IFormatProvider?) CultureInfo.InvariantCulture;
+        yield return (IFormatProvider?) new CultureInfo("en-US");
+        yield return (IFormatProvider?) null!;
     }
 
     [Test]
@@ -66,7 +66,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -89,7 +89,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -209,7 +209,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -232,7 +232,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -352,7 +352,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -375,7 +375,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -495,7 +495,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -518,7 +518,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -638,7 +638,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);
@@ -661,7 +661,7 @@ public class UuidParseWithFormatProviderTests
                 var actualBytes = new byte[16];
                 fixed (byte* pinnedActualBytes = actualBytes)
                 {
-                    *(Uuid*)pinnedActualBytes = parsedUuid;
+                    *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
                 Assert.AreEqual(expectedBytes, actualBytes);

@@ -148,8 +148,8 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*)pinnedString = parsedUuidString;
-                        *(Uuid*)pinnedSpan = parsedUuidSpan;
+                        *(Uuid*) pinnedString = parsedUuidString;
+                        *(Uuid*) pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
@@ -170,19 +170,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
-            foreach (string format in UuidTestData.Formats.AllExceptN)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.AllExceptN)
                 {
-                    Uuid _ = Uuid.ParseExact(correctNString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctNString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -193,19 +195,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (string brokenNString in UuidTestData.BrokenNStrings)
-            foreach (string format in UuidTestData.Formats.N)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.N)
                 {
-                    Uuid _ = Uuid.ParseExact(brokenNString, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(brokenNString, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(brokenNString.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(brokenNString.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -216,19 +220,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
-            foreach (string format in UuidTestData.Formats.N)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.N)
                 {
-                    Uuid _ = Uuid.ParseExact(correctDString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctDString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctDString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctDString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -256,8 +262,8 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*)pinnedString = parsedUuidString;
-                        *(Uuid*)pinnedSpan = parsedUuidSpan;
+                        *(Uuid*) pinnedString = parsedUuidString;
+                        *(Uuid*) pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
@@ -278,19 +284,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctDString in UuidTestData.CorrectDStrings)
-            foreach (string format in UuidTestData.Formats.AllExceptD)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.AllExceptD)
                 {
-                    Uuid _ = Uuid.ParseExact(correctDString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctDString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctDString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctDString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -301,19 +309,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (string brokenDString in UuidTestData.BrokenDStrings)
-            foreach (string format in UuidTestData.Formats.D)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.D)
                 {
-                    Uuid _ = Uuid.ParseExact(brokenDString, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(brokenDString, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(brokenDString.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(brokenDString.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -324,19 +334,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
-            foreach (string format in UuidTestData.Formats.D)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.D)
                 {
-                    Uuid _ = Uuid.ParseExact(correctNString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctNString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -364,8 +376,8 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*)pinnedString = parsedUuidString;
-                        *(Uuid*)pinnedSpan = parsedUuidSpan;
+                        *(Uuid*) pinnedString = parsedUuidString;
+                        *(Uuid*) pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
@@ -386,19 +398,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctBString in UuidTestData.CorrectBStrings)
-            foreach (string format in UuidTestData.Formats.AllExceptB)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.AllExceptB)
                 {
-                    Uuid _ = Uuid.ParseExact(correctBString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctBString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctBString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctBString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -409,19 +423,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (string brokenBString in UuidTestData.BrokenBStrings)
-            foreach (string format in UuidTestData.Formats.B)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.B)
                 {
-                    Uuid _ = Uuid.ParseExact(brokenBString, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(brokenBString, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(brokenBString.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(brokenBString.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -432,19 +448,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
-            foreach (string format in UuidTestData.Formats.B)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.B)
                 {
-                    Uuid _ = Uuid.ParseExact(correctNString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctNString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -472,8 +490,8 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*)pinnedString = parsedUuidString;
-                        *(Uuid*)pinnedSpan = parsedUuidSpan;
+                        *(Uuid*) pinnedString = parsedUuidString;
+                        *(Uuid*) pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
@@ -494,19 +512,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctPString in UuidTestData.CorrectPStrings)
-            foreach (string format in UuidTestData.Formats.AllExceptP)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.AllExceptP)
                 {
-                    Uuid _ = Uuid.ParseExact(correctPString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctPString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctPString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctPString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -517,19 +537,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (string brokenPString in UuidTestData.BrokenPStrings)
-            foreach (string format in UuidTestData.Formats.P)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.P)
                 {
-                    Uuid _ = Uuid.ParseExact(brokenPString, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(brokenPString, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(brokenPString.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(brokenPString.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -540,19 +562,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
-            foreach (string format in UuidTestData.Formats.P)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.P)
                 {
-                    Uuid _ = Uuid.ParseExact(correctNString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctNString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -580,8 +604,8 @@ public class UuidParseExactTests
                     var actualBytesSpan = new byte[16];
                     fixed (byte* pinnedString = actualBytesString, pinnedSpan = actualBytesSpan)
                     {
-                        *(Uuid*)pinnedString = parsedUuidString;
-                        *(Uuid*)pinnedSpan = parsedUuidSpan;
+                        *(Uuid*) pinnedString = parsedUuidString;
+                        *(Uuid*) pinnedSpan = parsedUuidSpan;
                     }
 
                     results.Add(actualBytesString);
@@ -602,19 +626,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctXString in UuidTestData.CorrectXStrings)
-            foreach (string format in UuidTestData.Formats.AllExceptX)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.AllExceptX)
                 {
-                    Uuid _ = Uuid.ParseExact(correctXString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctXString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctXString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctXString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -625,19 +651,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (string brokenXString in UuidTestData.BrokenXStrings)
-            foreach (string format in UuidTestData.Formats.X)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.X)
                 {
-                    Uuid _ = Uuid.ParseExact(brokenXString, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(brokenXString, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(brokenXString.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(brokenXString.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }
@@ -648,19 +676,21 @@ public class UuidParseExactTests
         Assert.Multiple(() =>
         {
             foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
-            foreach (string format in UuidTestData.Formats.X)
             {
-                Assert.Throws<FormatException>(() =>
+                foreach (string format in UuidTestData.Formats.X)
                 {
-                    Uuid _ = Uuid.ParseExact(correctNString.String, format);
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(correctNString.String, format);
+                    });
 
-                Assert.Throws<FormatException>(() =>
-                {
-                    Uuid _ = Uuid.ParseExact(
-                        new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
-                        new ReadOnlySpan<char>(format.ToCharArray()));
-                });
+                    Assert.Throws<FormatException>(() =>
+                    {
+                        Uuid _ = Uuid.ParseExact(
+                            new ReadOnlySpan<char>(correctNString.String.ToCharArray()),
+                            new ReadOnlySpan<char>(format.ToCharArray()));
+                    });
+                }
             }
         });
     }

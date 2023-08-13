@@ -419,7 +419,7 @@ public unsafe class TryParseBenchmarks
         var random = new Random();
         int* uuidIntegers = stackalloc int[4];
         char* charToBreakPtr = stackalloc char[1];
-        var charBytesPtr = (byte*)charToBreakPtr;
+        var charBytesPtr = (byte*) charToBreakPtr;
         var result = new string[count];
         var breakUpperByteOnCharArray = new bool[32];
         for (var i = 0; i < breakUpperByteOnCharArray.Length; i++)

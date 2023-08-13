@@ -63,7 +63,7 @@ public static class Utf8JsonTestData
         var escapedCharacters = new List<string>();
         foreach (char ch in uuidString)
         {
-            var intChar = (int)ch;
+            var intChar = (int) ch;
             escapedCharacters.Add("\\u" + intChar.ToString("x4"));
         }
 

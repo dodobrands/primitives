@@ -11,7 +11,7 @@ public class UuidGetHashCodeTests
         var uuid = new Uuid(correctBytes);
         Uuid* uuidPtr = stackalloc Uuid[1];
         uuidPtr[0] = uuid;
-        var intPtr = (int*)uuidPtr;
+        var intPtr = (int*) uuidPtr;
         int int0 = intPtr[0];
         int int1 = intPtr[1];
         int int2 = intPtr[2];

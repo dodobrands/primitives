@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -28,5 +29,21 @@ public class SystemTextJsonUuidJsonConverter : JsonConverter<Uuid>
         Span<char> outputBuffer = stackalloc char[32];
         value.TryFormat(outputBuffer, out _, "N");
         writer.WriteStringValue(outputBuffer);
+    }
+
+    /// <inheritdoc />
+    public override Uuid ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        Debug.Assert(reader.TokenType == JsonTokenType.PropertyName);
+        return reader.GetUuid();
+    }
+
+    /// <inheritdoc />
+    public override void WriteAsPropertyName(Utf8JsonWriter writer, Uuid value, JsonSerializerOptions options)
+    {
+        // Always will be well-formatted, cuz we allocate exact buffer for output format
+        Span<char> outputBuffer = stackalloc char[32];
+        value.TryFormat(outputBuffer, out _, "N");
+        writer.WritePropertyName(outputBuffer);
     }
 }

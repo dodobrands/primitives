@@ -261,49 +261,53 @@ public class UuidTestsUtils
     {
         var resultStrings = new List<string>();
         for (int stringsToCreate = 32, itemsToFill = 1; stringsToCreate > 0; stringsToCreate >>= 1, itemsToFill <<= 1)
-        for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
         {
-            resultStrings.Add(
-                string.Create(
-                    32,
-                    (stringIndex * itemsToFill, itmesToFill: itemsToFill),
-                    (result, state) =>
-                    {
-                        (int startPositionToFill, int itemsToFillCount) = state;
-                        for (var j = 0; j < 32; j++)
+            for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
+            {
+                resultStrings.Add(
+                    string.Create(
+                        32,
+                        (stringIndex * itemsToFill, itmesToFill: itemsToFill),
+                        (result, state) =>
                         {
-                            result[j] = '0';
-                        }
+                            (int startPositionToFill, int itemsToFillCount) = state;
+                            for (var j = 0; j < 32; j++)
+                            {
+                                result[j] = '0';
+                            }
 
-                        result[startPositionToFill] = '1';
-                        for (var j = 0; j < itemsToFillCount; j++)
-                        {
-                            result[startPositionToFill + j] = '1';
-                        }
-                    }));
+                            result[startPositionToFill] = '1';
+                            for (var j = 0; j < itemsToFillCount; j++)
+                            {
+                                result[startPositionToFill + j] = '1';
+                            }
+                        }));
+            }
         }
 
         for (int stringsToCreate = 32, itemsToFill = 1; stringsToCreate > 0; stringsToCreate >>= 1, itemsToFill <<= 1)
-        for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
         {
-            resultStrings.Add(
-                string.Create(
-                    32,
-                    (stringIndex * itemsToFill, itmesToFill: itemsToFill),
-                    (result, state) =>
-                    {
-                        (int startPositionToFill, int itemsToFillCount) = state;
-                        for (var j = 0; j < 32; j++)
+            for (var stringIndex = 0; stringIndex < stringsToCreate; stringIndex++)
+            {
+                resultStrings.Add(
+                    string.Create(
+                        32,
+                        (stringIndex * itemsToFill, itmesToFill: itemsToFill),
+                        (result, state) =>
                         {
-                            result[j] = '1';
-                        }
+                            (int startPositionToFill, int itemsToFillCount) = state;
+                            for (var j = 0; j < 32; j++)
+                            {
+                                result[j] = '1';
+                            }
 
-                        result[startPositionToFill] = '1';
-                        for (var j = 0; j < itemsToFillCount; j++)
-                        {
-                            result[startPositionToFill + j] = '0';
-                        }
-                    }));
+                            result[startPositionToFill] = '1';
+                            for (var j = 0; j < itemsToFillCount; j++)
+                            {
+                                result[startPositionToFill + j] = '0';
+                            }
+                        }));
+            }
         }
 
         string[] nStrings = resultStrings.Distinct().ToArray();
@@ -390,7 +394,7 @@ public class UuidTestsUtils
         var rng = new UuidRng(1337);
         int* uuidIntegers = stackalloc int[4];
         char* charToBreakPtr = stackalloc char[1];
-        var charBytesPtr = (byte*)charToBreakPtr;
+        var charBytesPtr = (byte*) charToBreakPtr;
         var result = new string[count];
         var breakUpperByteOnCharArray = new bool[outputFormatSize];
         for (var i = 0; i < breakUpperByteOnCharArray.Length; i++)

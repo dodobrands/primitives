@@ -41,22 +41,38 @@ public class OverridesBenchmarks
 
     public IEnumerable<object[]> GuidSameValues()
     {
-        yield return new object[] { _guid, _guidSame };
+        yield return new object[]
+        {
+            _guid,
+            _guidSame
+        };
     }
 
     public IEnumerable<object[]> UuidSameValues()
     {
-        yield return new object[] { _uuid, _uuidSame };
+        yield return new object[]
+        {
+            _uuid,
+            _uuidSame
+        };
     }
 
     public IEnumerable<object[]> GuidDifferentTypesValues()
     {
-        yield return new[] { _guid, new object() };
+        yield return new[]
+        {
+            _guid,
+            new object()
+        };
     }
 
     public IEnumerable<object[]> UuidDifferentTypesValues()
     {
-        yield return new[] { _uuid, new object() };
+        yield return new[]
+        {
+            _uuid,
+            new object()
+        };
     }
 
     // GetHashCode
@@ -118,7 +134,7 @@ public class OverridesBenchmarks
     [MethodImpl(MethodImplOptions.NoInlining)]
     public bool uuid_EqualsWithNull(Uuid uuid)
     {
-        return uuid.Equals((object?)null);
+        return uuid.Equals((object?) null);
     }
 
     [Benchmark]
@@ -128,6 +144,6 @@ public class OverridesBenchmarks
     [MethodImpl(MethodImplOptions.NoInlining)]
     public bool guid_EqualsWithNull(Guid guid)
     {
-        return guid.Equals((object?)null);
+        return guid.Equals((object?) null);
     }
 }

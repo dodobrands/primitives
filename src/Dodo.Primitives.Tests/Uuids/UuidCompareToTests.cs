@@ -13,7 +13,7 @@ public class UuidCompareToTests
         int expectedResult)
     {
         var uuid = new Uuid(correctBytes);
-        var uuidToCompareAsObject = (object)new Uuid(correctCompareToBytes);
+        var uuidToCompareAsObject = (object) new Uuid(correctCompareToBytes);
 
         int compareResult = uuid.CompareTo(uuidToCompareAsObject);
 

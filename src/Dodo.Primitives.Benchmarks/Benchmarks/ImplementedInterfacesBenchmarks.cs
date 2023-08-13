@@ -46,22 +46,38 @@ public class ImplementedInterfacesBenchmarks
 
     public IEnumerable<object[]> GuidSameValues()
     {
-        yield return new object[] { _guid, _guidSame };
+        yield return new object[]
+        {
+            _guid,
+            _guidSame
+        };
     }
 
     public IEnumerable<object[]> UuidSameValues()
     {
-        yield return new object[] { _uuid, _uuidSame };
+        yield return new object[]
+        {
+            _uuid,
+            _uuidSame
+        };
     }
 
     public IEnumerable<object[]> GuidDifferentValues()
     {
-        yield return new object[] { _guid, _guidDifferent };
+        yield return new object[]
+        {
+            _guid,
+            _guidDifferent
+        };
     }
 
     public IEnumerable<object[]> UuidDifferentValues()
     {
-        yield return new object[] { _uuid, _uuidDifferent };
+        yield return new object[]
+        {
+            _uuid,
+            _uuidDifferent
+        };
     }
 
     // IEquatable<T>.Equals with same value
@@ -173,7 +189,7 @@ public class ImplementedInterfacesBenchmarks
     [SuppressMessage("ReSharper", "RedundantCast")]
     public int uuid_CompareToNull(Uuid uuid)
     {
-        return uuid.CompareTo((object)null);
+        return uuid.CompareTo((object) null);
     }
 
     [Benchmark]
@@ -182,7 +198,6 @@ public class ImplementedInterfacesBenchmarks
     [SuppressMessage("ReSharper", "RedundantCast")]
     public int guid_CompareToNull(Guid guid)
     {
-        return guid.CompareTo((object)null);
+        return guid.CompareTo((object) null);
     }
-#nullable restore
 }

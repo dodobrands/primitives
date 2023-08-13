@@ -19,7 +19,7 @@ public class UuidEqualsTests
     public void EqualsWithObjectOtherTypeReturnFalse(byte[] correctBytes)
     {
         var uuid = new Uuid(correctBytes);
-        var objectWithAnotherType = (object)42;
+        var objectWithAnotherType = (object) 42;
 
         bool isEquals = uuid.Equals(objectWithAnotherType);
 
@@ -33,7 +33,7 @@ public class UuidEqualsTests
         bool expectedResult)
     {
         var uuid = new Uuid(correctBytes);
-        var objectUuid = (object)new Uuid(correctEqualsBytes);
+        var objectUuid = (object) new Uuid(correctEqualsBytes);
 
         bool isEquals = uuid.Equals(objectUuid);
 
