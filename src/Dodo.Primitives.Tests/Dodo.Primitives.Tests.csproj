@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
         <ProjectGuid>4c9485a5-fcb5-4361-8c46-c99669d5b22e</ProjectGuid>
         <LangVersion>11.0</LangVersion>
         <Nullable>enable</Nullable>
@@ -18,11 +18,11 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-        <PackageReference Include="NuGet.Frameworks" Version="6.7.0"/>
-        <PackageReference Include="nunit" Version="3.13.3"/>
+        <PackageReference Include="NuGet.Frameworks" Version="6.8.0"/>
+        <PackageReference Include="nunit" Version="3.14.0"/>
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0"/>
-        <PackageReference Include="System.Reflection.Metadata" Version="7.0.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+        <PackageReference Include="System.Reflection.Metadata" Version="8.0.0"/>
     </ItemGroup>
 
     <ItemGroup>

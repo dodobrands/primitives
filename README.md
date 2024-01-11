@@ -1,7 +1,7 @@
 # Dodo.Primitives
 
-[![Latest release](https://img.shields.io/badge/nuget-2.0.1-blue?&kill_cache=1)](https://www.nuget.org/packages/Dodo.Primitives/2.0.1)
-[![Coverage Status](https://coveralls.io/repos/github/dodopizza/primitives/badge.svg?branch=refs/tags/2.0.1&kill_cache=1)](https://coveralls.io/github/dodopizza/primitives?branch=refs/tags/2.0.1)
+[![Latest release](https://img.shields.io/badge/nuget-3.0.0-blue?&kill_cache=1)](https://www.nuget.org/packages/Dodo.Primitives/3.0.0)
+[![Coverage Status](https://coveralls.io/repos/github/dodobrands/primitives/badge.svg?branch=refs/tags/3.0.0&kill_cache=1)](https://coveralls.io/github/dodobrands/primitives?branch=refs/tags/3.0.0)
 
 Library provides .NET primitive types:
 
@@ -15,7 +15,7 @@ and utils to work with types:
 
 The main goal is Uuid implementation according to the [RFC4122](https://tools.ietf.org/html/rfc4122).
 
-.NET provides [System.Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) struct which is special case of the RFC4122 implementation. System.Guid has [little-endian layout](https://github.com/dotnet/runtime/blob/v7.0.0/src/libraries/System.Private.CoreLib/src/System/Guid.cs#L30-L32) for the first 8 bytes (int32, int16, int16).
+.NET provides [System.Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) struct which is special case of the RFC4122 implementation. System.Guid has [little-endian layout](https://github.com/dotnet/runtime/blob/v8.0.0/src/libraries/System.Private.CoreLib/src/System/Guid.cs#L33-L35) for the first 8 bytes (int32, int16, int16).
 
 Our goal is to provide Uuid fully compliant with RFC4122 (big-endian layout) and preserve System.Guid-like behaviour. Also project contains generators to create different Uuid variants. Currently supported variants:
 
@@ -35,6 +35,6 @@ Our goal is to provide Uuid fully compliant with RFC4122 (big-endian layout) and
 
 ## Project documentation
 
-- [Prerequisites, build and development](https://github.com/dodopizza/primitives/wiki/Prerequisites,-build-and-development)
-- [Benchmarks](https://github.com/dodopizza/primitives/wiki/Benchmarks)
+- [Prerequisites, build and development](https://github.com/dodobrands/primitives/wiki/Prerequisites,-build-and-development)
+- [Benchmarks](https://github.com/dodobrands/primitives/wiki/Benchmarks)
 

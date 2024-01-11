@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Dodo.Primitives.Internal;
@@ -6,22 +7,41 @@ namespace Dodo.Primitives.Internal;
 internal static unsafe class InternalHexTables
 {
     internal const ushort MaximalChar = 103;
-    internal static readonly uint* TableToHex;
-    internal static readonly byte* TableFromHexToBytes;
+    internal static readonly uint* TableToHexUtf16;
+    internal static readonly ushort* TableToHexUtf8;
+    internal static readonly byte* TableFromHexToBytesUtf16;
 
+    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     static InternalHexTables()
     {
-        TableToHex = (uint*) Marshal.AllocHGlobal(sizeof(uint) * 256).ToPointer();
-        for (var i = 0; i < 256; i++)
+        const int bytesPerCharUtf16 = 2;
+        const int bytesPerCharUtf8 = 1;
+        const int charsPerTableToHexCell = 2;
+        const int charsPerTableToHex = 256;
+
+        IntPtr tableToHexUtf16Buffer = Marshal.AllocHGlobal(bytesPerCharUtf16 * charsPerTableToHexCell * charsPerTableToHex);
+        IntPtr tableToHexUtf8Buffer = Marshal.AllocHGlobal(bytesPerCharUtf8 * charsPerTableToHexCell * charsPerTableToHex);
+
+        void* tableToHexUtf16Pointer = tableToHexUtf16Buffer.ToPointer();
+        void* tableToHexUtf8Pointer = tableToHexUtf8Buffer.ToPointer();
+
+        TableToHexUtf16 = (uint*) tableToHexUtf16Pointer;
+        TableToHexUtf8 = (ushort*) tableToHexUtf8Pointer;
+        for (var i = 0; i < charsPerTableToHex; i++)
         {
             string chars = Convert.ToString(i, 16).PadLeft(2, '0');
-            TableToHex[i] = ((uint) chars[1] << 16) | chars[0];
+            uint utf16 = ((uint) chars[1] << 16) | chars[0];
+            ushort utf8 = (ushort) ((ushort) ((byte) chars[1] << 8) | (byte) chars[0]);
+            TableToHexUtf8[i] = utf8;
+            TableToHexUtf16[i] = utf16;
         }
 
-        TableFromHexToBytes = (byte*) Marshal.AllocHGlobal(103).ToPointer();
-        for (var i = 0; i < 103; i++)
+        IntPtr tableFromHexToBytesUtf16Buffer = Marshal.AllocHGlobal(MaximalChar);
+        void* tableFromHexToBytesUtf16BufferPointer = tableFromHexToBytesUtf16Buffer.ToPointer();
+        TableFromHexToBytesUtf16 = (byte*) tableFromHexToBytesUtf16BufferPointer;
+        for (var i = 0; i < MaximalChar; i++)
         {
-            TableFromHexToBytes[i] = (char) i switch
+            TableFromHexToBytesUtf16[i] = (char) i switch
             {
                 '0' => 0x0,
                 '1' => 0x1,
