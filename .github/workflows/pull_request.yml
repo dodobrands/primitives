@@ -186,10 +186,10 @@ jobs:
                   export MergeWith=${{ env.cover_net8_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
                   mv '${{ env.cover_net8_nohw_merge }}' '${{ env.cover_net8_hw_merge_lcov }}'
-                  cat '${{ env.cover_net8_hw_merge_lcov }}'
             - name: Publish coverage report to coveralls.io
               uses: coverallsapp/github-action@v2.2.3
               with:
                   file: ${{ env.cover_net8_hw_merge_lcov }}
                   format: lcov
                   github-token: ${{ github.token }}
+                  debug: true
