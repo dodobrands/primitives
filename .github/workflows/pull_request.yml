@@ -137,11 +137,14 @@ jobs:
                   PATH_NET8_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net8hw"
                   echo "cover_net8_hw=${PATH_NET8_HW}" >> $GITHUB_ENV
                   echo "cover_net8_hw_merge=${PATH_NET8_HW}.net8.0.info" >> $GITHUB_ENV
+                  echo "cover_net8_hw_merge_lcov=${PATH_NET8_HW}.net8.0.lcov" >> $GITHUB_ENV
             - name: Run .NET 6 tests without Hardware Intrinsics
               shell: bash
               run: |
                   export COMPlus_EnableHWIntrinsic=0
+                  export DOTNET_EnableHWIntrinsic=0
                   export COMPlus_ReadyToRun=0
+                  export DOTNET_ReadyToRun=0
                   export CollectCoverage=true
                   export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net6_nohw }}
@@ -150,7 +153,9 @@ jobs:
               shell: bash
               run: |
                   export COMPlus_EnableHWIntrinsic=1
+                  export DOTNET_EnableHWIntrinsic=1
                   unset COMPlus_ReadyToRun
+                  unset DOTNET_ReadyToRun
                   export CollectCoverage=true
                   export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net6_hw }}
@@ -160,6 +165,9 @@ jobs:
               shell: bash
               run: |
                   export COMPlus_EnableHWIntrinsic=0
+                  export DOTNET_EnableHWIntrinsic=0
+                  export COMPlus_ReadyToRun=0
+                  export DOTNET_ReadyToRun=0
                   export CollectCoverage=true
                   export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net8_nohw }}
@@ -169,13 +177,16 @@ jobs:
               shell: bash
               run: |
                   export COMPlus_EnableHWIntrinsic=1
+                  export DOTNET_EnableHWIntrinsic=1
+                  unset COMPlus_ReadyToRun
+                  unset DOTNET_ReadyToRun
                   export CollectCoverage=true
                   export CoverletOutputFormat=lcov
                   export CoverletOutput=${{ env.cover_net8_hw }}
                   export MergeWith=${{ env.cover_net8_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
+                  mv '${{ env.cover_net8_nohw_merge }}' '${{ env.cover_net8_hw_merge_lcov }}'
             - name: Publish coverage report to coveralls.io
               uses: coverallsapp/github-action@v2.2.3
               with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  file: ${{ env.cover_net8_hw_merge }}
+                  file: ${{ env.cover_net8_hw_merge_lcov }}
