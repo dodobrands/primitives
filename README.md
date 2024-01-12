@@ -1,7 +1,7 @@
 # Dodo.Primitives
 
 [![Latest release](https://img.shields.io/badge/nuget-3.0.0-blue?&kill_cache=1)](https://www.nuget.org/packages/Dodo.Primitives/3.0.0)
-[![Coverage Status](https://coveralls.io/repos/github/dodobrands/primitives/badge.svg?branch=refs/tags/3.0.0&kill_cache=1)](https://coveralls.io/github/dodobrands/primitives?branch=refs/tags/3.0.0)
+[![codecov](https://codecov.io/gh/dodobrands/primitives/graph/badge.svg?token=7ILQPREIVA)](https://codecov.io/gh/dodobrands/primitives)
 
 Library provides .NET primitive types:
 
