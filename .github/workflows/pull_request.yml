@@ -191,5 +191,4 @@ jobs:
               with:
                   file: ${{ env.cover_net8_hw_merge_lcov }}
                   format: lcov
-                  github-token: ${{ github.token }}
-                  debug: true
+                  github-token: ${{ secrets.COVERALLS_SECRET }}

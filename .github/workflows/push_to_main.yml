@@ -128,7 +128,7 @@ jobs:
               with:
                   file: ${{ env.cover_net8_hw_merge_lcov }}
                   format: lcov
-                  github-token: ${{ github.token }}
+                  github-token: ${{ secrets.COVERALLS_SECRET }}
     release:
         name: Create release
         runs-on: ubuntu-latest

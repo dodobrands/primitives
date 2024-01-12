@@ -98,7 +98,7 @@ jobs:
               with:
                   file: ${{ env.cover_net8_hw_merge_lcov }}
                   format: lcov
-                  github-token: ${{ github.token }}
+                  github-token: ${{ secrets.COVERALLS_SECRET }}
             - name: Build and publish library to NuGet
               shell: bash
               run: |
