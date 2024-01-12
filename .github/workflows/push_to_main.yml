@@ -52,6 +52,15 @@ jobs:
               uses: actions/setup-dotnet@v4
               with:
                   dotnet-version: 8.0.101
+            - name: Get commit hash
+              shell: bash
+              run: |
+                  if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+                    SHA_TO_USE=$(cat $GITHUB_EVENT_PATH | jq -r .pull_request.head.sha)
+                    echo "gh_sha=${SHA_TO_USE}" >> $GITHUB_ENV
+                  else
+                    echo "gh_sha=${GITHUB_SHA}" >> $GITHUB_ENV
+                  fi
             - name: Create coverage directory and promote absolute paths to env
               shell: bash
               run: |
@@ -128,6 +137,9 @@ jobs:
               with:
                   file: ${{ env.cover_net8_hw_merge_lcov }}
                   format: lcov
+                  github-token: ${{ github.token }}
+                  git-branch: ${{ github.ref }}
+                  git-commit: ${{ env.gh_sha }}
     release:
         name: Create release
         runs-on: ubuntu-latest
