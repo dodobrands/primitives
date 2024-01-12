@@ -190,3 +190,4 @@ jobs:
               uses: coverallsapp/github-action@v2.2.3
               with:
                   file: ${{ env.cover_net8_hw_merge_lcov }}
+                  format: lcov
