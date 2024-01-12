@@ -34,4 +34,4 @@ This project has adopted the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## NuGet package release process for repository owners and collaborators
 
-You can find latest releases on the [releases pane](https://github.com/dodopizza/primitives/releases) or NuGet repository.
+You can find latest releases on the [releases pane](https://github.com/dodobrands/primitives/releases) or NuGet repository.

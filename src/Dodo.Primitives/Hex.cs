@@ -10,13 +10,13 @@ namespace Dodo.Primitives;
 public static unsafe class Hex
 {
     private const ushort MaximalChar = InternalHexTables.MaximalChar;
-    private static readonly uint* TableToHex;
-    private static readonly byte* TableFromHexToBytes;
+    private static readonly uint* TableToHexUtf16;
+    private static readonly byte* TableFromHexToBytesUtf16;
 
     static Hex()
     {
-        TableToHex = InternalHexTables.TableToHex;
-        TableFromHexToBytes = InternalHexTables.TableFromHexToBytes;
+        TableToHexUtf16 = InternalHexTables.TableToHexUtf16;
+        TableFromHexToBytesUtf16 = InternalHexTables.TableFromHexToBytesUtf16;
     }
 
     /// <summary>
@@ -42,9 +42,9 @@ public static unsafe class Hex
             for (var i = 0; i < length;)
             {
                 if (stringPtr[i] < MaximalChar
-                    && TableFromHexToBytes[stringPtr[i]] != 0xFF
+                    && TableFromHexToBytesUtf16[stringPtr[i]] != 0xFF
                     && stringPtr[i + 1] < MaximalChar
-                    && TableFromHexToBytes[stringPtr[i + 1]] != 0xFF)
+                    && TableFromHexToBytesUtf16[stringPtr[i + 1]] != 0xFF)
                 {
                     i += 2;
                 }
@@ -86,9 +86,9 @@ public static unsafe class Hex
                 byte hexByteHi;
                 byte hexByteLow;
                 if (stringPtr[i] < MaximalChar
-                    && (hexByteHi = TableFromHexToBytes[stringPtr[i]]) != 0xFF
+                    && (hexByteHi = TableFromHexToBytesUtf16[stringPtr[i]]) != 0xFF
                     && stringPtr[i + 1] < MaximalChar
-                    && (hexByteLow = TableFromHexToBytes[stringPtr[i + 1]]) != 0xFF)
+                    && (hexByteLow = TableFromHexToBytesUtf16[stringPtr[i + 1]]) != 0xFF)
                 {
                     var resultByte = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
                     resultPtr[resultIndex] = resultByte;
@@ -129,7 +129,7 @@ public static unsafe class Hex
             var destUints = (uint*) stringPtr;
             for (var i = 0; i < bytes.Length; i++)
             {
-                destUints[i] = TableToHex[bytes[i]];
+                destUints[i] = TableToHexUtf16[bytes[i]];
             }
         }
 
