@@ -44,7 +44,6 @@ jobs:
                   PATH_NET8_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net8hw"
                   echo "cover_net8_hw=${PATH_NET8_HW}" >> $GITHUB_ENV
                   echo "cover_net8_hw_merge=${PATH_NET8_HW}.net8.0.info" >> $GITHUB_ENV
-                  echo "cover_net8_hw_merge_lcov=${PATH_NET8_HW}.net8.0.lcov" >> $GITHUB_ENV
             - name: Run .NET 6 tests without Hardware Intrinsics
               shell: bash
               run: |
@@ -92,12 +91,11 @@ jobs:
                   export CoverletOutput=${{ env.cover_net8_hw }}
                   export MergeWith=${{ env.cover_net8_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
-                  mv '${{ env.cover_net8_nohw_merge }}' '${{ env.cover_net8_hw_merge_lcov }}'
             - name: Publish coverage report to coveralls.io
               uses: coverallsapp/github-action@1.1.3
               with:
-                  github-token: ${{ github.token }}
-                  path-to-lcov: ${{ env.cover_net8_hw_merge_lcov }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  path-to-lcov: ${{ env.cover_net8_hw_merge }}
             - name: Build and publish library to NuGet
               shell: bash
               run: |
