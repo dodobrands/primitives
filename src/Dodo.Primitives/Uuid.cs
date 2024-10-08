@@ -152,93 +152,16 @@ public unsafe struct Uuid :
             return 1;
         }
 
-        if (!(obj is Uuid))
+        if (!(obj is Uuid other))
         {
             throw new ArgumentException("Object must be of type Uuid.", nameof(obj));
         }
 
-        var other = (Uuid) obj;
-        if (other._byte0 != _byte0)
-        {
-            return _byte0 < other._byte0 ? -1 : 1;
-        }
+        ref ulong left = ref Unsafe.As<Uuid, ulong>(ref this);
+        ref ulong right = ref Unsafe.As<Uuid, ulong>(ref other);
 
-        if (other._byte1 != _byte1)
-        {
-            return _byte1 < other._byte1 ? -1 : 1;
-        }
-
-        if (other._byte2 != _byte2)
-        {
-            return _byte2 < other._byte2 ? -1 : 1;
-        }
-
-        if (other._byte3 != _byte3)
-        {
-            return _byte3 < other._byte3 ? -1 : 1;
-        }
-
-        if (other._byte4 != _byte4)
-        {
-            return _byte4 < other._byte4 ? -1 : 1;
-        }
-
-        if (other._byte5 != _byte5)
-        {
-            return _byte5 < other._byte5 ? -1 : 1;
-        }
-
-        if (other._byte6 != _byte6)
-        {
-            return _byte6 < other._byte6 ? -1 : 1;
-        }
-
-        if (other._byte7 != _byte7)
-        {
-            return _byte7 < other._byte7 ? -1 : 1;
-        }
-
-        if (other._byte8 != _byte8)
-        {
-            return _byte8 < other._byte8 ? -1 : 1;
-        }
-
-        if (other._byte9 != _byte9)
-        {
-            return _byte9 < other._byte9 ? -1 : 1;
-        }
-
-        if (other._byte10 != _byte10)
-        {
-            return _byte10 < other._byte10 ? -1 : 1;
-        }
-
-        if (other._byte11 != _byte11)
-        {
-            return _byte11 < other._byte11 ? -1 : 1;
-        }
-
-        if (other._byte12 != _byte12)
-        {
-            return _byte12 < other._byte12 ? -1 : 1;
-        }
-
-        if (other._byte13 != _byte13)
-        {
-            return _byte13 < other._byte13 ? -1 : 1;
-        }
-
-        if (other._byte14 != _byte14)
-        {
-            return _byte14 < other._byte14 ? -1 : 1;
-        }
-
-        if (other._byte15 != _byte15)
-        {
-            return _byte15 < other._byte15 ? -1 : 1;
-        }
-
-        return 0;
+        int upper = left.CompareTo(right);
+        return upper != 0 ? upper : Unsafe.Add(ref left, 1).CompareTo(Unsafe.Add(ref right, 1));
     }
 
     /// <summary>
@@ -246,89 +169,14 @@ public unsafe struct Uuid :
     /// </summary>
     /// <param name="other">An <see cref="Uuid" /> object to compare to this instance.</param>
     /// <returns>A signed number indicating the relative values of this instance and <paramref name="other" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Uuid other)
     {
-        if (other._byte0 != _byte0)
-        {
-            return _byte0 < other._byte0 ? -1 : 1;
-        }
+        ref ulong left = ref Unsafe.As<Uuid, ulong>(ref this);
+        ref ulong right = ref Unsafe.As<Uuid, ulong>(ref other);
 
-        if (other._byte1 != _byte1)
-        {
-            return _byte1 < other._byte1 ? -1 : 1;
-        }
-
-        if (other._byte2 != _byte2)
-        {
-            return _byte2 < other._byte2 ? -1 : 1;
-        }
-
-        if (other._byte3 != _byte3)
-        {
-            return _byte3 < other._byte3 ? -1 : 1;
-        }
-
-        if (other._byte4 != _byte4)
-        {
-            return _byte4 < other._byte4 ? -1 : 1;
-        }
-
-        if (other._byte5 != _byte5)
-        {
-            return _byte5 < other._byte5 ? -1 : 1;
-        }
-
-        if (other._byte6 != _byte6)
-        {
-            return _byte6 < other._byte6 ? -1 : 1;
-        }
-
-        if (other._byte7 != _byte7)
-        {
-            return _byte7 < other._byte7 ? -1 : 1;
-        }
-
-        if (other._byte8 != _byte8)
-        {
-            return _byte8 < other._byte8 ? -1 : 1;
-        }
-
-        if (other._byte9 != _byte9)
-        {
-            return _byte9 < other._byte9 ? -1 : 1;
-        }
-
-        if (other._byte10 != _byte10)
-        {
-            return _byte10 < other._byte10 ? -1 : 1;
-        }
-
-        if (other._byte11 != _byte11)
-        {
-            return _byte11 < other._byte11 ? -1 : 1;
-        }
-
-        if (other._byte12 != _byte12)
-        {
-            return _byte12 < other._byte12 ? -1 : 1;
-        }
-
-        if (other._byte13 != _byte13)
-        {
-            return _byte13 < other._byte13 ? -1 : 1;
-        }
-
-        if (other._byte14 != _byte14)
-        {
-            return _byte14 < other._byte14 ? -1 : 1;
-        }
-
-        if (other._byte15 != _byte15)
-        {
-            return _byte15 < other._byte15 ? -1 : 1;
-        }
-
-        return 0;
+        int upper = left.CompareTo(right);
+        return upper != 0 ? upper : Unsafe.Add(ref left, 1).CompareTo(Unsafe.Add(ref right, 1));
     }
 
     /// <summary>
@@ -1311,6 +1159,26 @@ public unsafe struct Uuid :
         }
 
         this = result;
+    }
+
+    /// <summary>
+    ///     Crates a span to this uuid
+    /// </summary>
+    /// <returns>Span in bytes</returns>
+    public ReadOnlySpan<byte> ToByteReadOnlySpan()
+    {
+        ReadOnlySpan<Uuid> source = MemoryMarshal.CreateReadOnlySpan(ref this, 1);
+        return MemoryMarshal.AsBytes(source);
+    }
+
+    /// <summary>
+    ///     Crates a span to this uuid
+    /// </summary>
+    /// <returns>Span in ulongs</returns>
+    public ReadOnlySpan<ulong> ToUnsignedLongReadOnlySpan()
+    {
+        ReadOnlySpan<Uuid> source = MemoryMarshal.CreateReadOnlySpan(ref this, 1);
+        return MemoryMarshal.Cast<Uuid, ulong>(source);
     }
 
     /// <summary>
