@@ -34,8 +34,8 @@ public class UuidTryParseWithFormatProviderTests
         bool parsed = Uuid.TryParse(valueToParse, formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
-            Assert.False(parsed);
-            Assert.AreEqual(Uuid.Empty, uuid);
+            Assert.That(parsed, Is.False);
+            Assert.That(uuid, Is.EqualTo(Uuid.Empty));
         });
     }
 
@@ -45,8 +45,8 @@ public class UuidTryParseWithFormatProviderTests
         bool parsed = Uuid.TryParse(string.Empty, formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
-            Assert.False(parsed);
-            Assert.AreEqual(Uuid.Empty, uuid);
+            Assert.That(parsed, Is.False);
+            Assert.That(uuid, Is.EqualTo(Uuid.Empty));
         });
     }
 
@@ -56,8 +56,8 @@ public class UuidTryParseWithFormatProviderTests
         bool parsed = Uuid.TryParse(new ReadOnlySpan<char>(new char[] { }), formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
-            Assert.False(parsed);
-            Assert.AreEqual(Uuid.Empty, uuid);
+            Assert.That(parsed, Is.False);
+            Assert.That(uuid, Is.EqualTo(Uuid.Empty));
         });
     }
 
@@ -342,8 +342,8 @@ public class UuidTryParseWithFormatProviderTests
                         *(Uuid*) pinnedActualBytes = uuid;
                     }
 
-                    Assert.True(parsed);
-                    Assert.AreEqual(expectedBytes, actualBytes);
+                    Assert.That(parsed);
+                    Assert.That(actualBytes, Is.EqualTo(expectedBytes));
                 }
             }
         });
@@ -368,8 +368,8 @@ public class UuidTryParseWithFormatProviderTests
                         *(Uuid*) pinnedActualBytes = uuid;
                     }
 
-                    Assert.True(parsed);
-                    Assert.AreEqual(expectedBytes, actualBytes);
+                    Assert.That(parsed);
+                    Assert.That(actualBytes, Is.EqualTo(expectedBytes));
                 }
             }
         });
@@ -383,7 +383,7 @@ public class UuidTryParseWithFormatProviderTests
             {
                 foreach (string largeString in incorrectLargeStrings)
                 {
-                    Assert.False(Uuid.TryParse(largeString, formatProvider, out _));
+                    Assert.That(Uuid.TryParse(largeString, formatProvider, out _), Is.False);
                 }
             }
         });
@@ -398,7 +398,7 @@ public class UuidTryParseWithFormatProviderTests
                 foreach (string largeString in incorrectLargeStrings)
                 {
                     var largeSpan = new ReadOnlySpan<char>(largeString.ToCharArray());
-                    Assert.False(Uuid.TryParse(largeSpan, formatProvider, out _));
+                    Assert.That(Uuid.TryParse(largeSpan, formatProvider, out _), Is.False);
                 }
             }
         });

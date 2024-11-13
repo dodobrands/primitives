@@ -13,21 +13,21 @@ public class UuidTypeConverterTests
     public void CanConvertToCorrect(Type type)
     {
         var converter = new UuidTypeConverter();
-        Assert.True(converter.CanConvertTo(type));
+        Assert.That(converter.CanConvertTo(type));
     }
 
     [Test]
     public void CanConvertFromCorrect()
     {
         var converter = new UuidTypeConverter();
-        Assert.True(converter.CanConvertFrom(typeof(string)));
+        Assert.That(converter.CanConvertFrom(typeof(string)));
     }
 
     [Test]
     public void CanConvertFromInt32()
     {
         var converter = new UuidTypeConverter();
-        Assert.False(converter.CanConvertFrom(typeof(int)));
+        Assert.That(converter.CanConvertFrom(typeof(int)), Is.False);
     }
 
     [Test]
@@ -39,10 +39,10 @@ public class UuidTypeConverterTests
 
         object? actualValue = converter.ConvertTo(notUuid, typeof(string));
 
-        Assert.NotNull(actualValue);
-        Assert.IsInstanceOf<string>(actualValue);
-        Assert.AreEqual(expectedValue, (string?) actualValue);
-        Assert.AreEqual(1, notUuid.ToStringCalls);
+        Assert.That(actualValue, Is.Not.Null);
+        Assert.That(actualValue, Is.InstanceOf<string>());
+        Assert.That((string?)actualValue, Is.EqualTo(expectedValue));
+        Assert.That(notUuid.ToStringCalls, Is.EqualTo(1));
     }
 
     [Test]
@@ -54,9 +54,9 @@ public class UuidTypeConverterTests
 
         object? actualValue = converter.ConvertTo(uuid, typeof(string));
 
-        Assert.NotNull(actualValue);
-        Assert.IsInstanceOf<string>(actualValue);
-        Assert.AreEqual(expectedValue, (string?) actualValue);
+        Assert.That(actualValue, Is.Not.Null);
+        Assert.That(actualValue, Is.InstanceOf<string>());
+        Assert.That((string?)actualValue, Is.EqualTo(expectedValue));
     }
 
     [Test]
@@ -69,12 +69,12 @@ public class UuidTypeConverterTests
 
         object? actualValue = converter.ConvertTo(uuid, typeof(InstanceDescriptor));
 
-        Assert.NotNull(actualValue);
-        Assert.IsInstanceOf<InstanceDescriptor>(actualValue);
+        Assert.That(actualValue, Is.Not.Null);
+        Assert.That(actualValue, Is.InstanceOf<InstanceDescriptor>());
         var actualDescriptor = (InstanceDescriptor?) actualValue;
-        Assert.AreEqual(expectedValue.MemberInfo, actualDescriptor?.MemberInfo);
-        Assert.AreEqual(expectedValue.IsComplete, actualDescriptor?.IsComplete);
-        Assert.AreEqual(expectedValue.Arguments, actualDescriptor?.Arguments);
+        Assert.That(actualDescriptor?.MemberInfo, Is.EqualTo(expectedValue.MemberInfo));
+        Assert.That(actualDescriptor?.IsComplete, Is.EqualTo(expectedValue.IsComplete));
+        Assert.That(actualDescriptor?.Arguments, Is.EqualTo(expectedValue.Arguments));
     }
 
     [Test]
@@ -97,9 +97,9 @@ public class UuidTypeConverterTests
 
         object? actualValue = converter.ConvertFrom("28d2b480b9e743f48ee32ecf03247ad1");
 
-        Assert.NotNull(actualValue);
-        Assert.IsInstanceOf<Uuid>(actualValue);
-        Assert.AreEqual(expectedValue, (Uuid) actualValue!);
+        Assert.That(actualValue, Is.Not.Null);
+        Assert.That(actualValue, Is.InstanceOf<Uuid>());
+        Assert.That((Uuid)actualValue!, Is.EqualTo(expectedValue));
     }
 
     [Test]
@@ -112,9 +112,9 @@ public class UuidTypeConverterTests
 
         object? actualValue = converter.ConvertFrom(descriptor);
 
-        Assert.NotNull(actualValue);
-        Assert.IsInstanceOf<Uuid>(actualValue);
-        Assert.AreEqual(expectedValue, (Uuid) actualValue!);
+        Assert.That(actualValue, Is.Not.Null);
+        Assert.That(actualValue, Is.InstanceOf<Uuid>());
+        Assert.That((Uuid)actualValue!, Is.EqualTo(expectedValue));
     }
 
     [Test]

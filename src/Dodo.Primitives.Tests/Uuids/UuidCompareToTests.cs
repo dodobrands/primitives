@@ -17,7 +17,7 @@ public class UuidCompareToTests
 
         int compareResult = uuid.CompareTo(uuidToCompareAsObject);
 
-        Assert.AreEqual(expectedResult, compareResult);
+        Assert.That(compareResult, Is.EqualTo(expectedResult));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -27,7 +27,7 @@ public class UuidCompareToTests
 
         int compareResult = uuid.CompareTo(null);
 
-        Assert.AreEqual(1, compareResult);
+        Assert.That(compareResult, Is.EqualTo(1));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -52,6 +52,6 @@ public class UuidCompareToTests
 
         int compareResult = uuid.CompareTo(uuidToCompareAsObject);
 
-        Assert.AreEqual(expectedResult, compareResult);
+        Assert.That(compareResult, Is.EqualTo(expectedResult));
     }
 }

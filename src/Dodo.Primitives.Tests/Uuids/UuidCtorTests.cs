@@ -20,7 +20,7 @@ public class UuidCtorTests
             *(Uuid*) pinnedUuidArray = uuid;
         }
 
-        Assert.AreEqual(correctBytes, uuidBytes);
+        Assert.That(uuidBytes, Is.EqualTo(correctBytes));
     }
 
     [Test]
@@ -65,7 +65,7 @@ public class UuidCtorTests
             *(Uuid*) pinnedUuidArray = uuid;
         }
 
-        Assert.AreEqual(correctBytes, uuidBytes);
+        Assert.That(uuidBytes, Is.EqualTo(correctBytes));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -80,7 +80,7 @@ public class UuidCtorTests
             *(Uuid*) pinnedUuidArray = uuid;
         }
 
-        Assert.AreEqual(correctBytes, uuidBytes);
+        Assert.That(uuidBytes, Is.EqualTo(correctBytes));
     }
 
     [Test]
@@ -151,7 +151,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -174,7 +174,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -201,7 +201,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -224,7 +224,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -251,7 +251,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -274,7 +274,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -301,7 +301,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -324,7 +324,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -351,7 +351,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -374,7 +374,7 @@ public class UuidCtorTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }

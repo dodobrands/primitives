@@ -18,7 +18,7 @@ public class UuidOperatorsTests
 
         bool isEquals = uuid == otherUuid;
 
-        Assert.AreEqual(expectedResult, isEquals);
+        Assert.That(isEquals, Is.EqualTo(expectedResult));
     }
 
     #endregion
@@ -37,7 +37,7 @@ public class UuidOperatorsTests
 
         bool isEquals = uuid != otherUuid;
 
-        Assert.AreEqual(expectedResult, isEquals);
+        Assert.That(isEquals, Is.EqualTo(expectedResult));
     }
 
     #endregion
@@ -48,7 +48,7 @@ public class UuidOperatorsTests
     public void LessThan_ReturnsTrue_WhenLeftLessThanRight(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left < right;
-        Assert.True(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.True);
     }
 
     [Test]
@@ -60,14 +60,14 @@ public class UuidOperatorsTests
 
         bool isLeftLessThatRight = left < right;
 
-        Assert.False(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.False);
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.RightLessThanLeft))]
     public void LessThan_ReturnsFalse_WhenRightLessThanLeft(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left < right;
-        Assert.False(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.False);
     }
 
     #endregion
@@ -78,7 +78,7 @@ public class UuidOperatorsTests
     public void LessThanOrEqual_ReturnsTrue_WhenLeftLessThanRight(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left <= right;
-        Assert.True(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.True);
     }
 
     [Test]
@@ -90,14 +90,14 @@ public class UuidOperatorsTests
 
         bool isLeftLessThatRight = left <= right;
 
-        Assert.True(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.True);
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.RightLessThanLeft))]
     public void LessThanOrEqual_ReturnsFalse_WhenRightLessThanLeft(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left <= right;
-        Assert.False(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.False);
     }
 
     #endregion
@@ -108,7 +108,7 @@ public class UuidOperatorsTests
     public void GreaterThan_ReturnsTrue_WhenLeftGreaterThanRight(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left > right;
-        Assert.True(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.True);
     }
 
     [Test]
@@ -120,14 +120,14 @@ public class UuidOperatorsTests
 
         bool isLeftLessThatRight = left > right;
 
-        Assert.False(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.False);
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.LeftLessThanRight))]
     public void GreaterThan_ReturnsFalse_WhenRightGreaterThanLeft(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left > right;
-        Assert.False(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.False);
     }
 
     #endregion
@@ -138,7 +138,7 @@ public class UuidOperatorsTests
     public void GreaterThanOrEqual_ReturnsTrue_WhenLeftGreaterThanRight(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left >= right;
-        Assert.True(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.True);
     }
 
     [Test]
@@ -150,14 +150,14 @@ public class UuidOperatorsTests
 
         bool isLeftLessThatRight = left >= right;
 
-        Assert.True(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.True);
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.LeftLessThanRight))]
     public void GreaterThanOrEqual_ReturnsFalse_WhenRightGreaterThanLeft(Uuid left, Uuid right)
     {
         bool isLeftLessThatRight = left >= right;
-        Assert.False(isLeftLessThatRight);
+        Assert.That(isLeftLessThatRight, Is.False);
     }
 
     #endregion

@@ -22,11 +22,14 @@ public class SystemTextJsonUuidJsonConverterDictionaryPropertyTests
             stream,
             options
         );
-        Assert.NotNull(result);
+        Assert.That(result, Is.Not.Null);
         if (result != null)
         {
-            Assert.IsTrue(result.ContainsKey(expectedUuid));
-            Assert.AreEqual(1, result[expectedUuid]);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.ContainsKey(expectedUuid));
+                Assert.That(result[expectedUuid], Is.EqualTo(1));
+            });
         }
     }
 
@@ -45,7 +48,7 @@ public class SystemTextJsonUuidJsonConverterDictionaryPropertyTests
 
         string actualValue = JsonSerializer.Serialize(target, options);
 
-        Assert.AreEqual(expectedValue, actualValue);
+        Assert.That(actualValue, Is.EqualTo(expectedValue));
     }
 
     public static Stream GenerateStreamFromString(string s)

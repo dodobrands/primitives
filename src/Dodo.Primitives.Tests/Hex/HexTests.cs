@@ -12,25 +12,25 @@ public class HexTests
     [TestCaseSource(typeof(HexTestsData), nameof(HexTestsData.ValidHexStrings))]
     public void IsHexStringCorrect(string validHexString)
     {
-        Assert.True(Primitives.Hex.IsHexString(validHexString));
+        Assert.That(Primitives.Hex.IsHexString(validHexString));
     }
 
     [Test]
     public void IsHexStringReturnFalseWhenNull()
     {
-        Assert.False(Primitives.Hex.IsHexString(null));
+        Assert.That(Primitives.Hex.IsHexString(null), Is.False);
     }
 
     [Test]
     public void IsHexStringReturnFalseWhenOddStringLength()
     {
-        Assert.False(Primitives.Hex.IsHexString("F"));
+        Assert.That(Primitives.Hex.IsHexString("F"), Is.False);
     }
 
     [TestCaseSource(typeof(HexTestsData), nameof(HexTestsData.BrokenHexStrings))]
     public void IsHexStringReturnFalseWithBrokenStrings(string brokenHexString)
     {
-        Assert.False(Primitives.Hex.IsHexString(brokenHexString));
+        Assert.That(Primitives.Hex.IsHexString(brokenHexString), Is.False);
     }
 
     #endregion
@@ -44,29 +44,29 @@ public class HexTests
         byte[]? actual = Primitives.Hex.GetBytes(validHexString);
         Assert.Multiple(() =>
         {
-            Assert.NotNull(expected);
-            Assert.NotNull(actual);
-            Assert.True(expected!.Length == actual!.Length);
-            Assert.True(expected.SequenceEqual(actual));
+            Assert.That(expected, Is.Not.Null);
+            Assert.That(actual, Is.Not.Null);
+            Assert.That(expected!.Length == actual!.Length, Is.True);
+            Assert.That(expected.SequenceEqual(actual), Is.True);
         });
     }
 
     [Test]
     public void CanGetBytesReturnNullWhenNull()
     {
-        Assert.Null(Primitives.Hex.GetBytes(null!));
+        Assert.That(Primitives.Hex.GetBytes(null!), Is.Null);
     }
 
     [Test]
     public void CanGetBytesReturnNullWhenOddStringLength()
     {
-        Assert.Null(Primitives.Hex.GetBytes("fff"));
+        Assert.That(Primitives.Hex.GetBytes("fff"), Is.Null);
     }
 
     [TestCaseSource(typeof(HexTestsData), nameof(HexTestsData.BrokenHexStrings))]
     public void CanGetBytesReturnNullWithBrokenStrings(string brokenHexString)
     {
-        Assert.Null(Primitives.Hex.GetBytes(brokenHexString));
+        Assert.That(Primitives.Hex.GetBytes(brokenHexString), Is.Null);
     }
 
     #endregion
@@ -78,19 +78,19 @@ public class HexTests
     {
         string expected = ByteArrayToHexStringNaive(bytesToHex);
         string? actual = Primitives.Hex.GetString(bytesToHex);
-        Assert.AreEqual(expected, actual);
+        Assert.That(actual, Is.EqualTo(expected));
     }
 
     [Test]
     public void CanGetStringReturnNullWhenArrayIsNull()
     {
-        Assert.Null(Primitives.Hex.GetString(null!));
+        Assert.That(Primitives.Hex.GetString(null!), Is.Null);
     }
 
     [Test]
     public void CanGetStringReturnEmptyStringWhenArrayIsEmpty()
     {
-        Assert.AreEqual(string.Empty, Primitives.Hex.GetString(new byte[] { }));
+        Assert.That(Primitives.Hex.GetString(new byte[] { }), Is.EqualTo(string.Empty));
     }
 
     #endregion

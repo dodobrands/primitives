@@ -14,7 +14,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString();
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -25,7 +25,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString(null);
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -36,7 +36,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString(string.Empty);
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -69,7 +69,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString("N");
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -80,7 +80,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString("D");
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -91,7 +91,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString("B");
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -102,7 +102,7 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString("P");
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -113,6 +113,6 @@ public class UuidToStringTests
 
         var actualString = uuid.ToString("X");
 
-        Assert.AreEqual(expectedString, actualString);
+        Assert.That(actualString, Is.EqualTo(expectedString));
     }
 }

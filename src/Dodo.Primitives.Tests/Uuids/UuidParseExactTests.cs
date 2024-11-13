@@ -158,7 +158,7 @@ public class UuidParseExactTests
 
                 foreach (byte[] result in results)
                 {
-                    Assert.AreEqual(correctNString.Bytes, result);
+                    Assert.That(result, Is.EqualTo(correctNString.Bytes));
                 }
             }
         });
@@ -272,7 +272,7 @@ public class UuidParseExactTests
 
                 foreach (byte[] result in results)
                 {
-                    Assert.AreEqual(correctDString.Bytes, result);
+                    Assert.That(result, Is.EqualTo(correctDString.Bytes));
                 }
             }
         });
@@ -386,7 +386,7 @@ public class UuidParseExactTests
 
                 foreach (byte[] result in results)
                 {
-                    Assert.AreEqual(correctBString.Bytes, result);
+                    Assert.That(result, Is.EqualTo(correctBString.Bytes));
                 }
             }
         });
@@ -500,7 +500,7 @@ public class UuidParseExactTests
 
                 foreach (byte[] result in results)
                 {
-                    Assert.AreEqual(correctPString.Bytes, result);
+                    Assert.That(result, Is.EqualTo(correctPString.Bytes));
                 }
             }
         });
@@ -614,7 +614,7 @@ public class UuidParseExactTests
 
                 foreach (byte[] result in results)
                 {
-                    Assert.AreEqual(correctXString.Bytes, result);
+                    Assert.That(result, Is.EqualTo(correctXString.Bytes));
                 }
             }
         });

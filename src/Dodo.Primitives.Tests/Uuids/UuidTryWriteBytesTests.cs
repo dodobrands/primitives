@@ -17,8 +17,8 @@ public class UuidTryWriteBytesTests
 
         byte[] outputBytes = output.ToArray();
 
-        Assert.True(wasWritten);
-        Assert.AreEqual(correctBytes, outputBytes);
+        Assert.That(wasWritten);
+        Assert.That(outputBytes, Is.EqualTo(correctBytes));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -32,8 +32,8 @@ public class UuidTryWriteBytesTests
 
         byte[] outputBytes = output.Slice(0, 16).ToArray();
 
-        Assert.True(wasWritten);
-        Assert.AreEqual(correctBytes, outputBytes);
+        Assert.That(wasWritten);
+        Assert.That(outputBytes, Is.EqualTo(correctBytes));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -47,7 +47,7 @@ public class UuidTryWriteBytesTests
 
         byte[] outputBytes = output.ToArray();
 
-        Assert.False(wasWritten);
-        Assert.AreNotEqual(correctBytes, outputBytes);
+        Assert.That(wasWritten, Is.False);
+        Assert.That(outputBytes, Is.Not.EqualTo(correctBytes));
     }
 }

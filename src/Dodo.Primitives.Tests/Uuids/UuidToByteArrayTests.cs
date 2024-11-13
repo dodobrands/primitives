@@ -12,6 +12,6 @@ public class UuidToByteArrayTests
 
         byte[] uuidBytes = uuid.ToByteArray();
 
-        Assert.AreEqual(correctBytes, uuidBytes);
+        Assert.That(uuidBytes, Is.EqualTo(correctBytes));
     }
 }

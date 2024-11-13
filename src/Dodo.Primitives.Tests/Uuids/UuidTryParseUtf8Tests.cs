@@ -14,8 +14,8 @@ public class UuidTryParseUtf8Tests
         bool parsed = Uuid.TryParse((ReadOnlySpan<byte>) null, out Uuid uuid);
         Assert.Multiple(() =>
         {
-            Assert.False(parsed);
-            Assert.AreEqual(Uuid.Empty, uuid);
+            Assert.That(parsed, Is.False);
+            Assert.That(uuid, Is.EqualTo(Uuid.Empty));
         });
     }
 
@@ -25,8 +25,8 @@ public class UuidTryParseUtf8Tests
         bool parsed = Uuid.TryParse(ReadOnlySpan<byte>.Empty, out Uuid uuid);
         Assert.Multiple(() =>
         {
-            Assert.False(parsed);
-            Assert.AreEqual(Uuid.Empty, uuid);
+            Assert.That(parsed, Is.False);
+            Assert.That(uuid, Is.EqualTo(Uuid.Empty));
         });
     }
 
@@ -191,8 +191,8 @@ public class UuidTryParseUtf8Tests
                     *(Uuid*) pinnedActualBytes = uuid;
                 }
 
-                Assert.True(parsed);
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(parsed);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -206,7 +206,7 @@ public class UuidTryParseUtf8Tests
             {
                 int utf8Chars = GetUtf8BytesSpanFromString(largeString, utf8Buffer);
                 Span<byte> spanToParse = utf8Buffer.Slice(0, utf8Chars);
-                Assert.False(Uuid.TryParse(spanToParse, out _));
+                Assert.That(Uuid.TryParse(spanToParse, out _), Is.False);
             }
         });
     }

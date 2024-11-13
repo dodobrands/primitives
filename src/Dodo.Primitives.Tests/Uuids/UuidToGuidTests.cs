@@ -40,8 +40,8 @@ public class UuidToGuidTests
                 });
                 var actualGuidString = guid.ToString("N");
 
-                Assert.AreEqual(expectedBytes, actualBytes);
-                Assert.True(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                Assert.That(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
             }
         });
     }
@@ -79,8 +79,8 @@ public class UuidToGuidTests
                 var expectedGuidString = uuid.ToString("N");
                 var actualGuidString = guid.ToString("N");
 
-                Assert.AreEqual(expectedBytes, actualBytes);
-                Assert.True(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                Assert.That(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
             }
         });
     }
