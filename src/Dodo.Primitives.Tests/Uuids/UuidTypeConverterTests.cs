@@ -41,7 +41,7 @@ public class UuidTypeConverterTests
 
         Assert.That(actualValue, Is.Not.Null);
         Assert.That(actualValue, Is.InstanceOf<string>());
-        Assert.That((string?)actualValue, Is.EqualTo(expectedValue));
+        Assert.That((string?) actualValue, Is.EqualTo(expectedValue));
         Assert.That(notUuid.ToStringCalls, Is.EqualTo(1));
     }
 
@@ -56,7 +56,7 @@ public class UuidTypeConverterTests
 
         Assert.That(actualValue, Is.Not.Null);
         Assert.That(actualValue, Is.InstanceOf<string>());
-        Assert.That((string?)actualValue, Is.EqualTo(expectedValue));
+        Assert.That((string?) actualValue, Is.EqualTo(expectedValue));
     }
 
     [Test]
@@ -99,7 +99,7 @@ public class UuidTypeConverterTests
 
         Assert.That(actualValue, Is.Not.Null);
         Assert.That(actualValue, Is.InstanceOf<Uuid>());
-        Assert.That((Uuid)actualValue!, Is.EqualTo(expectedValue));
+        Assert.That((Uuid) actualValue!, Is.EqualTo(expectedValue));
     }
 
     [Test]
@@ -114,7 +114,7 @@ public class UuidTypeConverterTests
 
         Assert.That(actualValue, Is.Not.Null);
         Assert.That(actualValue, Is.InstanceOf<Uuid>());
-        Assert.That((Uuid)actualValue!, Is.EqualTo(expectedValue));
+        Assert.That((Uuid) actualValue!, Is.EqualTo(expectedValue));
     }
 
     [Test]

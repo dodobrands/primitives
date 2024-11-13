@@ -19,7 +19,7 @@ public class UuidToGuidTests
 
                 byte[] expectedBytes = uuid.ToByteArray();
                 byte[] actualBytes = guid.ToByteArray();
-                string? expectedGuidString = Primitives.Hex.GetString(new[]
+                string? expectedGuidString = Convert.ToHexString(new[]
                 {
                     nString.Bytes[3],
                     nString.Bytes[2],

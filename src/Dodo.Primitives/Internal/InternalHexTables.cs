@@ -6,7 +6,7 @@ namespace Dodo.Primitives.Internal;
 
 internal static unsafe class InternalHexTables
 {
-    internal const ushort MaximalChar = 103;
+    internal const ushort MaximalChar = 128;
     internal static readonly uint* TableToHexUtf16;
     internal static readonly ushort* TableToHexUtf8;
     internal static readonly byte* TableFromHexToBytesUtf16;

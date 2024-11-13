@@ -158,84 +158,18 @@ public unsafe struct Uuid :
         }
 
         var other = (Uuid) obj;
-        if (other._byte0 != _byte0)
+        ref ulong rSelfHi = ref Unsafe.As<Uuid, ulong>(ref this);
+        ref ulong rSelfLo = ref Unsafe.Add(ref rSelfHi, 1);
+        ref ulong rOtherHi = ref Unsafe.As<Uuid, ulong>(ref other);
+        ref ulong rOtherLo = ref Unsafe.Add(ref rOtherHi, 1);
+        if (rSelfHi != rOtherHi)
         {
-            return _byte0 < other._byte0 ? -1 : 1;
+            return rSelfHi < rOtherHi ? -1 : 1;
         }
 
-        if (other._byte1 != _byte1)
+        if (rSelfLo != rOtherLo)
         {
-            return _byte1 < other._byte1 ? -1 : 1;
-        }
-
-        if (other._byte2 != _byte2)
-        {
-            return _byte2 < other._byte2 ? -1 : 1;
-        }
-
-        if (other._byte3 != _byte3)
-        {
-            return _byte3 < other._byte3 ? -1 : 1;
-        }
-
-        if (other._byte4 != _byte4)
-        {
-            return _byte4 < other._byte4 ? -1 : 1;
-        }
-
-        if (other._byte5 != _byte5)
-        {
-            return _byte5 < other._byte5 ? -1 : 1;
-        }
-
-        if (other._byte6 != _byte6)
-        {
-            return _byte6 < other._byte6 ? -1 : 1;
-        }
-
-        if (other._byte7 != _byte7)
-        {
-            return _byte7 < other._byte7 ? -1 : 1;
-        }
-
-        if (other._byte8 != _byte8)
-        {
-            return _byte8 < other._byte8 ? -1 : 1;
-        }
-
-        if (other._byte9 != _byte9)
-        {
-            return _byte9 < other._byte9 ? -1 : 1;
-        }
-
-        if (other._byte10 != _byte10)
-        {
-            return _byte10 < other._byte10 ? -1 : 1;
-        }
-
-        if (other._byte11 != _byte11)
-        {
-            return _byte11 < other._byte11 ? -1 : 1;
-        }
-
-        if (other._byte12 != _byte12)
-        {
-            return _byte12 < other._byte12 ? -1 : 1;
-        }
-
-        if (other._byte13 != _byte13)
-        {
-            return _byte13 < other._byte13 ? -1 : 1;
-        }
-
-        if (other._byte14 != _byte14)
-        {
-            return _byte14 < other._byte14 ? -1 : 1;
-        }
-
-        if (other._byte15 != _byte15)
-        {
-            return _byte15 < other._byte15 ? -1 : 1;
+            return rSelfLo < rOtherLo ? -1 : 1;
         }
 
         return 0;
@@ -248,84 +182,19 @@ public unsafe struct Uuid :
     /// <returns>A signed number indicating the relative values of this instance and <paramref name="other" />.</returns>
     public int CompareTo(Uuid other)
     {
-        if (other._byte0 != _byte0)
+        ref ulong rSelfHi = ref Unsafe.As<Uuid, ulong>(ref this);
+        ref ulong rSelfLo = ref Unsafe.Add(ref rSelfHi, 1);
+        ref ulong rOtherHi = ref Unsafe.As<Uuid, ulong>(ref other);
+        ref ulong rOtherLo = ref Unsafe.Add(ref rOtherHi, 1);
+
+        if (rSelfHi != rOtherHi)
         {
-            return _byte0 < other._byte0 ? -1 : 1;
+            return rSelfHi < rOtherHi ? -1 : 1;
         }
 
-        if (other._byte1 != _byte1)
+        if (rSelfLo != rOtherLo)
         {
-            return _byte1 < other._byte1 ? -1 : 1;
-        }
-
-        if (other._byte2 != _byte2)
-        {
-            return _byte2 < other._byte2 ? -1 : 1;
-        }
-
-        if (other._byte3 != _byte3)
-        {
-            return _byte3 < other._byte3 ? -1 : 1;
-        }
-
-        if (other._byte4 != _byte4)
-        {
-            return _byte4 < other._byte4 ? -1 : 1;
-        }
-
-        if (other._byte5 != _byte5)
-        {
-            return _byte5 < other._byte5 ? -1 : 1;
-        }
-
-        if (other._byte6 != _byte6)
-        {
-            return _byte6 < other._byte6 ? -1 : 1;
-        }
-
-        if (other._byte7 != _byte7)
-        {
-            return _byte7 < other._byte7 ? -1 : 1;
-        }
-
-        if (other._byte8 != _byte8)
-        {
-            return _byte8 < other._byte8 ? -1 : 1;
-        }
-
-        if (other._byte9 != _byte9)
-        {
-            return _byte9 < other._byte9 ? -1 : 1;
-        }
-
-        if (other._byte10 != _byte10)
-        {
-            return _byte10 < other._byte10 ? -1 : 1;
-        }
-
-        if (other._byte11 != _byte11)
-        {
-            return _byte11 < other._byte11 ? -1 : 1;
-        }
-
-        if (other._byte12 != _byte12)
-        {
-            return _byte12 < other._byte12 ? -1 : 1;
-        }
-
-        if (other._byte13 != _byte13)
-        {
-            return _byte13 < other._byte13 ? -1 : 1;
-        }
-
-        if (other._byte14 != _byte14)
-        {
-            return _byte14 < other._byte14 ? -1 : 1;
-        }
-
-        if (other._byte15 != _byte15)
-        {
-            return _byte15 < other._byte15 ? -1 : 1;
+            return rSelfLo < rOtherLo ? -1 : 1;
         }
 
         return 0;
@@ -932,7 +801,6 @@ public unsafe struct Uuid :
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8N(byte* dest)
     {
         // dddddddddddddddddddddddddddddddd
@@ -955,7 +823,6 @@ public unsafe struct Uuid :
         destInt16[15] = TableToHexUtf8[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8D(byte* dest)
     {
         // dddddddd-dddd-dddd-dddd-dddddddddddd
@@ -981,7 +848,6 @@ public unsafe struct Uuid :
         destInt16[10] = TableToHexUtf8[_byte9];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8B(byte* dest)
     {
         // {dddddddd-dddd-dddd-dddd-dddddddddddd}
@@ -1009,7 +875,6 @@ public unsafe struct Uuid :
         destInt16[17] = TableToHexUtf8[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8P(byte* dest)
     {
         // (dddddddd-dddd-dddd-dddd-dddddddddddd)
@@ -1037,7 +902,6 @@ public unsafe struct Uuid :
         destInt16[17] = TableToHexUtf8[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8X(byte* dest)
     {
         const ushort zeroXUtf8 = ('x' << 8) | '0'; // 0x
@@ -1072,7 +936,6 @@ public unsafe struct Uuid :
         destInt16[29] = TableToHexUtf8[_byte14];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16N(char* dest)
     {
         // dddddddddddddddddddddddddddddddd
@@ -1095,7 +958,6 @@ public unsafe struct Uuid :
         destInt32[15] = TableToHexUtf16[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16D(char* dest)
     {
         // dddddddd-dddd-dddd-dddd-dddddddddddd
@@ -1121,7 +983,6 @@ public unsafe struct Uuid :
         destInt32[10] = TableToHexUtf16[_byte9];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16B(char* dest)
     {
         // {dddddddd-dddd-dddd-dddd-dddddddddddd}
@@ -1149,7 +1010,6 @@ public unsafe struct Uuid :
         destInt32[17] = TableToHexUtf16[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16P(char* dest)
     {
         // (dddddddd-dddd-dddd-dddd-dddddddddddd)
@@ -1177,8 +1037,6 @@ public unsafe struct Uuid :
         destInt32[17] = TableToHexUtf16[_byte15];
     }
 
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16X(char* dest)
     {
         const uint zeroXUtf16 = ((uint) 'x' << 16) | '0'; // 0x
@@ -1217,7 +1075,6 @@ public unsafe struct Uuid :
     ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation.
     /// </summary>
     /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
     public Guid ToGuidByteLayout()
     {
         var result = new Guid();
@@ -1246,7 +1103,6 @@ public unsafe struct Uuid :
     ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation.
     /// </summary>
     /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
     public Guid ToGuidStringLayout()
     {
         var result = new Guid();
@@ -2324,7 +2180,6 @@ public unsafe struct Uuid :
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrN(char* value, byte* resultPtr)
     {
         // e.g. "d85b1407351d4694939203acc5870eb1"
@@ -2463,7 +2318,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrD(char* value, byte* resultPtr)
     {
         // e.g. "d85b1407-351d-4694-9392-03acc5870eb1"
@@ -2614,7 +2468,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrX(char* value, byte* resultPtr)
     {
         // e.g. "{0xd85b1407,0x351d,0x4694,{0x93,0x92,0x03,0xac,0xc5,0x87,0x0e,0xb1}}"
@@ -2808,7 +2661,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrNUtf8(byte* value, byte* resultPtr)
     {
         // e.g. "d85b1407351d4694939203acc5870eb1"
@@ -2947,7 +2799,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrDUtf8(byte* value, byte* resultPtr)
     {
         // e.g. "d85b1407-351d-4694-9392-03acc5870eb1"
@@ -3098,7 +2949,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrXUtf8(byte* value, byte* resultPtr)
     {
         // e.g. "{0xd85b1407,0x351d,0x4694,{0x93,0x92,0x03,0xac,0xc5,0x87,0x0e,0xb1}}"
