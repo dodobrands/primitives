@@ -69,7 +69,7 @@ jobs:
               shell: bash
               run: |
                   dotnet publish -c Release ./tools/Dodo.Primitives.Tools.CompareVersions/Dodo.Primitives.Tools.CompareVersions.csproj
-                  source_more_than_target=$(dotnet ./tools/Dodo.Primitives.Tools.CompareVersions/bin/Release/net8.0/publish/Dodo.Primitives.Tools.CompareVersions.dll "${source_version}" "${target_version}")
+                  source_more_than_target=$(dotnet ./tools/Dodo.Primitives.Tools.CompareVersions/bin/Release/net9.0/publish/Dodo.Primitives.Tools.CompareVersions.dll "${source_version}" "${target_version}")
                   last_exit_code=$(printf "%d" $?)
                   source_more_than_target=$(printf "%s" $source_more_than_target)
                   if [ "$last_exit_code" -ne 0 ]
