@@ -25,6 +25,34 @@ public class UuidCreateVersion7Tests
     }
 
     [Test]
+    public void CreateVersion7WithDateTimeOffset_ShouldThrows_WhenDateTimeOffsetIsLowerThanUnixEpoch()
+    {
+        long ticks = DateTimeOffset.UnixEpoch.UtcTicks - 1;
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Uuid.CreateVersion7(new DateTimeOffset(ticks, TimeSpan.Zero)));
+    }
+
+    [Test]
+    public void CreateVersion7WithDateTimeOffset_DoesNotThrows_WhenDateTimeOffsetExactUnixEpoch()
+    {
+        long ticks = DateTimeOffset.UnixEpoch.UtcTicks;
+        Assert.DoesNotThrow(() =>
+        {
+            Uuid.CreateVersion7(new DateTimeOffset(ticks, TimeSpan.Zero));
+        });
+    }
+
+    [Test]
+    public void CreateVersion7WithDateTimeOffset_DoesNotThrows_WhenDateTimeOffsetIsMax()
+    {
+        long ticks = DateTimeOffset.MaxValue.UtcTicks;
+        Assert.DoesNotThrow(() =>
+        {
+            Uuid.CreateVersion7(new DateTimeOffset(ticks, TimeSpan.Zero));
+        });
+    }
+
+    [Test]
     public void CreateVersion7WithoutDateTimeOffset()
     {
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
