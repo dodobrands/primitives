@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -23,7 +24,8 @@ public unsafe struct Uuid :
     ISpanFormattable,
     IComparable,
     IComparable<Uuid>,
-    IEquatable<Uuid>, IFormattable
+    IEquatable<Uuid>,
+    IFormattable
 #if NET8_0_OR_GREATER
     , ISpanParsable<Uuid>, IParsable<Uuid>, IUtf8SpanFormattable, IComparisonOperators<Uuid, Uuid, bool>
 #endif
@@ -63,7 +65,29 @@ public unsafe struct Uuid :
     /// </summary>
     // ReSharper disable once RedundantDefaultMemberInitializer
     // ReSharper disable once MemberCanBePrivate.Global
-    public static readonly Uuid Empty = new Uuid();
+    // ReSharper disable once UnassignedReadonlyField
+    public static readonly Uuid Empty;
+
+    /// <summary>Gets a <see cref="Uuid" /> where all bits are set.</summary>
+    /// <remarks>This returns the value: FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF</remarks>
+    public static Uuid AllBitsSet => new Uuid(
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue);
+
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified array of bytes.
@@ -83,15 +107,6 @@ public unsafe struct Uuid :
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified byte pointer.
-    /// </summary>
-    /// <param name="bytes">A byte pointer containing bytes which used to initialize the <see cref="Uuid" />.</param>
-    public Uuid(byte* bytes)
-    {
-        this = Unsafe.ReadUnaligned<Uuid>(bytes);
-    }
-
-    /// <summary>
     ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the value represented by the specified read-only span of
     ///     bytes.
     /// </summary>
@@ -105,6 +120,125 @@ public unsafe struct Uuid :
         }
 
         this = Unsafe.ReadUnaligned<Uuid>(ref MemoryMarshal.GetReference(bytes));
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified bytes, numbering from zero.
+    /// </summary>
+    /// <param name="byte0">Byte 0.</param>
+    /// <param name="byte1">Byte 1.</param>
+    /// <param name="byte2">Byte 2.</param>
+    /// <param name="byte3">Byte 3.</param>
+    /// <param name="byte4">Byte 4.</param>
+    /// <param name="byte5">Byte 5.</param>
+    /// <param name="byte6">Byte 6.</param>
+    /// <param name="byte7">Byte 7.</param>
+    /// <param name="byte8">Byte 8.</param>
+    /// <param name="byte9">Byte 9.</param>
+    /// <param name="byte10">Byte 10.</param>
+    /// <param name="byte11">Byte 11.</param>
+    /// <param name="byte12">Byte 12.</param>
+    /// <param name="byte13">Byte 13.</param>
+    /// <param name="byte14">Byte 14.</param>
+    /// <param name="byte15">Byte 15.</param>
+    public Uuid(
+        byte byte0,
+        byte byte1,
+        byte byte2,
+        byte byte3,
+        byte byte4,
+        byte byte5,
+        byte byte6,
+        byte byte7,
+        byte byte8,
+        byte byte9,
+        byte byte10,
+        byte byte11,
+        byte byte12,
+        byte byte13,
+        byte byte14,
+        byte byte15)
+    {
+        _byte0 = byte0;
+        _byte1 = byte1;
+        _byte2 = byte2;
+        _byte3 = byte3;
+        _byte4 = byte4;
+        _byte5 = byte5;
+        _byte6 = byte6;
+        _byte7 = byte7;
+        _byte8 = byte8;
+        _byte9 = byte9;
+        _byte10 = byte10;
+        _byte11 = byte11;
+        _byte12 = byte12;
+        _byte13 = byte13;
+        _byte14 = byte14;
+        _byte15 = byte15;
+    }
+
+    /// <summary>Gets the value of the variant field for the <see cref="Uuid" />.</summary>
+    /// <remarks>
+    ///     <para>This corresponds to the most significant 4 bits of the 8th byte: 00000000-0000-0000-F000-000000000000. The "don't-care" bits are not masked out.</para>
+    ///     <para>See RFC 9562 for more information on how to interpret this value.</para>
+    /// </remarks>
+    public int Variant => _byte8 >> 4;
+
+    /// <summary>Gets the value of the version field for the <see cref="Uuid" />.</summary>
+    /// <remarks>
+    ///     <para>This corresponds to the most significant 4 bits of the 6th byte: 00000000-0000-F000-0000-000000000000.</para>
+    ///     <para>See RFC 9562 for more information on how to interpret this value.</para>
+    /// </remarks>
+    public int Version => _byte6 >> 6;
+
+    /// <summary>Creates a new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</summary>
+    /// <returns>A new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</returns>
+    /// <remarks>
+    ///     <para>This uses <see cref="DateTimeOffset.UtcNow" /> to determine the Unix Epoch timestamp source.</para>
+    ///     <para>This seeds the unix_ts_ms, rand_a and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remain part of field rand_b is filled with random data.</para>
+    /// </remarks>
+    public static Uuid CreateVersion7()
+    {
+        return CreateVersion7(DateTimeOffset.UtcNow);
+    }
+
+    /// <summary>Creates a new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</summary>
+    /// <param name="timestamp">The date time offset used to determine the Unix Epoch timestamp.</param>
+    /// <returns>A new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timestamp" /> represents an offset prior to <see cref="DateTimeOffset.UnixEpoch" />.</exception>
+    /// <remarks>
+    ///     <para>This seeds the unix_ts_ms, rand_a and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remain part of field rand_b is filled with random data.</para>
+    /// </remarks>
+    public static Uuid CreateVersion7(DateTimeOffset timestamp)
+    {
+        const long unixEpochTicks = 621_355_968_000_000_000L;
+        const byte variant10XxMask = 0b11000000;
+        const byte variant10XxValue = 0b10000000;
+        const ushort version7Mask = 0b11110000_00000000;
+        const ushort version7Value = 0b01110000_00000000;
+        const ushort ticksNotFitInRandAExtractMask = 0b00000000_00000011;
+        const ushort ticksNotFitInRandASetMask = 0b00110000;
+        if (timestamp.UtcTicks < unixEpochTicks)
+        {
+            throw new ArgumentOutOfRangeException(
+                $"{nameof(timestamp)} must be greater than {DateTimeOffset.UnixEpoch}.");
+        }
+
+        timestamp.ToUnixTimeMilliseconds();
+        Span<byte> result = stackalloc byte[16];
+        var tempGuid = Guid.NewGuid();
+        tempGuid.TryWriteBytes(result);
+        var unixTsTicks = (ulong) (timestamp.UtcTicks - unixEpochTicks);
+        ulong unixTsMs = unixTsTicks / TimeSpan.TicksPerMillisecond;
+        BinaryPrimitives.WriteUInt64BigEndian(result, unixTsMs << 16);
+        var remainTicks = (ushort) (unixTsTicks - (unixTsMs * TimeSpan.TicksPerMillisecond)); // up to 14 bits
+        var randA = (ushort) (remainTicks >> 2);
+        var randAVer = (ushort) ((randA & ~version7Mask) | version7Value);
+        BinaryPrimitives.WriteUInt16BigEndian(result[6..], randAVer);
+        result[8] = (byte) ((result[8] & ~variant10XxMask) | variant10XxValue);
+        var ticksNotFitInRandA = (byte) ((byte) (remainTicks & ticksNotFitInRandAExtractMask) << 4);
+        result[8] = (byte) ((result[8] & ~ticksNotFitInRandASetMask) | ticksNotFitInRandA);
+        return new Uuid(result);
     }
 
     /// <summary>
@@ -1072,9 +1206,13 @@ public unsafe struct Uuid :
     }
 
     /// <summary>
-    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation.
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="ToLittleEndianGuid()" /> instead.</b>
+    ///     </para>
+    ///     <para>Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation (little endian).</para>
     /// </summary>
-    /// <returns></returns>
+    /// <returns><see cref="System.Guid" /> with same binary representation (little endian).</returns>
+    [Obsolete("Use ToLittleEndianGuid() instead.")]
     public Guid ToGuidByteLayout()
     {
         var result = new Guid();
@@ -1100,10 +1238,70 @@ public unsafe struct Uuid :
     }
 
     /// <summary>
-    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation.
+    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> in little endian format.
     /// </summary>
-    /// <returns></returns>
+    /// <returns><see cref="System.Guid" /> in little endian format.</returns>
+    public Guid ToLittleEndianGuid()
+    {
+        var result = new Guid();
+        Guid* resultPtr = &result;
+        var resultPtrBytes = (byte*) resultPtr;
+        resultPtrBytes[0] = _byte0;
+        resultPtrBytes[1] = _byte1;
+        resultPtrBytes[2] = _byte2;
+        resultPtrBytes[3] = _byte3;
+        resultPtrBytes[4] = _byte4;
+        resultPtrBytes[5] = _byte5;
+        resultPtrBytes[6] = _byte6;
+        resultPtrBytes[7] = _byte7;
+        resultPtrBytes[8] = _byte8;
+        resultPtrBytes[9] = _byte9;
+        resultPtrBytes[10] = _byte10;
+        resultPtrBytes[11] = _byte11;
+        resultPtrBytes[12] = _byte12;
+        resultPtrBytes[13] = _byte13;
+        resultPtrBytes[14] = _byte14;
+        resultPtrBytes[15] = _byte15;
+        return result;
+    }
+
+    /// <summary>
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="ToBigEndianGuid()" /> instead.</b>
+    ///     </para>
+    ///     <para>Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation (big endian).</para>
+    /// </summary>
+    /// <returns><see cref="System.Guid" /> with same string representation (big endian).</returns>
+    [Obsolete("Use ToBigEndianGuid() instead.")]
     public Guid ToGuidStringLayout()
+    {
+        var result = new Guid();
+        Guid* resultPtr = &result;
+        var resultPtrBytes = (byte*) resultPtr;
+        resultPtrBytes[0] = _byte3;
+        resultPtrBytes[1] = _byte2;
+        resultPtrBytes[2] = _byte1;
+        resultPtrBytes[3] = _byte0;
+        resultPtrBytes[4] = _byte5;
+        resultPtrBytes[5] = _byte4;
+        resultPtrBytes[6] = _byte7;
+        resultPtrBytes[7] = _byte6;
+        resultPtrBytes[8] = _byte8;
+        resultPtrBytes[9] = _byte9;
+        resultPtrBytes[10] = _byte10;
+        resultPtrBytes[11] = _byte11;
+        resultPtrBytes[12] = _byte12;
+        resultPtrBytes[13] = _byte13;
+        resultPtrBytes[14] = _byte14;
+        resultPtrBytes[15] = _byte15;
+        return result;
+    }
+
+    /// <summary>
+    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> in big endian format.
+    /// </summary>
+    /// <returns><see cref="System.Guid" /> in big endian format.</returns>
+    public Guid ToBigEndianGuid()
     {
         var result = new Guid();
         Guid* resultPtr = &result;
@@ -3614,9 +3812,13 @@ public unsafe struct Uuid :
     private const byte ReservedFlag = 0b1000_0000;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Uuid" /> structure that represents Uuid v1 (RFC4122).
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="CreateVersion7()" /> instead.</b>
+    ///     </para>
+    ///     <para>Initializes a new instance of the <see cref="Uuid" /> structure that represents Uuid v1 (RFC4122).</para>
     /// </summary>
     /// <returns></returns>
+    [Obsolete("Use CreateVersion7() instead.")]
     public static Uuid NewTimeBased()
     {
         byte* resultPtr = stackalloc byte[16];
@@ -3634,13 +3836,17 @@ public unsafe struct Uuid :
         resultPtr[6] = (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag);
         resultPtr[7] = ticksPtr[6];
         resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
-        return new Uuid(resultPtr);
+        return new Uuid(new Span<byte>(resultPtr, 16));
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Uuid" /> structure that works the same way as UUID_TO_BIN(UUID(), 1) from MySQL 8.0.
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="CreateVersion7()" /> instead.</b>
+    ///     </para>
+    ///     <para>Initializes a new instance of the <see cref="Uuid" /> structure that works the same way as UUID_TO_BIN(UUID(), 1) from MySQL 8.0.</para>
     /// </summary>
     /// <returns></returns>
+    [Obsolete("Use CreateVersion7() instead.")]
     public static Uuid NewMySqlOptimized()
     {
         byte* resultPtr = stackalloc byte[16];
@@ -3658,7 +3864,7 @@ public unsafe struct Uuid :
         resultPtr[6] = ticksPtr[1];
         resultPtr[7] = ticksPtr[0];
         resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
-        return new Uuid(resultPtr);
+        return new Uuid(new Span<byte>(resultPtr, 16));
     }
 
     #endregion

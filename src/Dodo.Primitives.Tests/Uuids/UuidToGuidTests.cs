@@ -15,7 +15,9 @@ public class UuidToGuidTests
             foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
             {
                 var uuid = new Uuid(nString.Bytes);
+#pragma warning disable CS0618 // Type or member is obsolete
                 Guid guid = uuid.ToGuidByteLayout();
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 byte[] expectedBytes = uuid.ToByteArray();
                 byte[] actualBytes = guid.ToByteArray();
@@ -54,7 +56,9 @@ public class UuidToGuidTests
             foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
             {
                 var uuid = new Uuid(nString.Bytes);
+#pragma warning disable CS0618 // Type or member is obsolete
                 Guid guid = uuid.ToGuidStringLayout();
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 byte[] expectedBytes =
                 {

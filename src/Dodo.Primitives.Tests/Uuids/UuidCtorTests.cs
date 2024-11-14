@@ -49,26 +49,6 @@ public class UuidCtorTests
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
-    public unsafe void CtorFromPtrCorrectData(byte[] correctBytes)
-    {
-        byte* bytePtr = stackalloc byte[correctBytes.Length];
-        for (var i = 0; i < correctBytes.Length; i++)
-        {
-            bytePtr[i] = correctBytes[i];
-        }
-
-        var uuid = new Uuid(bytePtr);
-
-        var uuidBytes = new byte[16];
-        fixed (byte* pinnedUuidArray = uuidBytes)
-        {
-            *(Uuid*) pinnedUuidArray = uuid;
-        }
-
-        Assert.That(uuidBytes, Is.EqualTo(correctBytes));
-    }
-
-    [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
     public unsafe void CtorFromReadOnlySpanCorrectBytes(byte[] correctBytes)
     {
         var span = new ReadOnlySpan<byte>(correctBytes);
