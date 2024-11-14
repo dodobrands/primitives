@@ -1895,6 +1895,85 @@ public static class UuidTestData
         return results.ToArray();
     }
 
+    public static object[] GetAllUuidVersions()
+    {
+        return new object[]
+        {
+            new object[]
+            {
+                "C232AB00-9414-11EC-B3C8-9F6BDECED846",
+                1
+            },
+            new object[]
+            {
+                "000003e8-a2bd-21ef-8f00-325096b39f47",
+                2
+            },
+            new object[]
+            {
+                "5df41881-3aed-3515-88a7-2f4a814cf09e",
+                3
+            },
+            new object[]
+            {
+                "919108f7-52d1-4320-9bac-f847db4148a8",
+                4
+            },
+            new object[]
+            {
+                "2ed6657d-e927-568b-95e1-2665a8aea6a2",
+                5
+            },
+            new object[]
+            {
+                "1EC9414C-232A-6B00-B3C8-9F6BDECED846",
+                6
+            },
+            new object[]
+            {
+                "017F22E2-79B0-7CC3-98C4-DC0C0C07398F",
+                7
+            },
+            new object[]
+            {
+                "2489E9AD-2EE2-8E00-8EC9-32D5F69181C0",
+                8
+            }
+        };
+    }
+
+    public static object[] GetAllUuidVariants()
+    {
+        return new object[]
+        {
+            new object[]
+            {
+                "01932c7c3db674000f1aa8ecd44dba8e",
+                0 //0b[0000]1111 >> 4 = 0b[0000] aka [ 0 x x x ] - Reserved. Network Computing System (NCS) backward compatibility, and includes Nil UUID as per Section 5.9 (RFC9562).
+            },
+            new object[]
+            {
+                "01932c7db4f974c78f4112fec6261162",
+                8 //0b[1000]1111 >> 4 = 0b[1000] aka [ 1 0 x x ] - The variant specified in this document (RFC9562).
+            },
+            new object[]
+            {
+                "01932c7e84f2701bcf01138af0833ce7",
+                12 //0b[1100]1111 >> 4 = 0b[1100] aka [ 1 1 0 x ] - Reserved. Microsoft Corporation backward compatibility (RFC9562).
+            },
+            new object[]
+            {
+                "01932c7fafd776a2efd103f756df5a38",
+                14 //0b[1110]1111 >> 4 = 0b[1110] aka [ 1 1 1 x ] - Reserved for future definition and includes Max UUID as per Section 5.10 (RFC9562).
+            },
+            new object[]
+            {
+                "01932c834499700bff144503c6259bdc",
+                15 //0b[1111]1111 >> 4 = 0b[1111] aka [ 1 1 1 x ] - Reserved for future definition and includes Max UUID as per Section 5.10 (RFC9562).
+            }
+        };
+    }
+
     // ReSharper disable once InconsistentNaming
     public static class Formats
     {
