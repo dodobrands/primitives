@@ -12,7 +12,7 @@ public class UuidEqualsTests
 
         bool isEquals = uuid.Equals(null);
 
-        Assert.False(isEquals);
+        Assert.That(isEquals, Is.False);
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectUuidBytesArrays))]
@@ -23,7 +23,7 @@ public class UuidEqualsTests
 
         bool isEquals = uuid.Equals(objectWithAnotherType);
 
-        Assert.False(isEquals);
+        Assert.That(isEquals, Is.False);
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectEqualsToBytesAndResult))]
@@ -37,7 +37,7 @@ public class UuidEqualsTests
 
         bool isEquals = uuid.Equals(objectUuid);
 
-        Assert.AreEqual(expectedResult, isEquals);
+        Assert.That(isEquals, Is.EqualTo(expectedResult));
     }
 
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.CorrectEqualsToBytesAndResult))]
@@ -51,6 +51,6 @@ public class UuidEqualsTests
 
         bool isEquals = uuid.Equals(otherUuid);
 
-        Assert.AreEqual(expectedResult, isEquals);
+        Assert.That(isEquals, Is.EqualTo(expectedResult));
     }
 }

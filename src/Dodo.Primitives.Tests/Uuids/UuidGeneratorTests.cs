@@ -17,7 +17,9 @@ public class UuidGeneratorTests
     public unsafe void NewTimeBased()
     {
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
+#pragma warning disable CS0618 // Type or member is obsolete
         var uuid = Uuid.NewTimeBased();
+#pragma warning restore CS0618 // Type or member is obsolete
         DateTimeOffset endDate = DateTimeOffset.UtcNow;
         var uuidPtr = (byte*) &uuid;
         long ticks = (endDate - startDate).Ticks + 1;
@@ -39,7 +41,9 @@ public class UuidGeneratorTests
     public unsafe void NewMySqlOptimized()
     {
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
+#pragma warning disable CS0618 // Type or member is obsolete
         var uuid = Uuid.NewMySqlOptimized();
+#pragma warning restore CS0618 // Type or member is obsolete
         DateTimeOffset endDate = DateTimeOffset.UtcNow;
         var uuidPtr = (byte*) &uuid;
         long ticks = (endDate - startDate).Ticks + 1;

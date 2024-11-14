@@ -20,7 +20,7 @@ public class SystemTextJsonUuidJsonConverterTests
         Uuid actualUuid = converter.Read(ref reader, typeof(Uuid), null);
 #pragma warning restore 8625
 
-        Assert.AreEqual(expectedUuid, actualUuid);
+        Assert.That(actualUuid, Is.EqualTo(expectedUuid));
     }
 
     [Test]
@@ -38,6 +38,6 @@ public class SystemTextJsonUuidJsonConverterTests
 
         writer.Flush();
         string actualValue = Encoding.UTF8.GetString(stream.ToArray());
-        Assert.AreEqual(expectedValue, actualValue);
+        Assert.That(actualValue, Is.EqualTo(expectedValue));
     }
 }

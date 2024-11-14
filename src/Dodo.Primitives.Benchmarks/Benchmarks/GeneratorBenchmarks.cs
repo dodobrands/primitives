@@ -13,20 +13,14 @@ namespace Dodo.Primitives.Benchmarks.Benchmarks;
 public class GeneratorBenchmarks
 {
     [Benchmark]
-    public Guid guid_New()
+    public Guid guid_CreateVersion7()
     {
-        return Guid.NewGuid();
+        return Guid.CreateVersion7();
     }
 
     [Benchmark]
-    public Uuid uuid_NewTimeBased()
+    public Uuid uuid_CreateVersion7()
     {
-        return Uuid.NewTimeBased();
-    }
-
-    [Benchmark]
-    public Uuid uuid_NewMySqlOptimized()
-    {
-        return Uuid.NewMySqlOptimized();
+        return Uuid.CreateVersion7();
     }
 }

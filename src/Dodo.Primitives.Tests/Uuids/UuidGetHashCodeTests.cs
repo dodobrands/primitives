@@ -20,6 +20,6 @@ public class UuidGetHashCodeTests
 
         int actualHashCode = uuid.GetHashCode();
 
-        Assert.AreEqual(expectedHashCode, actualHashCode);
+        Assert.That(actualHashCode, Is.EqualTo(expectedHashCode));
     }
 }

@@ -26,7 +26,7 @@ public class Utf8JsonReaderUuidExtensionsTests
             reader.Read(); // "hsadgfhygsdaf"
             reader.GetUuid();
         });
-        Assert.AreEqual("System.Text.Json.Rethrowable", ex?.Source);
+        Assert.That(ex?.Source, Is.EqualTo("System.Text.Json.Rethrowable"));
     }
 
     [Test]
@@ -39,7 +39,7 @@ public class Utf8JsonReaderUuidExtensionsTests
             reader.Read();
             reader.TryGetUuid(out _);
         });
-        Assert.AreEqual("System.Text.Json.Rethrowable", ex?.Source);
+        Assert.That(ex?.Source, Is.EqualTo("System.Text.Json.Rethrowable"));
     }
 
     [Test]
@@ -61,8 +61,8 @@ public class Utf8JsonReaderUuidExtensionsTests
         reader.Read(); // "value"
         reader.Read(); // UuidTooLongEscapedValue
 
-        Assert.False(reader.TryGetUuid(out Uuid actualUuid));
-        Assert.AreEqual(Uuid.Empty, actualUuid);
+        Assert.That(reader.TryGetUuid(out Uuid actualUuid), Is.False);
+        Assert.That(actualUuid, Is.EqualTo(Uuid.Empty));
     }
 
     [Test]
@@ -80,8 +80,8 @@ public class Utf8JsonReaderUuidExtensionsTests
                 reader.Read(); // "value"
                 reader.Read(); // UuidEscapedValue
 
-                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                Assert.AreEqual(expectedUuid, actualUuid);
+                Assert.That(reader.TryGetUuid(out Uuid actualUuid), Is.True);
+                Assert.That(actualUuid, Is.EqualTo(expectedUuid));
             }
         });
     }
@@ -101,8 +101,8 @@ public class Utf8JsonReaderUuidExtensionsTests
                 reader.Read(); // "value"
                 reader.Read(); // UuidEscapedValue
 
-                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                Assert.AreEqual(expectedUuid, actualUuid);
+                Assert.That(reader.TryGetUuid(out Uuid actualUuid), Is.True);
+                Assert.That(actualUuid, Is.EqualTo(expectedUuid));
             }
         });
     }
@@ -124,8 +124,8 @@ public class Utf8JsonReaderUuidExtensionsTests
                 reader.Read(); // "value"
                 reader.Read(); // UuidEscapedValue
 
-                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                Assert.AreEqual(expectedUuid, actualUuid);
+                Assert.That(reader.TryGetUuid(out Uuid actualUuid), Is.True);
+                Assert.That(actualUuid, Is.EqualTo(expectedUuid));
             }
         });
     }
@@ -147,8 +147,8 @@ public class Utf8JsonReaderUuidExtensionsTests
                 reader.Read(); // "value"
                 reader.Read(); // UuidEscapedValue
 
-                Assert.True(reader.TryGetUuid(out Uuid actualUuid));
-                Assert.AreEqual(expectedUuid, actualUuid);
+                Assert.That(reader.TryGetUuid(out Uuid actualUuid));
+                Assert.That(actualUuid, Is.EqualTo(expectedUuid));
             }
         });
     }
@@ -196,8 +196,8 @@ public class Utf8JsonReaderUuidExtensionsTests
         reader.Read(); // "value"
         reader.Read(); // UuidTooLongEscapedValue
 
-        Assert.False(reader.TryGetUuid(out Uuid actualUuid));
-        Assert.AreEqual(Uuid.Empty, actualUuid);
+        Assert.That(reader.TryGetUuid(out Uuid actualUuid), Is.False);
+        Assert.That(actualUuid, Is.EqualTo(Uuid.Empty));
     }
 
     [Test]
@@ -217,8 +217,8 @@ public class Utf8JsonReaderUuidExtensionsTests
         reader.Read(); // "value"
         reader.Read(); // UuidTooLongEscapedValue
 
-        Assert.False(reader.TryGetUuid(out Uuid actualUuid));
-        Assert.AreEqual(Uuid.Empty, actualUuid);
+        Assert.That(reader.TryGetUuid(out Uuid actualUuid), Is.False);
+        Assert.That(actualUuid, Is.EqualTo(Uuid.Empty));
     }
 
     internal class MemorySegment : ReadOnlySequenceSegment<byte>

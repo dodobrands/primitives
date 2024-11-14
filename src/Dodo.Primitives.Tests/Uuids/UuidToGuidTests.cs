@@ -15,11 +15,13 @@ public class UuidToGuidTests
             foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
             {
                 var uuid = new Uuid(nString.Bytes);
+#pragma warning disable CS0618 // Type or member is obsolete
                 Guid guid = uuid.ToGuidByteLayout();
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 byte[] expectedBytes = uuid.ToByteArray();
                 byte[] actualBytes = guid.ToByteArray();
-                string? expectedGuidString = Primitives.Hex.GetString(new[]
+                string? expectedGuidString = Convert.ToHexString(new[]
                 {
                     nString.Bytes[3],
                     nString.Bytes[2],
@@ -40,8 +42,46 @@ public class UuidToGuidTests
                 });
                 var actualGuidString = guid.ToString("N");
 
-                Assert.AreEqual(expectedBytes, actualBytes);
-                Assert.True(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                Assert.That(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
+            }
+        });
+    }
+
+    [Test]
+    public void ToGuidLittleEndianLayout()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
+            {
+                var uuid = new Uuid(nString.Bytes);
+                Guid guid = uuid.ToGuidLittleEndian();
+                byte[] expectedBytes = uuid.ToByteArray();
+                byte[] actualBytes = guid.ToByteArray();
+                string? expectedGuidString = Convert.ToHexString(new[]
+                {
+                    nString.Bytes[3],
+                    nString.Bytes[2],
+                    nString.Bytes[1],
+                    nString.Bytes[0],
+                    nString.Bytes[5],
+                    nString.Bytes[4],
+                    nString.Bytes[7],
+                    nString.Bytes[6],
+                    nString.Bytes[8],
+                    nString.Bytes[9],
+                    nString.Bytes[10],
+                    nString.Bytes[11],
+                    nString.Bytes[12],
+                    nString.Bytes[13],
+                    nString.Bytes[14],
+                    nString.Bytes[15]
+                });
+                var actualGuidString = guid.ToString("N");
+
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                Assert.That(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
             }
         });
     }
@@ -54,7 +94,9 @@ public class UuidToGuidTests
             foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
             {
                 var uuid = new Uuid(nString.Bytes);
+#pragma warning disable CS0618 // Type or member is obsolete
                 Guid guid = uuid.ToGuidStringLayout();
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 byte[] expectedBytes =
                 {
@@ -79,8 +121,46 @@ public class UuidToGuidTests
                 var expectedGuidString = uuid.ToString("N");
                 var actualGuidString = guid.ToString("N");
 
-                Assert.AreEqual(expectedBytes, actualBytes);
-                Assert.True(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                Assert.That(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
+            }
+        });
+    }
+
+    [Test]
+    public void ToGuidBigEndianLayout()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (UuidStringWithBytes nString in UuidTestData.CorrectNStrings)
+            {
+                var uuid = new Uuid(nString.Bytes);
+                Guid guid = uuid.ToGuidBigEndian();
+                byte[] expectedBytes =
+                {
+                    nString.Bytes[3],
+                    nString.Bytes[2],
+                    nString.Bytes[1],
+                    nString.Bytes[0],
+                    nString.Bytes[5],
+                    nString.Bytes[4],
+                    nString.Bytes[7],
+                    nString.Bytes[6],
+                    nString.Bytes[8],
+                    nString.Bytes[9],
+                    nString.Bytes[10],
+                    nString.Bytes[11],
+                    nString.Bytes[12],
+                    nString.Bytes[13],
+                    nString.Bytes[14],
+                    nString.Bytes[15]
+                };
+                byte[] actualBytes = guid.ToByteArray();
+                var expectedGuidString = uuid.ToString("N");
+                var actualGuidString = guid.ToString("N");
+
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                Assert.That(string.Equals(expectedGuidString, actualGuidString, StringComparison.Ordinal));
             }
         });
     }

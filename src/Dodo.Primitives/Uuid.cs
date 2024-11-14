@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -23,7 +24,8 @@ public unsafe struct Uuid :
     ISpanFormattable,
     IComparable,
     IComparable<Uuid>,
-    IEquatable<Uuid>, IFormattable
+    IEquatable<Uuid>,
+    IFormattable
 #if NET8_0_OR_GREATER
     , ISpanParsable<Uuid>, IParsable<Uuid>, IUtf8SpanFormattable, IComparisonOperators<Uuid, Uuid, bool>
 #endif
@@ -63,7 +65,29 @@ public unsafe struct Uuid :
     /// </summary>
     // ReSharper disable once RedundantDefaultMemberInitializer
     // ReSharper disable once MemberCanBePrivate.Global
-    public static readonly Uuid Empty = new Uuid();
+    // ReSharper disable once UnassignedReadonlyField
+    public static readonly Uuid Empty;
+
+    /// <summary>Gets a <see cref="Uuid" /> where all bits are set.</summary>
+    /// <remarks>This returns the value: FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF</remarks>
+    public static Uuid AllBitsSet => new Uuid(
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue,
+        byte.MaxValue);
+
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified array of bytes.
@@ -83,15 +107,6 @@ public unsafe struct Uuid :
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified byte pointer.
-    /// </summary>
-    /// <param name="bytes">A byte pointer containing bytes which used to initialize the <see cref="Uuid" />.</param>
-    public Uuid(byte* bytes)
-    {
-        this = Unsafe.ReadUnaligned<Uuid>(bytes);
-    }
-
-    /// <summary>
     ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the value represented by the specified read-only span of
     ///     bytes.
     /// </summary>
@@ -105,6 +120,124 @@ public unsafe struct Uuid :
         }
 
         this = Unsafe.ReadUnaligned<Uuid>(ref MemoryMarshal.GetReference(bytes));
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="Uuid" /> structure by using the specified bytes, numbering from zero.
+    /// </summary>
+    /// <param name="byte0">Byte 0.</param>
+    /// <param name="byte1">Byte 1.</param>
+    /// <param name="byte2">Byte 2.</param>
+    /// <param name="byte3">Byte 3.</param>
+    /// <param name="byte4">Byte 4.</param>
+    /// <param name="byte5">Byte 5.</param>
+    /// <param name="byte6">Byte 6.</param>
+    /// <param name="byte7">Byte 7.</param>
+    /// <param name="byte8">Byte 8.</param>
+    /// <param name="byte9">Byte 9.</param>
+    /// <param name="byte10">Byte 10.</param>
+    /// <param name="byte11">Byte 11.</param>
+    /// <param name="byte12">Byte 12.</param>
+    /// <param name="byte13">Byte 13.</param>
+    /// <param name="byte14">Byte 14.</param>
+    /// <param name="byte15">Byte 15.</param>
+    public Uuid(
+        byte byte0,
+        byte byte1,
+        byte byte2,
+        byte byte3,
+        byte byte4,
+        byte byte5,
+        byte byte6,
+        byte byte7,
+        byte byte8,
+        byte byte9,
+        byte byte10,
+        byte byte11,
+        byte byte12,
+        byte byte13,
+        byte byte14,
+        byte byte15)
+    {
+        _byte0 = byte0;
+        _byte1 = byte1;
+        _byte2 = byte2;
+        _byte3 = byte3;
+        _byte4 = byte4;
+        _byte5 = byte5;
+        _byte6 = byte6;
+        _byte7 = byte7;
+        _byte8 = byte8;
+        _byte9 = byte9;
+        _byte10 = byte10;
+        _byte11 = byte11;
+        _byte12 = byte12;
+        _byte13 = byte13;
+        _byte14 = byte14;
+        _byte15 = byte15;
+    }
+
+    /// <summary>Gets the value of the variant field for the <see cref="Uuid" />.</summary>
+    /// <remarks>
+    ///     <para>This corresponds to the most significant 4 bits of the 8th byte: 00000000-0000-0000-F000-000000000000. The "don't-care" bits are not masked out.</para>
+    ///     <para>See RFC 9562 for more information on how to interpret this value.</para>
+    /// </remarks>
+    public int Variant => _byte8 >> 4;
+
+    /// <summary>Gets the value of the version field for the <see cref="Uuid" />.</summary>
+    /// <remarks>
+    ///     <para>This corresponds to the most significant 4 bits of the 6th byte: 00000000-0000-F000-0000-000000000000.</para>
+    ///     <para>See RFC 9562 for more information on how to interpret this value.</para>
+    /// </remarks>
+    public int Version => _byte6 >> 4;
+
+    /// <summary>Creates a new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</summary>
+    /// <returns>A new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</returns>
+    /// <remarks>
+    ///     <para>This uses <see cref="DateTimeOffset.UtcNow" /> to determine the Unix Epoch timestamp source.</para>
+    ///     <para>This seeds the unix_ts_ms, rand_a and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remain part of field rand_b is filled with random data.</para>
+    /// </remarks>
+    public static Uuid CreateVersion7()
+    {
+        return CreateVersion7(DateTimeOffset.UtcNow);
+    }
+
+    /// <summary>Creates a new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</summary>
+    /// <param name="timestamp">The date time offset used to determine the Unix Epoch timestamp.</param>
+    /// <returns>A new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timestamp" /> represents an offset prior to <see cref="DateTimeOffset.UnixEpoch" />.</exception>
+    /// <remarks>
+    ///     <para>This seeds the unix_ts_ms, rand_a and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remain part of field rand_b is filled with random data.</para>
+    /// </remarks>
+    public static Uuid CreateVersion7(DateTimeOffset timestamp)
+    {
+        const long unixEpochTicks = 621_355_968_000_000_000L;
+        const byte variant10XxMask = 0b11000000;
+        const byte variant10XxValue = 0b10000000;
+        const ushort version7Mask = 0b11110000_00000000;
+        const ushort version7Value = 0b01110000_00000000;
+        const ushort ticksNotFitInRandAExtractMask = 0b00000000_00000011;
+        const ushort ticksNotFitInRandASetMask = 0b00110000;
+        if (timestamp.UtcTicks < unixEpochTicks)
+        {
+            throw new ArgumentOutOfRangeException(
+                $"{nameof(timestamp)} must be greater than {DateTimeOffset.UnixEpoch}.");
+        }
+
+        Span<byte> result = stackalloc byte[16];
+        var tempGuid = Guid.NewGuid();
+        tempGuid.TryWriteBytes(result);
+        var unixTsTicks = (ulong) (timestamp.UtcTicks - unixEpochTicks);
+        ulong unixTsMs = unixTsTicks / TimeSpan.TicksPerMillisecond;
+        BinaryPrimitives.WriteUInt64BigEndian(result, unixTsMs << 16);
+        var remainTicks = (ushort) (unixTsTicks - (unixTsMs * TimeSpan.TicksPerMillisecond)); // up to 14 bits
+        var randA = (ushort) (remainTicks >> 2);
+        var randAVer = (ushort) ((randA & ~version7Mask) | version7Value);
+        BinaryPrimitives.WriteUInt16BigEndian(result[6..], randAVer);
+        result[8] = (byte) ((result[8] & ~variant10XxMask) | variant10XxValue);
+        var ticksNotFitInRandA = (byte) ((byte) (remainTicks & ticksNotFitInRandAExtractMask) << 4);
+        result[8] = (byte) ((result[8] & ~ticksNotFitInRandASetMask) | ticksNotFitInRandA);
+        return new Uuid(result);
     }
 
     /// <summary>
@@ -158,84 +291,18 @@ public unsafe struct Uuid :
         }
 
         var other = (Uuid) obj;
-        if (other._byte0 != _byte0)
+        ref ulong rSelfHi = ref Unsafe.As<Uuid, ulong>(ref this);
+        ref ulong rSelfLo = ref Unsafe.Add(ref rSelfHi, 1);
+        ref ulong rOtherHi = ref Unsafe.As<Uuid, ulong>(ref other);
+        ref ulong rOtherLo = ref Unsafe.Add(ref rOtherHi, 1);
+        if (rSelfHi != rOtherHi)
         {
-            return _byte0 < other._byte0 ? -1 : 1;
+            return rSelfHi < rOtherHi ? -1 : 1;
         }
 
-        if (other._byte1 != _byte1)
+        if (rSelfLo != rOtherLo)
         {
-            return _byte1 < other._byte1 ? -1 : 1;
-        }
-
-        if (other._byte2 != _byte2)
-        {
-            return _byte2 < other._byte2 ? -1 : 1;
-        }
-
-        if (other._byte3 != _byte3)
-        {
-            return _byte3 < other._byte3 ? -1 : 1;
-        }
-
-        if (other._byte4 != _byte4)
-        {
-            return _byte4 < other._byte4 ? -1 : 1;
-        }
-
-        if (other._byte5 != _byte5)
-        {
-            return _byte5 < other._byte5 ? -1 : 1;
-        }
-
-        if (other._byte6 != _byte6)
-        {
-            return _byte6 < other._byte6 ? -1 : 1;
-        }
-
-        if (other._byte7 != _byte7)
-        {
-            return _byte7 < other._byte7 ? -1 : 1;
-        }
-
-        if (other._byte8 != _byte8)
-        {
-            return _byte8 < other._byte8 ? -1 : 1;
-        }
-
-        if (other._byte9 != _byte9)
-        {
-            return _byte9 < other._byte9 ? -1 : 1;
-        }
-
-        if (other._byte10 != _byte10)
-        {
-            return _byte10 < other._byte10 ? -1 : 1;
-        }
-
-        if (other._byte11 != _byte11)
-        {
-            return _byte11 < other._byte11 ? -1 : 1;
-        }
-
-        if (other._byte12 != _byte12)
-        {
-            return _byte12 < other._byte12 ? -1 : 1;
-        }
-
-        if (other._byte13 != _byte13)
-        {
-            return _byte13 < other._byte13 ? -1 : 1;
-        }
-
-        if (other._byte14 != _byte14)
-        {
-            return _byte14 < other._byte14 ? -1 : 1;
-        }
-
-        if (other._byte15 != _byte15)
-        {
-            return _byte15 < other._byte15 ? -1 : 1;
+            return rSelfLo < rOtherLo ? -1 : 1;
         }
 
         return 0;
@@ -248,84 +315,19 @@ public unsafe struct Uuid :
     /// <returns>A signed number indicating the relative values of this instance and <paramref name="other" />.</returns>
     public int CompareTo(Uuid other)
     {
-        if (other._byte0 != _byte0)
+        ref ulong rSelfHi = ref Unsafe.As<Uuid, ulong>(ref this);
+        ref ulong rSelfLo = ref Unsafe.Add(ref rSelfHi, 1);
+        ref ulong rOtherHi = ref Unsafe.As<Uuid, ulong>(ref other);
+        ref ulong rOtherLo = ref Unsafe.Add(ref rOtherHi, 1);
+
+        if (rSelfHi != rOtherHi)
         {
-            return _byte0 < other._byte0 ? -1 : 1;
+            return rSelfHi < rOtherHi ? -1 : 1;
         }
 
-        if (other._byte1 != _byte1)
+        if (rSelfLo != rOtherLo)
         {
-            return _byte1 < other._byte1 ? -1 : 1;
-        }
-
-        if (other._byte2 != _byte2)
-        {
-            return _byte2 < other._byte2 ? -1 : 1;
-        }
-
-        if (other._byte3 != _byte3)
-        {
-            return _byte3 < other._byte3 ? -1 : 1;
-        }
-
-        if (other._byte4 != _byte4)
-        {
-            return _byte4 < other._byte4 ? -1 : 1;
-        }
-
-        if (other._byte5 != _byte5)
-        {
-            return _byte5 < other._byte5 ? -1 : 1;
-        }
-
-        if (other._byte6 != _byte6)
-        {
-            return _byte6 < other._byte6 ? -1 : 1;
-        }
-
-        if (other._byte7 != _byte7)
-        {
-            return _byte7 < other._byte7 ? -1 : 1;
-        }
-
-        if (other._byte8 != _byte8)
-        {
-            return _byte8 < other._byte8 ? -1 : 1;
-        }
-
-        if (other._byte9 != _byte9)
-        {
-            return _byte9 < other._byte9 ? -1 : 1;
-        }
-
-        if (other._byte10 != _byte10)
-        {
-            return _byte10 < other._byte10 ? -1 : 1;
-        }
-
-        if (other._byte11 != _byte11)
-        {
-            return _byte11 < other._byte11 ? -1 : 1;
-        }
-
-        if (other._byte12 != _byte12)
-        {
-            return _byte12 < other._byte12 ? -1 : 1;
-        }
-
-        if (other._byte13 != _byte13)
-        {
-            return _byte13 < other._byte13 ? -1 : 1;
-        }
-
-        if (other._byte14 != _byte14)
-        {
-            return _byte14 < other._byte14 ? -1 : 1;
-        }
-
-        if (other._byte15 != _byte15)
-        {
-            return _byte15 < other._byte15 ? -1 : 1;
+            return rSelfLo < rOtherLo ? -1 : 1;
         }
 
         return 0;
@@ -932,7 +934,6 @@ public unsafe struct Uuid :
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8N(byte* dest)
     {
         // dddddddddddddddddddddddddddddddd
@@ -955,7 +956,6 @@ public unsafe struct Uuid :
         destInt16[15] = TableToHexUtf8[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8D(byte* dest)
     {
         // dddddddd-dddd-dddd-dddd-dddddddddddd
@@ -981,7 +981,6 @@ public unsafe struct Uuid :
         destInt16[10] = TableToHexUtf8[_byte9];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8B(byte* dest)
     {
         // {dddddddd-dddd-dddd-dddd-dddddddddddd}
@@ -1009,7 +1008,6 @@ public unsafe struct Uuid :
         destInt16[17] = TableToHexUtf8[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8P(byte* dest)
     {
         // (dddddddd-dddd-dddd-dddd-dddddddddddd)
@@ -1037,7 +1035,6 @@ public unsafe struct Uuid :
         destInt16[17] = TableToHexUtf8[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf8X(byte* dest)
     {
         const ushort zeroXUtf8 = ('x' << 8) | '0'; // 0x
@@ -1072,7 +1069,6 @@ public unsafe struct Uuid :
         destInt16[29] = TableToHexUtf8[_byte14];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16N(char* dest)
     {
         // dddddddddddddddddddddddddddddddd
@@ -1095,7 +1091,6 @@ public unsafe struct Uuid :
         destInt32[15] = TableToHexUtf16[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16D(char* dest)
     {
         // dddddddd-dddd-dddd-dddd-dddddddddddd
@@ -1121,7 +1116,6 @@ public unsafe struct Uuid :
         destInt32[10] = TableToHexUtf16[_byte9];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16B(char* dest)
     {
         // {dddddddd-dddd-dddd-dddd-dddddddddddd}
@@ -1149,7 +1143,6 @@ public unsafe struct Uuid :
         destInt32[17] = TableToHexUtf16[_byte15];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16P(char* dest)
     {
         // (dddddddd-dddd-dddd-dddd-dddddddddddd)
@@ -1177,8 +1170,6 @@ public unsafe struct Uuid :
         destInt32[17] = TableToHexUtf16[_byte15];
     }
 
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void FormatUtf16X(char* dest)
     {
         const uint zeroXUtf16 = ((uint) 'x' << 16) | '0'; // 0x
@@ -1214,10 +1205,13 @@ public unsafe struct Uuid :
     }
 
     /// <summary>
-    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation.
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="ToGuidLittleEndian()" /> instead.</b>
+    ///     </para>
+    ///     <para>Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation (little endian).</para>
     /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+    /// <returns><see cref="System.Guid" /> with same binary representation (little endian).</returns>
+    [Obsolete("Use ToGuidLittleEndian() instead.")]
     public Guid ToGuidByteLayout()
     {
         var result = new Guid();
@@ -1243,11 +1237,70 @@ public unsafe struct Uuid :
     }
 
     /// <summary>
-    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation.
+    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> in little endian format.
     /// </summary>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+    /// <returns><see cref="System.Guid" /> in little endian format.</returns>
+    public Guid ToGuidLittleEndian()
+    {
+        var result = new Guid();
+        Guid* resultPtr = &result;
+        var resultPtrBytes = (byte*) resultPtr;
+        resultPtrBytes[0] = _byte0;
+        resultPtrBytes[1] = _byte1;
+        resultPtrBytes[2] = _byte2;
+        resultPtrBytes[3] = _byte3;
+        resultPtrBytes[4] = _byte4;
+        resultPtrBytes[5] = _byte5;
+        resultPtrBytes[6] = _byte6;
+        resultPtrBytes[7] = _byte7;
+        resultPtrBytes[8] = _byte8;
+        resultPtrBytes[9] = _byte9;
+        resultPtrBytes[10] = _byte10;
+        resultPtrBytes[11] = _byte11;
+        resultPtrBytes[12] = _byte12;
+        resultPtrBytes[13] = _byte13;
+        resultPtrBytes[14] = _byte14;
+        resultPtrBytes[15] = _byte15;
+        return result;
+    }
+
+    /// <summary>
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="ToGuidBigEndian()" /> instead.</b>
+    ///     </para>
+    ///     <para>Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation (big endian).</para>
+    /// </summary>
+    /// <returns><see cref="System.Guid" /> with same string representation (big endian).</returns>
+    [Obsolete("Use ToGuidBigEndian() instead.")]
     public Guid ToGuidStringLayout()
+    {
+        var result = new Guid();
+        Guid* resultPtr = &result;
+        var resultPtrBytes = (byte*) resultPtr;
+        resultPtrBytes[0] = _byte3;
+        resultPtrBytes[1] = _byte2;
+        resultPtrBytes[2] = _byte1;
+        resultPtrBytes[3] = _byte0;
+        resultPtrBytes[4] = _byte5;
+        resultPtrBytes[5] = _byte4;
+        resultPtrBytes[6] = _byte7;
+        resultPtrBytes[7] = _byte6;
+        resultPtrBytes[8] = _byte8;
+        resultPtrBytes[9] = _byte9;
+        resultPtrBytes[10] = _byte10;
+        resultPtrBytes[11] = _byte11;
+        resultPtrBytes[12] = _byte12;
+        resultPtrBytes[13] = _byte13;
+        resultPtrBytes[14] = _byte14;
+        resultPtrBytes[15] = _byte15;
+        return result;
+    }
+
+    /// <summary>
+    ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> in big endian format.
+    /// </summary>
+    /// <returns><see cref="System.Guid" /> in big endian format.</returns>
+    public Guid ToGuidBigEndian()
     {
         var result = new Guid();
         Guid* resultPtr = &result;
@@ -2324,7 +2377,6 @@ public unsafe struct Uuid :
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrN(char* value, byte* resultPtr)
     {
         // e.g. "d85b1407351d4694939203acc5870eb1"
@@ -2463,7 +2515,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrD(char* value, byte* resultPtr)
     {
         // e.g. "d85b1407-351d-4694-9392-03acc5870eb1"
@@ -2614,7 +2665,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrX(char* value, byte* resultPtr)
     {
         // e.g. "{0xd85b1407,0x351d,0x4694,{0x93,0x92,0x03,0xac,0xc5,0x87,0x0e,0xb1}}"
@@ -2808,7 +2858,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrNUtf8(byte* value, byte* resultPtr)
     {
         // e.g. "d85b1407351d4694939203acc5870eb1"
@@ -2947,7 +2996,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrDUtf8(byte* value, byte* resultPtr)
     {
         // e.g. "d85b1407-351d-4694-9392-03acc5870eb1"
@@ -3098,7 +3146,6 @@ public unsafe struct Uuid :
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static bool TryParsePtrXUtf8(byte* value, byte* resultPtr)
     {
         // e.g. "{0xd85b1407,0x351d,0x4694,{0x93,0x92,0x03,0xac,0xc5,0x87,0x0e,0xb1}}"
@@ -3307,84 +3354,18 @@ public unsafe struct Uuid :
 #endif
     public static bool operator <(Uuid left, Uuid right)
     {
-        if (left._byte0 != right._byte0)
+        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
+        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
+        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
+        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
+        if (leftHi != rightHi)
         {
-            return left._byte0 < right._byte0;
+            return leftHi < rightHi;
         }
 
-        if (left._byte1 != right._byte1)
+        if (leftLo != rightLo)
         {
-            return left._byte1 < right._byte1;
-        }
-
-        if (left._byte2 != right._byte2)
-        {
-            return left._byte2 < right._byte2;
-        }
-
-        if (left._byte3 != right._byte3)
-        {
-            return left._byte3 < right._byte3;
-        }
-
-        if (left._byte4 != right._byte4)
-        {
-            return left._byte4 < right._byte4;
-        }
-
-        if (left._byte5 != right._byte5)
-        {
-            return left._byte5 < right._byte5;
-        }
-
-        if (left._byte6 != right._byte6)
-        {
-            return left._byte6 < right._byte6;
-        }
-
-        if (left._byte7 != right._byte7)
-        {
-            return left._byte7 < right._byte7;
-        }
-
-        if (left._byte8 != right._byte8)
-        {
-            return left._byte8 < right._byte8;
-        }
-
-        if (left._byte9 != right._byte9)
-        {
-            return left._byte9 < right._byte9;
-        }
-
-        if (left._byte10 != right._byte10)
-        {
-            return left._byte10 < right._byte10;
-        }
-
-        if (left._byte11 != right._byte11)
-        {
-            return left._byte11 < right._byte11;
-        }
-
-        if (left._byte12 != right._byte12)
-        {
-            return left._byte12 < right._byte12;
-        }
-
-        if (left._byte13 != right._byte13)
-        {
-            return left._byte13 < right._byte13;
-        }
-
-        if (left._byte14 != right._byte14)
-        {
-            return left._byte14 < right._byte14;
-        }
-
-        if (left._byte15 != right._byte15)
-        {
-            return left._byte15 < right._byte15;
+            return leftLo < rightLo;
         }
 
         return false;
@@ -3405,84 +3386,18 @@ public unsafe struct Uuid :
 #endif
     public static bool operator <=(Uuid left, Uuid right)
     {
-        if (left._byte0 != right._byte0)
+        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
+        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
+        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
+        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
+        if (leftHi != rightHi)
         {
-            return left._byte0 < right._byte0;
+            return leftHi < rightHi;
         }
 
-        if (left._byte1 != right._byte1)
+        if (leftLo != rightLo)
         {
-            return left._byte1 < right._byte1;
-        }
-
-        if (left._byte2 != right._byte2)
-        {
-            return left._byte2 < right._byte2;
-        }
-
-        if (left._byte3 != right._byte3)
-        {
-            return left._byte3 < right._byte3;
-        }
-
-        if (left._byte4 != right._byte4)
-        {
-            return left._byte4 < right._byte4;
-        }
-
-        if (left._byte5 != right._byte5)
-        {
-            return left._byte5 < right._byte5;
-        }
-
-        if (left._byte6 != right._byte6)
-        {
-            return left._byte6 < right._byte6;
-        }
-
-        if (left._byte7 != right._byte7)
-        {
-            return left._byte7 < right._byte7;
-        }
-
-        if (left._byte8 != right._byte8)
-        {
-            return left._byte8 < right._byte8;
-        }
-
-        if (left._byte9 != right._byte9)
-        {
-            return left._byte9 < right._byte9;
-        }
-
-        if (left._byte10 != right._byte10)
-        {
-            return left._byte10 < right._byte10;
-        }
-
-        if (left._byte11 != right._byte11)
-        {
-            return left._byte11 < right._byte11;
-        }
-
-        if (left._byte12 != right._byte12)
-        {
-            return left._byte12 < right._byte12;
-        }
-
-        if (left._byte13 != right._byte13)
-        {
-            return left._byte13 < right._byte13;
-        }
-
-        if (left._byte14 != right._byte14)
-        {
-            return left._byte14 < right._byte14;
-        }
-
-        if (left._byte15 != right._byte15)
-        {
-            return left._byte15 < right._byte15;
+            return leftLo < rightLo;
         }
 
         return true;
@@ -3503,84 +3418,18 @@ public unsafe struct Uuid :
 #endif
     public static bool operator >(Uuid left, Uuid right)
     {
-        if (left._byte0 != right._byte0)
+        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
+        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
+        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
+        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
+        if (leftHi != rightHi)
         {
-            return left._byte0 > right._byte0;
+            return leftHi > rightHi;
         }
 
-        if (left._byte1 != right._byte1)
+        if (leftLo != rightLo)
         {
-            return left._byte1 > right._byte1;
-        }
-
-        if (left._byte2 != right._byte2)
-        {
-            return left._byte2 > right._byte2;
-        }
-
-        if (left._byte3 != right._byte3)
-        {
-            return left._byte3 > right._byte3;
-        }
-
-        if (left._byte4 != right._byte4)
-        {
-            return left._byte4 > right._byte4;
-        }
-
-        if (left._byte5 != right._byte5)
-        {
-            return left._byte5 > right._byte5;
-        }
-
-        if (left._byte6 != right._byte6)
-        {
-            return left._byte6 > right._byte6;
-        }
-
-        if (left._byte7 != right._byte7)
-        {
-            return left._byte7 > right._byte7;
-        }
-
-        if (left._byte8 != right._byte8)
-        {
-            return left._byte8 > right._byte8;
-        }
-
-        if (left._byte9 != right._byte9)
-        {
-            return left._byte9 > right._byte9;
-        }
-
-        if (left._byte10 != right._byte10)
-        {
-            return left._byte10 > right._byte10;
-        }
-
-        if (left._byte11 != right._byte11)
-        {
-            return left._byte11 > right._byte11;
-        }
-
-        if (left._byte12 != right._byte12)
-        {
-            return left._byte12 > right._byte12;
-        }
-
-        if (left._byte13 != right._byte13)
-        {
-            return left._byte13 > right._byte13;
-        }
-
-        if (left._byte14 != right._byte14)
-        {
-            return left._byte14 > right._byte14;
-        }
-
-        if (left._byte15 != right._byte15)
-        {
-            return left._byte15 > right._byte15;
+            return leftLo > rightLo;
         }
 
         return false;
@@ -3601,84 +3450,18 @@ public unsafe struct Uuid :
 #endif
     public static bool operator >=(Uuid left, Uuid right)
     {
-        if (left._byte0 != right._byte0)
+        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
+        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
+        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
+        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
+        if (leftHi != rightHi)
         {
-            return left._byte0 > right._byte0;
+            return leftHi > rightHi;
         }
 
-        if (left._byte1 != right._byte1)
+        if (leftLo != rightLo)
         {
-            return left._byte1 > right._byte1;
-        }
-
-        if (left._byte2 != right._byte2)
-        {
-            return left._byte2 > right._byte2;
-        }
-
-        if (left._byte3 != right._byte3)
-        {
-            return left._byte3 > right._byte3;
-        }
-
-        if (left._byte4 != right._byte4)
-        {
-            return left._byte4 > right._byte4;
-        }
-
-        if (left._byte5 != right._byte5)
-        {
-            return left._byte5 > right._byte5;
-        }
-
-        if (left._byte6 != right._byte6)
-        {
-            return left._byte6 > right._byte6;
-        }
-
-        if (left._byte7 != right._byte7)
-        {
-            return left._byte7 > right._byte7;
-        }
-
-        if (left._byte8 != right._byte8)
-        {
-            return left._byte8 > right._byte8;
-        }
-
-        if (left._byte9 != right._byte9)
-        {
-            return left._byte9 > right._byte9;
-        }
-
-        if (left._byte10 != right._byte10)
-        {
-            return left._byte10 > right._byte10;
-        }
-
-        if (left._byte11 != right._byte11)
-        {
-            return left._byte11 > right._byte11;
-        }
-
-        if (left._byte12 != right._byte12)
-        {
-            return left._byte12 > right._byte12;
-        }
-
-        if (left._byte13 != right._byte13)
-        {
-            return left._byte13 > right._byte13;
-        }
-
-        if (left._byte14 != right._byte14)
-        {
-            return left._byte14 > right._byte14;
-        }
-
-        if (left._byte15 != right._byte15)
-        {
-            return left._byte15 > right._byte15;
+            return leftLo > rightLo;
         }
 
         return true;
@@ -3707,7 +3490,7 @@ public unsafe struct Uuid :
     /// <inheritdoc cref="IParsable{TSelf}.TryParse(string?, IFormatProvider?, out TSelf)" />
 #else
     /// <summary>
-    ///     Tries to parses a string into a value.
+    ///     Tries to parse a string into a value.
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
@@ -3741,7 +3524,7 @@ public unsafe struct Uuid :
     /// <inheritdoc cref="ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)" />
 #else
     /// <summary>
-    ///     Tries to parses a span of characters into a value.
+    ///     Tries to parse a span of characters into a value.
     /// </summary>
     /// <param name="s">The span of characters to parse.</param>
     /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
@@ -3764,9 +3547,13 @@ public unsafe struct Uuid :
     private const byte ReservedFlag = 0b1000_0000;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Uuid" /> structure that represents Uuid v1 (RFC4122).
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="CreateVersion7()" /> instead.</b>
+    ///     </para>
+    ///     <para>Initializes a new instance of the <see cref="Uuid" /> structure that represents Uuid v1 (RFC4122).</para>
     /// </summary>
     /// <returns></returns>
+    [Obsolete("Use CreateVersion7() instead.")]
     public static Uuid NewTimeBased()
     {
         byte* resultPtr = stackalloc byte[16];
@@ -3784,13 +3571,17 @@ public unsafe struct Uuid :
         resultPtr[6] = (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag);
         resultPtr[7] = ticksPtr[6];
         resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
-        return new Uuid(resultPtr);
+        return new Uuid(new Span<byte>(resultPtr, 16));
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Uuid" /> structure that works the same way as UUID_TO_BIN(UUID(), 1) from MySQL 8.0.
+    ///     <para>
+    ///         <b>Obsolete. Use <see cref="CreateVersion7()" /> instead.</b>
+    ///     </para>
+    ///     <para>Initializes a new instance of the <see cref="Uuid" /> structure that works the same way as UUID_TO_BIN(UUID(), 1) from MySQL 8.0.</para>
     /// </summary>
     /// <returns></returns>
+    [Obsolete("Use CreateVersion7() instead.")]
     public static Uuid NewMySqlOptimized()
     {
         byte* resultPtr = stackalloc byte[16];
@@ -3808,7 +3599,7 @@ public unsafe struct Uuid :
         resultPtr[6] = ticksPtr[1];
         resultPtr[7] = ticksPtr[0];
         resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
-        return new Uuid(resultPtr);
+        return new Uuid(new Span<byte>(resultPtr, 16));
     }
 
     #endregion

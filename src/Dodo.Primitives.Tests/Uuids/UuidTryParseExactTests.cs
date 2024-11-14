@@ -17,8 +17,8 @@ public class UuidTryParseExactTests
             bool parsed = Uuid.TryParseExact(NullString, format, out Uuid uuid);
             Assert.Multiple(() =>
             {
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             });
         }
     }
@@ -33,8 +33,8 @@ public class UuidTryParseExactTests
 #pragma warning disable 8625
                 bool parsed = Uuid.TryParseExact(correctNString.String, NullString, out Uuid uuid);
 #pragma warning restore 8625
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             }
         });
     }
@@ -47,8 +47,8 @@ public class UuidTryParseExactTests
             foreach (UuidStringWithBytes correctNString in UuidTestData.CorrectNStrings)
             {
                 bool parsed = Uuid.TryParseExact(correctNString.String, "Ъ", out Uuid uuid);
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             }
         });
     }
@@ -61,8 +61,8 @@ public class UuidTryParseExactTests
             foreach (string format in UuidTestData.Formats.All)
             {
                 bool parsed = Uuid.TryParseExact(string.Empty, format, out Uuid uuid);
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             }
         });
     }
@@ -77,8 +77,8 @@ public class UuidTryParseExactTests
                 var stringSpan = new ReadOnlySpan<char>(new char[] { });
                 var formatSpan = new ReadOnlySpan<char>(format.ToCharArray());
                 bool parsed = Uuid.TryParseExact(stringSpan, formatSpan, out Uuid uuid);
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             }
         });
     }
@@ -93,8 +93,8 @@ public class UuidTryParseExactTests
                 var stringSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
                 var formatSpan = new ReadOnlySpan<char>(new char[] { });
                 bool parsed = Uuid.TryParseExact(stringSpan, formatSpan, out Uuid uuid);
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             }
         });
     }
@@ -109,8 +109,8 @@ public class UuidTryParseExactTests
                 var stringSpan = new ReadOnlySpan<char>(correctNString.String.ToCharArray());
                 var formatSpan = new ReadOnlySpan<char>(new[] { 'Ъ' });
                 bool parsed = Uuid.TryParseExact(stringSpan, formatSpan, out Uuid uuid);
-                Assert.False(parsed);
-                Assert.AreEqual(Uuid.Empty, uuid);
+                Assert.That(parsed, Is.False);
+                Assert.That(uuid, Is.EqualTo(Uuid.Empty));
             }
         });
     }
@@ -325,10 +325,10 @@ public class UuidTryParseExactTests
                         *(Uuid*) pinnedSpan = parsedUuidFromSpan;
                     }
 
-                    Assert.True(isParsedFromString);
-                    Assert.True(isParsedBoolFromSpan);
-                    Assert.AreEqual(correctString.Bytes, actualBytesString);
-                    Assert.AreEqual(correctString.Bytes, actualBytesSpan);
+                    Assert.That(isParsedFromString);
+                    Assert.That(isParsedBoolFromSpan);
+                    Assert.That(actualBytesString, Is.EqualTo(correctString.Bytes));
+                    Assert.That(actualBytesSpan, Is.EqualTo(correctString.Bytes));
                 }
             }
         });
@@ -381,10 +381,10 @@ public class UuidTryParseExactTests
                         *(Uuid*) pinnedSpan = parsedUuidFromSpan;
                     }
 
-                    Assert.False(isParsedFromString);
-                    Assert.False(isParsedBoolFromSpan);
-                    Assert.AreEqual(ExpectedEmptyUuidBytes, actualBytesString);
-                    Assert.AreEqual(ExpectedEmptyUuidBytes, actualBytesSpan);
+                    Assert.That(isParsedFromString, Is.False);
+                    Assert.That(isParsedBoolFromSpan, Is.False);
+                    Assert.That(actualBytesString, Is.EqualTo(ExpectedEmptyUuidBytes));
+                    Assert.That(actualBytesSpan, Is.EqualTo(ExpectedEmptyUuidBytes));
                 }
             }
         });
@@ -417,10 +417,10 @@ public class UuidTryParseExactTests
                         *(Uuid*) pinnedSpan = parsedUuidFromSpan;
                     }
 
-                    Assert.False(isParsedFromString);
-                    Assert.False(isParsedBoolFromSpan);
-                    Assert.AreEqual(ExpectedEmptyUuidBytes, actualBytesString);
-                    Assert.AreEqual(ExpectedEmptyUuidBytes, actualBytesSpan);
+                    Assert.That(isParsedFromString, Is.False);
+                    Assert.That(isParsedBoolFromSpan, Is.False);
+                    Assert.That(actualBytesString, Is.EqualTo(ExpectedEmptyUuidBytes));
+                    Assert.That(actualBytesSpan, Is.EqualTo(ExpectedEmptyUuidBytes));
                 }
             }
         });
@@ -453,10 +453,10 @@ public class UuidTryParseExactTests
                         *(Uuid*) pinnedSpan = parsedUuidFromSpan;
                     }
 
-                    Assert.False(isParsedFromString);
-                    Assert.False(isParsedBoolFromSpan);
-                    Assert.AreEqual(ExpectedEmptyUuidBytes, actualBytesString);
-                    Assert.AreEqual(ExpectedEmptyUuidBytes, actualBytesSpan);
+                    Assert.That(isParsedFromString, Is.False);
+                    Assert.That(isParsedBoolFromSpan, Is.False);
+                    Assert.That(actualBytesString, Is.EqualTo(ExpectedEmptyUuidBytes));
+                    Assert.That(actualBytesSpan, Is.EqualTo(ExpectedEmptyUuidBytes));
                 }
             }
         });

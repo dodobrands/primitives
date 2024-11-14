@@ -58,7 +58,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -81,7 +81,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -201,7 +201,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -224,7 +224,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -344,7 +344,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -367,7 +367,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -487,7 +487,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -510,7 +510,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -630,7 +630,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
@@ -653,7 +653,7 @@ public class UuidParseTests
                     *(Uuid*) pinnedActualBytes = parsedUuid;
                 }
 
-                Assert.AreEqual(expectedBytes, actualBytes);
+                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
             }
         });
     }
