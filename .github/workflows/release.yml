@@ -67,6 +67,7 @@ jobs:
                   export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net6_nohw }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
+                  dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net6.0
             - name: Run .NET 6 tests with Hardware Intrinsics
               shell: bash
               run: |
@@ -79,6 +80,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net6_hw }}
                   export MergeWith=${{ env.cover_net6_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
+                  dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net6.0
             - name: Run .NET 8 tests without Hardware Intrinsics
               shell: bash
               run: |
@@ -91,6 +93,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net8_nohw }}
                   export MergeWith=${{ env.cover_net6_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
+                  dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net8.0
             - name: Run .NET 8 tests with Hardware Intrinsics
               shell: bash
               run: |
@@ -103,6 +106,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net8_hw }}
                   export MergeWith=${{ env.cover_net8_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
+                  dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net8.0
             - name: Run .NET 9 tests without Hardware Intrinsics
               shell: bash
               run: |
@@ -115,6 +119,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net9_nohw }}
                   export MergeWith=${{ env.cover_net8_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net9.0
+                  dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net9.0
             - name: Run .NET 9 tests with Hardware Intrinsics
               shell: bash
               run: |
@@ -127,6 +132,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net9_hw }}
                   export MergeWith=${{ env.cover_net9_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net9.0
+                  dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net9.0
             - name: Upload coverage reports to Codecov
               uses: codecov/codecov-action@v4
               env:
