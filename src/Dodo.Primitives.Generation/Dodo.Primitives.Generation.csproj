@@ -19,7 +19,7 @@
         <Authors>Roman Bukin</Authors>
         <Company>Dodo Brands</Company>
         <Copyright>Copyright 2022-2024 Dodo Brands</Copyright>
-        <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
+        <Description>The main goal of this library is to provide methods for generating Uuid.</Description>
         <PackageTags>Uuid Hex Dodo</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
