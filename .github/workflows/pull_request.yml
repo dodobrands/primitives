@@ -148,7 +148,7 @@ jobs:
 
                   PATH_NET9_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net9hw"
                   echo "cover_net9_hw=${PATH_NET9_HW}" >> $GITHUB_ENV
-                  echo "cover_net9_hw_merge=${PATH_NET9_HW}.net9.0.info" >> $GITHUB_ENV
+                  echo "cover_net9_hw_merge=${PATH_NET9_HW}.net9.0.json" >> $GITHUB_ENV
             - name: Run .NET 6 tests without Hardware Intrinsics
               shell: bash
               run: |
@@ -226,7 +226,7 @@ jobs:
                   unset COMPlus_ReadyToRun
                   unset DOTNET_ReadyToRun
                   export CollectCoverage=true
-                  export CoverletOutputFormat=lcov
+                  export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net9_hw }}
                   export MergeWith=${{ env.cover_net9_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net9.0
