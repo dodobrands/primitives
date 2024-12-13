@@ -159,6 +159,7 @@ jobs:
                   export CollectCoverage=true
                   export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net6_nohw }}
+                  export MergeWith=${{ env.cover_net6_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
                   dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net6.0
             - name: Run .NET 6 tests with Hardware Intrinsics
@@ -186,6 +187,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net8_nohw }}
                   export MergeWith=${{ env.cover_net6_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
+                  export MergeWith=${{ env.cover_net8_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net8.0
             - name: Run .NET 8 tests with Hardware Intrinsics
               shell: bash
@@ -212,6 +214,7 @@ jobs:
                   export CoverletOutput=${{ env.cover_net9_nohw }}
                   export MergeWith=${{ env.cover_net8_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net9.0
+                  export MergeWith=${{ env.cover_net9_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net9.0
             - name: Run .NET 9 tests with Hardware Intrinsics
               shell: bash
