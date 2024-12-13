@@ -150,9 +150,9 @@ jobs:
                   echo "cover_net9_hw=${PATH_NET9_HW}" >> $GITHUB_ENV
                   echo "cover_net9_hw_merge=${PATH_NET9_HW}.net9.0.json" >> $GITHUB_ENV
 
-                  PATH_REPORT="${PATH_TO_COVERAGE_DIRECTORY}/cover_report"
-                  echo "cover_report=${PATH_REPORT}" >> $GITHUB_ENV
-                  echo "cover_report_merge=${PATH_REPORT}.net9.0.info" >> $GITHUB_ENV
+                  PATH_REPORT="${PATH_TO_COVERAGE_DIRECTORY}/coverage_report"
+                  echo "coverage_report=${PATH_REPORT}" >> $GITHUB_ENV
+                  echo "coverage_report_merge=${PATH_REPORT}.net9.0.info" >> $GITHUB_ENV
             - name: Run .NET 6 tests without Hardware Intrinsics
               shell: bash
               run: |
@@ -245,7 +245,7 @@ jobs:
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net9.0
 
                   export CoverletOutputFormat=lcov
-                  export CoverletOutput=${{ env.cover_report_merge }}
+                  export CoverletOutput=${{ env.coverage_report }}
                   export MergeWith=${{ env.cover_net9_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Generation.Tests/Dodo.Primitives.Generation.Tests.csproj -f net9.0
             - name: Upload coverage reports to Codecov
@@ -254,4 +254,4 @@ jobs:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               with:
                   fail_ci_if_error: true
-                  files: ${{ env.cover_report_merge }}
+                  files: ${{ env.coverage_report_merge }}
