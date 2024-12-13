@@ -198,7 +198,7 @@ jobs:
                   unset COMPlus_ReadyToRun
                   unset DOTNET_ReadyToRun
                   export CollectCoverage=true
-                  export CoverletOutputFormat=lcov
+                  export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net8_hw }}
                   export MergeWith=${{ env.cover_net8_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
