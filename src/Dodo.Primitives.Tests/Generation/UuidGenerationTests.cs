@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Dodo.Primitives.Generation.Tests;
+namespace Dodo.Primitives.Tests.Generation;
 
 public class UuidGenerationTests
 {
@@ -17,7 +17,7 @@ public class UuidGenerationTests
     public unsafe void NewTimeBased()
     {
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
-        var uuid = Uuid.NewTimeBased();
+        var uuid = Dodo.Primitives.Generation.Uuid.NewTimeBased();
         DateTimeOffset endDate = DateTimeOffset.UtcNow;
         var uuidPtr = (byte*)&uuid;
         long ticks = (endDate - startDate).Ticks + 1;
@@ -39,7 +39,7 @@ public class UuidGenerationTests
     public unsafe void NewMySqlOptimized()
     {
         DateTimeOffset startDate = DateTimeOffset.UtcNow;
-        var uuid = Uuid.NewMySqlOptimized();
+        var uuid = Dodo.Primitives.Generation.Uuid.NewMySqlOptimized();
         DateTimeOffset endDate = DateTimeOffset.UtcNow;
         var uuidPtr = (byte*)&uuid;
         long ticks = (endDate - startDate).Ticks + 1;
