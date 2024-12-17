@@ -29,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Dodo.Primitives.Generation\Dodo.Primitives.Generation.csproj" />
         <ProjectReference Include="..\Dodo.Primitives\Dodo.Primitives.csproj"/>
     </ItemGroup>
 

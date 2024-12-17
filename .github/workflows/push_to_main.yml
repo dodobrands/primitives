@@ -200,4 +200,3 @@ jobs:
                   name: Release ${{ env.release_version_with_suffix }}
                   draft: true
                   prerelease: ${{ env.release_has_suffix }}
-

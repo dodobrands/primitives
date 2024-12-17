@@ -11,6 +11,7 @@
         <Project Path="Dodo.Primitives.Benchmarks/Dodo.Primitives.Benchmarks.csproj"/>
     </Folder>
     <Folder Name="/root/src/">
+        <Project Path="Dodo.Primitives.Generation\Dodo.Primitives.Generation.csproj"/>
         <Project Path="Dodo.Primitives/Dodo.Primitives.csproj"/>
     </Folder>
     <Folder Name="/root/tests/">
