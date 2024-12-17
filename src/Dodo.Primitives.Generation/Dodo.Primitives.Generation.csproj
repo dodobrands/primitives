@@ -16,11 +16,11 @@
         <Deterministic Condition="'$(GITHUB_ACTIONS)' == 'true'">True</Deterministic>
         <EmbedAllSources>true</EmbedAllSources>
         <PackageId>Dodo.Primitives.Generation</PackageId>
-        <Authors>Roman Bukin</Authors>
+        <Authors>Roman Bukin, Daria Lebedeva</Authors>
         <Company>Dodo Brands</Company>
         <Copyright>Copyright 2022-2024 Dodo Brands</Copyright>
         <Description>The main goal of this library is to provide methods for generating Uuid.</Description>
-        <PackageTags>Uuid Hex Dodo</PackageTags>
+        <PackageTags>Uuid Dodo</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageIcon>logo.png</PackageIcon>

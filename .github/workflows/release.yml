@@ -140,14 +140,17 @@ jobs:
                   dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net6.0
                   dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net8.0
                   dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net9.0
-                  dotnet pack -c Release --output out ./src/Dodo.Primitives/Dodo.Primitives.csproj
+                  dotnet pack -c Release --output out/primitives ./src/Dodo.Primitives/Dodo.Primitives.csproj
+
+                  rm ./out/primitives/*.symbols.nupkg
+                  PATH_TO_PACKAGE=$(readlink -f ./out/primitives/*.nupkg)
+                  dotnet nuget push "$PATH_TO_PACKAGE" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
                   dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net6.0
                   dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net8.0
                   dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net9.0
-                  dotnet pack -c Release --output out ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj
+                  dotnet pack -c Release --output out/generation ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj
 
-                  rm ./out/*.symbols.nupkg
-                  PATH_TO_PACKAGE=$(readlink -f ./out)
-                  dotnet nuget push "${PATH_TO_PACKAGE}/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
-
+                  rm ./out/generation/*.symbols.nupkg
+                  PATH_TO_PACKAGE=$(readlink -f ./out/generation/*.nupkg)
+                  dotnet nuget push "$PATH_TO_PACKAGE" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}

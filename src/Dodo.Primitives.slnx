@@ -1,20 +1,20 @@
 <Solution>
-  <Folder Name="/root/">
-    <File Path="../.editorconfig" />
-    <File Path="../.gitattributes" />
-    <File Path="../.gitignore" />
-    <File Path="../global.json" />
-    <File Path="../README.md" />
-    <File Path="Directory.Build.props" />
-  </Folder>
-  <Folder Name="/root/benchmarks/">
-    <Project Path="Dodo.Primitives.Benchmarks/Dodo.Primitives.Benchmarks.csproj" />
-  </Folder>
-  <Folder Name="/root/src/">
-    <Project Path="Dodo.Primitives.Generation\Dodo.Primitives.Generation.csproj" />
-    <Project Path="Dodo.Primitives/Dodo.Primitives.csproj" />
-  </Folder>
-  <Folder Name="/root/tests/">
-    <Project Path="Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj" />
-  </Folder>
+    <Folder Name="/root/">
+        <File Path="../.editorconfig"/>
+        <File Path="../.gitattributes"/>
+        <File Path="../.gitignore"/>
+        <File Path="../global.json"/>
+        <File Path="../README.md"/>
+        <File Path="Directory.Build.props"/>
+    </Folder>
+    <Folder Name="/root/benchmarks/">
+        <Project Path="Dodo.Primitives.Benchmarks/Dodo.Primitives.Benchmarks.csproj"/>
+    </Folder>
+    <Folder Name="/root/src/">
+        <Project Path="Dodo.Primitives.Generation\Dodo.Primitives.Generation.csproj"/>
+        <Project Path="Dodo.Primitives/Dodo.Primitives.csproj"/>
+    </Folder>
+    <Folder Name="/root/tests/">
+        <Project Path="Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj"/>
+    </Folder>
 </Solution>
