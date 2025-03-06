@@ -48,9 +48,9 @@ public class UuidCompareToTests
         int expectedResult)
     {
         var uuid = new Uuid(correctBytes);
-        var uuidToCompareAsObject = new Uuid(correctCompareToBytes);
+        var uuidToCompare = new Uuid(correctCompareToBytes);
 
-        int compareResult = uuid.CompareTo(uuidToCompareAsObject);
+        int compareResult = uuid.CompareTo(uuidToCompare);
 
         Assert.That(compareResult, Is.EqualTo(expectedResult));
     }
