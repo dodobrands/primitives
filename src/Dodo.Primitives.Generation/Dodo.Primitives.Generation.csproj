@@ -18,7 +18,7 @@
         <PackageId>Dodo.Primitives.Generation</PackageId>
         <Authors>Roman Bukin, Daria Lebedeva</Authors>
         <Company>Dodo Brands</Company>
-        <Copyright>Copyright 2022-2024 Dodo Brands</Copyright>
+        <Copyright>Copyright 2022-2025 Dodo Brands</Copyright>
         <Description>The main goal of this library is to provide methods for generating Uuid.</Description>
         <PackageTags>Uuid Dodo</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
