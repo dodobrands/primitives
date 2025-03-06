@@ -278,6 +278,7 @@ public unsafe struct Uuid :
     /// <exception cref="ArgumentException"><paramref name="obj" /> must be of type <see cref="Uuid" />.</exception>
     [SuppressMessage("ReSharper", "MergeCastWithTypeCheck")]
     [SuppressMessage("ReSharper", "UseNegatedPatternInIsExpression")]
+    [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
     public int CompareTo(object? obj)
     {
         if (obj == null)
@@ -285,27 +286,12 @@ public unsafe struct Uuid :
             return 1;
         }
 
-        if (!(obj is Uuid))
+        if (obj is not Uuid other)
         {
             throw new ArgumentException("Object must be of type Uuid.", nameof(obj));
         }
 
-        var other = (Uuid) obj;
-        ref ulong rSelfHi = ref Unsafe.As<Uuid, ulong>(ref this);
-        ref ulong rSelfLo = ref Unsafe.Add(ref rSelfHi, 1);
-        ref ulong rOtherHi = ref Unsafe.As<Uuid, ulong>(ref other);
-        ref ulong rOtherLo = ref Unsafe.Add(ref rOtherHi, 1);
-        if (rSelfHi != rOtherHi)
-        {
-            return rSelfHi < rOtherHi ? -1 : 1;
-        }
-
-        if (rSelfLo != rOtherLo)
-        {
-            return rSelfLo < rOtherLo ? -1 : 1;
-        }
-
-        return 0;
+        return CompareTo(other);
     }
 
     /// <summary>
@@ -313,21 +299,87 @@ public unsafe struct Uuid :
     /// </summary>
     /// <param name="other">An <see cref="Uuid" /> object to compare to this instance.</param>
     /// <returns>A signed number indicating the relative values of this instance and <paramref name="other" />.</returns>
+    [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
     public int CompareTo(Uuid other)
     {
-        ref ulong rSelfHi = ref Unsafe.As<Uuid, ulong>(ref this);
-        ref ulong rSelfLo = ref Unsafe.Add(ref rSelfHi, 1);
-        ref ulong rOtherHi = ref Unsafe.As<Uuid, ulong>(ref other);
-        ref ulong rOtherLo = ref Unsafe.Add(ref rOtherHi, 1);
-
-        if (rSelfHi != rOtherHi)
+        if (other._byte0 != _byte0)
         {
-            return rSelfHi < rOtherHi ? -1 : 1;
+            return _byte0 < other._byte0 ? -1 : 1;
         }
 
-        if (rSelfLo != rOtherLo)
+        if (other._byte1 != _byte1)
         {
-            return rSelfLo < rOtherLo ? -1 : 1;
+            return _byte1 < other._byte1 ? -1 : 1;
+        }
+
+        if (other._byte2 != _byte2)
+        {
+            return _byte2 < other._byte2 ? -1 : 1;
+        }
+
+        if (other._byte3 != _byte3)
+        {
+            return _byte3 < other._byte3 ? -1 : 1;
+        }
+
+        if (other._byte4 != _byte4)
+        {
+            return _byte4 < other._byte4 ? -1 : 1;
+        }
+
+        if (other._byte5 != _byte5)
+        {
+            return _byte5 < other._byte5 ? -1 : 1;
+        }
+
+        if (other._byte6 != _byte6)
+        {
+            return _byte6 < other._byte6 ? -1 : 1;
+        }
+
+        if (other._byte7 != _byte7)
+        {
+            return _byte7 < other._byte7 ? -1 : 1;
+        }
+
+        if (other._byte8 != _byte8)
+        {
+            return _byte8 < other._byte8 ? -1 : 1;
+        }
+
+        if (other._byte9 != _byte9)
+        {
+            return _byte9 < other._byte9 ? -1 : 1;
+        }
+
+        if (other._byte10 != _byte10)
+        {
+            return _byte10 < other._byte10 ? -1 : 1;
+        }
+
+        if (other._byte11 != _byte11)
+        {
+            return _byte11 < other._byte11 ? -1 : 1;
+        }
+
+        if (other._byte12 != _byte12)
+        {
+            return _byte12 < other._byte12 ? -1 : 1;
+        }
+
+        if (other._byte13 != _byte13)
+        {
+            return _byte13 < other._byte13 ? -1 : 1;
+        }
+
+        if (other._byte14 != _byte14)
+        {
+            return _byte14 < other._byte14 ? -1 : 1;
+        }
+
+        if (other._byte15 != _byte15)
+        {
+            return _byte15 < other._byte15 ? -1 : 1;
         }
 
         return 0;
@@ -3354,21 +3406,8 @@ public unsafe struct Uuid :
 #endif
     public static bool operator <(Uuid left, Uuid right)
     {
-        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
-        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
-        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
-        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
-        if (leftHi != rightHi)
-        {
-            return leftHi < rightHi;
-        }
-
-        if (leftLo != rightLo)
-        {
-            return leftLo < rightLo;
-        }
-
-        return false;
+        int compareResult = left.CompareTo(right);
+        return compareResult is -1;
     }
 
 #if NET8_0_OR_GREATER
@@ -3386,21 +3425,8 @@ public unsafe struct Uuid :
 #endif
     public static bool operator <=(Uuid left, Uuid right)
     {
-        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
-        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
-        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
-        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
-        if (leftHi != rightHi)
-        {
-            return leftHi < rightHi;
-        }
-
-        if (leftLo != rightLo)
-        {
-            return leftLo < rightLo;
-        }
-
-        return true;
+        int compareResult = left.CompareTo(right);
+        return compareResult is 0 or -1;
     }
 
 #if NET8_0_OR_GREATER
@@ -3418,21 +3444,8 @@ public unsafe struct Uuid :
 #endif
     public static bool operator >(Uuid left, Uuid right)
     {
-        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
-        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
-        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
-        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
-        if (leftHi != rightHi)
-        {
-            return leftHi > rightHi;
-        }
-
-        if (leftLo != rightLo)
-        {
-            return leftLo > rightLo;
-        }
-
-        return false;
+        int compareResult = left.CompareTo(right);
+        return compareResult is 1;
     }
 
 #if NET8_0_OR_GREATER
@@ -3450,21 +3463,8 @@ public unsafe struct Uuid :
 #endif
     public static bool operator >=(Uuid left, Uuid right)
     {
-        ref ulong leftHi = ref Unsafe.As<Uuid, ulong>(ref left);
-        ref ulong leftLo = ref Unsafe.Add(ref leftHi, 1);
-        ref ulong rightHi = ref Unsafe.As<Uuid, ulong>(ref right);
-        ref ulong rightLo = ref Unsafe.Add(ref rightHi, 1);
-        if (leftHi != rightHi)
-        {
-            return leftHi > rightHi;
-        }
-
-        if (leftLo != rightLo)
-        {
-            return leftLo > rightLo;
-        }
-
-        return true;
+        int compareResult = left.CompareTo(right);
+        return compareResult is 0 or 1;
     }
 
     //
