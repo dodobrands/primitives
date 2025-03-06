@@ -54,10 +54,10 @@ jobs:
                   fi
                   echo "version_with_suffix_dst=${version_with_suffix}" >> $GITHUB_ENV
                   echo "has_suffix_dst=${has_suffix}" >> $GITHUB_ENV
-            - name: Setup .NET Core SDK 9.0.100
+            - name: Setup .NET Core SDK 9.0.200
               uses: actions/setup-dotnet@v4
               with:
-                  dotnet-version: 9.0.100
+                  dotnet-version: 9.0.200
             - name: Checkout source branch back
               uses: actions/checkout@v4
               with:
@@ -111,14 +111,14 @@ jobs:
               uses: actions/setup-dotnet@v4
               with:
                   dotnet-version: 6.0.428
-            - name: Setup .NET Core SDK 8.0.404
+            - name: Setup .NET Core SDK 8.0.406
               uses: actions/setup-dotnet@v4
               with:
-                  dotnet-version: 8.0.404
-            - name: Setup .NET Core SDK 9.0.100
+                  dotnet-version: 8.0.406
+            - name: Setup .NET Core SDK 9.0.200
               uses: actions/setup-dotnet@v4
               with:
-                  dotnet-version: 9.0.100
+                  dotnet-version: 9.0.200
             - name: Create coverage directory and promote absolute paths to env
               shell: bash
               run: |
