@@ -12,7 +12,7 @@ max_line_length = 999999999
 # Xml project files
 [*.csproj]
 indent_size = 2
-ij_formatter_enabled = false
+ij_formatter_enabled = true
 # Xml config files
 [*.props]
 indent_size = 2

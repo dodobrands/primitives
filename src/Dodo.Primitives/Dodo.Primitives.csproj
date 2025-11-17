@@ -1,44 +1,44 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-        <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
-        <LangVersion>11.0</LangVersion>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>disable</ImplicitUsings>
-        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
-        <EnableSourceLink>true</EnableSourceLink>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <DebugType>embedded</DebugType>
-        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
-        <Deterministic Condition="'$(GITHUB_ACTIONS)' == 'true'">True</Deterministic>
-        <EmbedAllSources>true</EmbedAllSources>
-        <PackageId>Dodo.Primitives</PackageId>
-        <Authors>Roman Bukin</Authors>
-        <Company>Dodo Brands</Company>
-        <Copyright>Copyright 2022-2025 Dodo Brands</Copyright>
-        <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
-        <PackageTags>Uuid Hex Dodo</PackageTags>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <PackageIcon>logo.png</PackageIcon>
-        <PackageProjectUrl>https://github.com/dodobrands/primitives</PackageProjectUrl>
-        <PackageReleaseNotes>https://github.com/dodobrands/primitives/releases</PackageReleaseNotes>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <IncludeSymbols>true</IncludeSymbols>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
+    <LangVersion>11.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+    <EnableSourceLink>true</EnableSourceLink>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugType>embedded</DebugType>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+    <Deterministic Condition="'$(GITHUB_ACTIONS)' == 'true'">True</Deterministic>
+    <EmbedAllSources>true</EmbedAllSources>
+    <PackageId>Dodo.Primitives</PackageId>
+    <Authors>Roman Bukin</Authors>
+    <Company>Dodo Brands</Company>
+    <Copyright>Copyright 2022-2025 Dodo Brands</Copyright>
+    <Description>The main goal of this library is to provide primitive types like Uuid, Hex converter, etc.</Description>
+    <PackageTags>Uuid Hex Dodo</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/dodobrands/primitives</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/dodobrands/primitives/releases</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="../../.github/images/logo.png" Pack="true" Visible="false" PackagePath=""/>
-    </ItemGroup>
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath=""/>
+    <None Include="../../.github/images/logo.png" Pack="true" Visible="false" PackagePath=""/>
+  </ItemGroup>
 
-    <PropertyGroup>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
 
 </Project>
