@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <ProjectGuid>4c9485a5-fcb5-4361-8c46-c99669d5b22e</ProjectGuid>
         <LangVersion>11.0</LangVersion>
         <Nullable>enable</Nullable>
