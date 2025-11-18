@@ -2,14 +2,11 @@
 using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text.Json.Serialization;
-using Dodo.Primitives.Internal;
-#if NET8_0_OR_GREATER
-using System.Numerics;
 using System.Runtime.Intrinsics;
-#endif
+using System.Text.Json.Serialization;
 
 namespace Dodo.Primitives;
 
@@ -20,29 +17,19 @@ namespace Dodo.Primitives;
 [TypeConverter(typeof(UuidTypeConverter))]
 [JsonConverter(typeof(SystemTextJsonUuidJsonConverter))]
 [SuppressMessage("ReSharper", "RedundantNameQualifier")]
-public unsafe struct Uuid :
+[SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
+public unsafe partial struct Uuid :
     ISpanFormattable,
+    IFormattable,
     IComparable,
     IComparable<Uuid>,
     IEquatable<Uuid>,
-    IFormattable
-#if NET8_0_OR_GREATER
-    , ISpanParsable<Uuid>, IParsable<Uuid>, IUtf8SpanFormattable, IComparisonOperators<Uuid, Uuid, bool>
-#endif
+    ISpanParsable<Uuid>,
+    IParsable<Uuid>,
+    IUtf8SpanFormattable,
+    IUtf8SpanParsable<Uuid>,
+    IComparisonOperators<Uuid, Uuid, bool>
 {
-    static Uuid()
-    {
-        TableToHexUtf16 = InternalHexTables.TableToHexUtf16;
-        TableToHexUtf8 = InternalHexTables.TableToHexUtf8;
-        TableFromHexToBytesUtf16 = InternalHexTables.TableFromHexToBytesUtf16;
-    }
-
-    private const ushort MaximalCharUtf16 = InternalHexTables.MaximalChar;
-
-    private static readonly uint* TableToHexUtf16;
-    private static readonly ushort* TableToHexUtf8;
-    private static readonly byte* TableFromHexToBytesUtf16;
-
     private readonly byte _byte0;
     private readonly byte _byte1;
     private readonly byte _byte2;
@@ -195,7 +182,7 @@ public unsafe struct Uuid :
     /// <returns>A new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</returns>
     /// <remarks>
     ///     <para>This uses <see cref="DateTimeOffset.UtcNow" /> to determine the Unix Epoch timestamp source.</para>
-    ///     <para>This seeds the unix_ts_ms, rand_a and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remain part of field rand_b is filled with random data.</para>
+    ///     <para>This seeds the unix_ts_ms, rand_a, and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remaining part of the field rand_b is filled with random data.</para>
     /// </remarks>
     public static Uuid CreateVersion7()
     {
@@ -207,7 +194,7 @@ public unsafe struct Uuid :
     /// <returns>A new <see cref="Uuid" /> according to RFC 9562, following the Version 7 format.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timestamp" /> represents an offset prior to <see cref="DateTimeOffset.UnixEpoch" />.</exception>
     /// <remarks>
-    ///     <para>This seeds the unix_ts_ms, rand_a and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remain part of field rand_b is filled with random data.</para>
+    ///     <para>This seeds the unix_ts_ms, rand_a, and 2 bits of rand_b fields with the number of ticks of the Unix time epoch. The remaining part of the field rand_b is filled with random data.</para>
     /// </remarks>
     public static Uuid CreateVersion7(DateTimeOffset timestamp)
     {
@@ -400,15 +387,13 @@ public unsafe struct Uuid :
     {
         if (obj is Uuid other)
         {
-#if NET8_0_OR_GREATER
             if (Vector128.IsHardwareAccelerated)
             {
                 return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref this)) == Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref other));
             }
-#endif
+
             ref long rA = ref Unsafe.As<Uuid, long>(ref this);
             ref long rB = ref Unsafe.As<Uuid, long>(ref other);
-
             // Compare each element
             return rA == rB && Unsafe.Add(ref rA, 1) == Unsafe.Add(ref rB, 1);
         }
@@ -423,15 +408,13 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if <paramref name="other" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
     public bool Equals(Uuid other)
     {
-#if NET8_0_OR_GREATER
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref this)) == Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref other));
         }
-#endif
+
         ref long rA = ref Unsafe.As<Uuid, long>(ref this);
         ref long rB = ref Unsafe.As<Uuid, long>(ref other);
-
         // Compare each element
         return rA == rB && Unsafe.Add(ref rA, 1) == Unsafe.Add(ref rB, 1);
     }
@@ -454,15 +437,13 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <see langword="false" />.</returns>
     public static bool operator ==(Uuid left, Uuid right)
     {
-#if NET8_0_OR_GREATER
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref left)) == Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref right));
         }
-#endif
+
         ref long rA = ref Unsafe.As<Uuid, long>(ref left);
         ref long rB = ref Unsafe.As<Uuid, long>(ref right);
-
         // Compare each element
         return rA == rB && Unsafe.Add(ref rA, 1) == Unsafe.Add(ref rB, 1);
     }
@@ -478,15 +459,13 @@ public unsafe struct Uuid :
     /// </returns>
     public static bool operator !=(Uuid left, Uuid right)
     {
-#if NET8_0_OR_GREATER
         if (Vector128.IsHardwareAccelerated)
         {
             return Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref left)) != Vector128.LoadUnsafe(ref Unsafe.As<Uuid, byte>(ref right));
         }
-#endif
+
         ref long rA = ref Unsafe.As<Uuid, long>(ref left);
         ref long rB = ref Unsafe.As<Uuid, long>(ref right);
-
         // Compare each element
         return rA != rB || Unsafe.Add(ref rA, 1) != Unsafe.Add(ref rB, 1);
     }
@@ -509,9 +488,7 @@ public unsafe struct Uuid :
     public bool TryFormat(
         Span<char> destination,
         out int charsWritten,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         ReadOnlySpan<char> format,
         IFormatProvider? provider)
     {
@@ -538,7 +515,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16N(uuidChars);
+                        CharFormatN(uuidChars);
                     }
 
                     charsWritten = 32;
@@ -554,7 +531,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16D(uuidChars);
+                        CharFormatD(uuidChars);
                     }
 
                     charsWritten = 36;
@@ -570,7 +547,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16B(uuidChars);
+                        CharFormatB(uuidChars);
                     }
 
                     charsWritten = 38;
@@ -586,7 +563,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16P(uuidChars);
+                        CharFormatP(uuidChars);
                     }
 
                     charsWritten = 38;
@@ -602,7 +579,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16X(uuidChars);
+                        CharFormatX(uuidChars);
                     }
 
                     charsWritten = 68;
@@ -633,9 +610,7 @@ public unsafe struct Uuid :
     public bool TryFormat(
         Span<char> destination,
         out int charsWritten,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         ReadOnlySpan<char> format = default)
     {
         if (format.Length == 0)
@@ -661,7 +636,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16N(uuidChars);
+                        CharFormatN(uuidChars);
                     }
 
                     charsWritten = 32;
@@ -677,7 +652,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16D(uuidChars);
+                        CharFormatD(uuidChars);
                     }
 
                     charsWritten = 36;
@@ -693,7 +668,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16B(uuidChars);
+                        CharFormatB(uuidChars);
                     }
 
                     charsWritten = 38;
@@ -709,7 +684,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16P(uuidChars);
+                        CharFormatP(uuidChars);
                     }
 
                     charsWritten = 38;
@@ -725,7 +700,7 @@ public unsafe struct Uuid :
 
                     fixed (char* uuidChars = &destination.GetPinnableReference())
                     {
-                        FormatUtf16X(uuidChars);
+                        CharFormatX(uuidChars);
                     }
 
                     charsWritten = 68;
@@ -742,26 +717,11 @@ public unsafe struct Uuid :
     //
     // IUtf8SpanFormattable
     //
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="System.IUtf8SpanFormattable.TryFormat" />
-#else
-    /// <summary>Tries to format the value of the current instance as UTF-8 into the provided span of bytes.</summary>
-    /// <param name="utf8Destination">When this method returns, this instance's value formatted as a span of bytes.</param>
-    /// <param name="bytesWritten">When this method returns, the number of bytes that were written in <paramref name="utf8Destination" />.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for <paramref name="utf8Destination" />.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information for <paramref name="utf8Destination" />.</param>
-    /// <returns><see langword="true" /> if the formatting was successful; otherwise, <see langword="false" />.</returns>
-    /// <remarks>
-    ///     An implementation of this interface should produce the same string of characters as an implementation of <see cref="IFormattable.ToString(string?, IFormatProvider?)" /> or <see cref="ISpanFormattable.TryFormat" />
-    ///     on the same type. TryFormat should return false only if there is not enough space in the destination buffer; any other failures should throw an exception.
-    /// </remarks>
-#endif
     public bool TryFormat(
         Span<byte> utf8Destination,
         out int bytesWritten,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         ReadOnlySpan<char> format,
         IFormatProvider? provider)
     {
@@ -788,7 +748,7 @@ public unsafe struct Uuid :
 
                     fixed (byte* uuidChars = &utf8Destination.GetPinnableReference())
                     {
-                        FormatUtf8N(uuidChars);
+                        Utf8FormatN(uuidChars);
                     }
 
                     bytesWritten = 32;
@@ -804,7 +764,7 @@ public unsafe struct Uuid :
 
                     fixed (byte* uuidChars = &utf8Destination.GetPinnableReference())
                     {
-                        FormatUtf8D(uuidChars);
+                        Utf8FormatD(uuidChars);
                     }
 
                     bytesWritten = 36;
@@ -820,7 +780,7 @@ public unsafe struct Uuid :
 
                     fixed (byte* uuidChars = &utf8Destination.GetPinnableReference())
                     {
-                        FormatUtf8B(uuidChars);
+                        Utf8FormatB(uuidChars);
                     }
 
                     bytesWritten = 38;
@@ -836,7 +796,7 @@ public unsafe struct Uuid :
 
                     fixed (byte* uuidChars = &utf8Destination.GetPinnableReference())
                     {
-                        FormatUtf8P(uuidChars);
+                        Utf8FormatP(uuidChars);
                     }
 
                     bytesWritten = 38;
@@ -852,7 +812,7 @@ public unsafe struct Uuid :
 
                     fixed (byte* uuidChars = &utf8Destination.GetPinnableReference())
                     {
-                        FormatUtf8X(uuidChars);
+                        Utf8FormatX(uuidChars);
                     }
 
                     bytesWritten = 68;
@@ -865,7 +825,6 @@ public unsafe struct Uuid :
                 }
         }
     }
-
 
     /// <summary>
     ///     Returns a string representation of the value of this instance.
@@ -885,9 +844,7 @@ public unsafe struct Uuid :
     /// </param>
     /// <returns>The value of this <see cref="Uuid" />, represented as a series of lowercase hexadecimal digits in the specified format.</returns>
     public string ToString(
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         string? format)
     {
         // ReSharper disable once IntroduceOptionalParameters.Global
@@ -909,9 +866,7 @@ public unsafe struct Uuid :
     ///     "B", "P", or "X".
     /// </exception>
     public string ToString(
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         string? format,
         IFormatProvider? formatProvider)
     {
@@ -935,7 +890,7 @@ public unsafe struct Uuid :
                     var uuidString = new string('\0', 32);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
-                        FormatUtf16N(uuidChars);
+                        CharFormatN(uuidChars);
                     }
 
                     return uuidString;
@@ -945,7 +900,7 @@ public unsafe struct Uuid :
                     var uuidString = new string('\0', 36);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
-                        FormatUtf16D(uuidChars);
+                        CharFormatD(uuidChars);
                     }
 
                     return uuidString;
@@ -955,7 +910,7 @@ public unsafe struct Uuid :
                     var uuidString = new string('\0', 38);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
-                        FormatUtf16B(uuidChars);
+                        CharFormatB(uuidChars);
                     }
 
                     return uuidString;
@@ -965,7 +920,7 @@ public unsafe struct Uuid :
                     var uuidString = new string('\0', 38);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
-                        FormatUtf16P(uuidChars);
+                        CharFormatP(uuidChars);
                     }
 
                     return uuidString;
@@ -975,7 +930,7 @@ public unsafe struct Uuid :
                     var uuidString = new string('\0', 68);
                     fixed (char* uuidChars = &uuidString.GetPinnableReference())
                     {
-                        FormatUtf16X(uuidChars);
+                        CharFormatX(uuidChars);
                     }
 
                     return uuidString;
@@ -986,315 +941,13 @@ public unsafe struct Uuid :
         }
     }
 
-    private void FormatUtf8N(byte* dest)
-    {
-        // dddddddddddddddddddddddddddddddd
-        var destInt16 = (ushort*) dest;
-        destInt16[0] = TableToHexUtf8[_byte0];
-        destInt16[1] = TableToHexUtf8[_byte1];
-        destInt16[2] = TableToHexUtf8[_byte2];
-        destInt16[3] = TableToHexUtf8[_byte3];
-        destInt16[4] = TableToHexUtf8[_byte4];
-        destInt16[5] = TableToHexUtf8[_byte5];
-        destInt16[6] = TableToHexUtf8[_byte6];
-        destInt16[7] = TableToHexUtf8[_byte7];
-        destInt16[8] = TableToHexUtf8[_byte8];
-        destInt16[9] = TableToHexUtf8[_byte9];
-        destInt16[10] = TableToHexUtf8[_byte10];
-        destInt16[11] = TableToHexUtf8[_byte11];
-        destInt16[12] = TableToHexUtf8[_byte12];
-        destInt16[13] = TableToHexUtf8[_byte13];
-        destInt16[14] = TableToHexUtf8[_byte14];
-        destInt16[15] = TableToHexUtf8[_byte15];
-    }
-
-    private void FormatUtf8D(byte* dest)
-    {
-        // dddddddd-dddd-dddd-dddd-dddddddddddd
-        var destInt16 = (ushort*) dest;
-        var destInt16AsInt8 = (byte**) &destInt16;
-        dest[8] = dest[13] = dest[18] = dest[23] = Utf8Dash;
-        destInt16[0] = TableToHexUtf8[_byte0];
-        destInt16[1] = TableToHexUtf8[_byte1];
-        destInt16[2] = TableToHexUtf8[_byte2];
-        destInt16[3] = TableToHexUtf8[_byte3];
-        destInt16[7] = TableToHexUtf8[_byte6];
-        destInt16[8] = TableToHexUtf8[_byte7];
-        destInt16[12] = TableToHexUtf8[_byte10];
-        destInt16[13] = TableToHexUtf8[_byte11];
-        destInt16[14] = TableToHexUtf8[_byte12];
-        destInt16[15] = TableToHexUtf8[_byte13];
-        destInt16[16] = TableToHexUtf8[_byte14];
-        destInt16[17] = TableToHexUtf8[_byte15];
-        *destInt16AsInt8 += 1;
-        destInt16[4] = TableToHexUtf8[_byte4];
-        destInt16[5] = TableToHexUtf8[_byte5];
-        destInt16[9] = TableToHexUtf8[_byte8];
-        destInt16[10] = TableToHexUtf8[_byte9];
-    }
-
-    private void FormatUtf8B(byte* dest)
-    {
-        // {dddddddd-dddd-dddd-dddd-dddddddddddd}
-        var destInt16 = (ushort*) dest;
-        var destInt16AsInt8 = (byte**) &destInt16;
-        dest[0] = Utf8LeftCurlyBracket;
-        dest[9] = dest[14] = dest[19] = dest[24] = Utf8Dash;
-        dest[37] = Utf8RightCurlyBracket;
-        destInt16[5] = TableToHexUtf8[_byte4];
-        destInt16[6] = TableToHexUtf8[_byte5];
-        destInt16[10] = TableToHexUtf8[_byte8];
-        destInt16[11] = TableToHexUtf8[_byte9];
-        *destInt16AsInt8 += 1;
-        destInt16[0] = TableToHexUtf8[_byte0];
-        destInt16[1] = TableToHexUtf8[_byte1];
-        destInt16[2] = TableToHexUtf8[_byte2];
-        destInt16[3] = TableToHexUtf8[_byte3];
-        destInt16[7] = TableToHexUtf8[_byte6];
-        destInt16[8] = TableToHexUtf8[_byte7];
-        destInt16[12] = TableToHexUtf8[_byte10];
-        destInt16[13] = TableToHexUtf8[_byte11];
-        destInt16[14] = TableToHexUtf8[_byte12];
-        destInt16[15] = TableToHexUtf8[_byte13];
-        destInt16[16] = TableToHexUtf8[_byte14];
-        destInt16[17] = TableToHexUtf8[_byte15];
-    }
-
-    private void FormatUtf8P(byte* dest)
-    {
-        // (dddddddd-dddd-dddd-dddd-dddddddddddd)
-        var destInt16 = (ushort*) dest;
-        var destInt16AsInt8 = (byte**) &destInt16;
-        dest[0] = Utf8LeftParenthesis;
-        dest[9] = dest[14] = dest[19] = dest[24] = Utf8Dash;
-        dest[37] = Utf8RightParenthesis;
-        destInt16[5] = TableToHexUtf8[_byte4];
-        destInt16[6] = TableToHexUtf8[_byte5];
-        destInt16[10] = TableToHexUtf8[_byte8];
-        destInt16[11] = TableToHexUtf8[_byte9];
-        *destInt16AsInt8 += 1;
-        destInt16[0] = TableToHexUtf8[_byte0];
-        destInt16[1] = TableToHexUtf8[_byte1];
-        destInt16[2] = TableToHexUtf8[_byte2];
-        destInt16[3] = TableToHexUtf8[_byte3];
-        destInt16[7] = TableToHexUtf8[_byte6];
-        destInt16[8] = TableToHexUtf8[_byte7];
-        destInt16[12] = TableToHexUtf8[_byte10];
-        destInt16[13] = TableToHexUtf8[_byte11];
-        destInt16[14] = TableToHexUtf8[_byte12];
-        destInt16[15] = TableToHexUtf8[_byte13];
-        destInt16[16] = TableToHexUtf8[_byte14];
-        destInt16[17] = TableToHexUtf8[_byte15];
-    }
-
-    private void FormatUtf8X(byte* dest)
-    {
-        const ushort zeroXUtf8 = ('x' << 8) | '0'; // 0x
-        const ushort commaBraceUtf8 = ('{' << 8) | ','; // ,{
-        const ushort closeBracesUtf8 = ('}' << 8) | '}'; // }}
-
-        // {0xdddddddd,0xdddd,0xdddd,{0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd}}
-        var destInt16 = (ushort*) dest;
-        var destInt16AsInt8 = (byte**) &destInt16;
-        dest[0] = Utf8LeftCurlyBracket;
-        dest[11] = dest[18] = dest[31] = dest[36] = dest[41] = dest[46] = dest[51] = dest[56] = dest[61] = Utf8Comma;
-        destInt16[6] = destInt16[16] = destInt16[21] = destInt16[26] = destInt16[31] = zeroXUtf8; // 0x
-        destInt16[7] = TableToHexUtf8[_byte4];
-        destInt16[8] = TableToHexUtf8[_byte5];
-        destInt16[17] = TableToHexUtf8[_byte9];
-        destInt16[22] = TableToHexUtf8[_byte11];
-        destInt16[27] = TableToHexUtf8[_byte13];
-        destInt16[32] = TableToHexUtf8[_byte15];
-        destInt16[33] = closeBracesUtf8; // }}
-        *destInt16AsInt8 += 1;
-        destInt16[0] = destInt16[9] = destInt16[13] = destInt16[18] = destInt16[23] = destInt16[28] = zeroXUtf8; // 0x
-        destInt16[1] = TableToHexUtf8[_byte0];
-        destInt16[2] = TableToHexUtf8[_byte1];
-        destInt16[3] = TableToHexUtf8[_byte2];
-        destInt16[4] = TableToHexUtf8[_byte3];
-        destInt16[10] = TableToHexUtf8[_byte6];
-        destInt16[11] = TableToHexUtf8[_byte7];
-        destInt16[12] = commaBraceUtf8; // ,{
-        destInt16[14] = TableToHexUtf8[_byte8];
-        destInt16[19] = TableToHexUtf8[_byte10];
-        destInt16[24] = TableToHexUtf8[_byte12];
-        destInt16[29] = TableToHexUtf8[_byte14];
-    }
-
-    private void FormatUtf16N(char* dest)
-    {
-        // dddddddddddddddddddddddddddddddd
-        var destInt32 = (uint*) dest;
-        destInt32[0] = TableToHexUtf16[_byte0];
-        destInt32[1] = TableToHexUtf16[_byte1];
-        destInt32[2] = TableToHexUtf16[_byte2];
-        destInt32[3] = TableToHexUtf16[_byte3];
-        destInt32[4] = TableToHexUtf16[_byte4];
-        destInt32[5] = TableToHexUtf16[_byte5];
-        destInt32[6] = TableToHexUtf16[_byte6];
-        destInt32[7] = TableToHexUtf16[_byte7];
-        destInt32[8] = TableToHexUtf16[_byte8];
-        destInt32[9] = TableToHexUtf16[_byte9];
-        destInt32[10] = TableToHexUtf16[_byte10];
-        destInt32[11] = TableToHexUtf16[_byte11];
-        destInt32[12] = TableToHexUtf16[_byte12];
-        destInt32[13] = TableToHexUtf16[_byte13];
-        destInt32[14] = TableToHexUtf16[_byte14];
-        destInt32[15] = TableToHexUtf16[_byte15];
-    }
-
-    private void FormatUtf16D(char* dest)
-    {
-        // dddddddd-dddd-dddd-dddd-dddddddddddd
-        var destInt32 = (uint*) dest;
-        var destInt32AsInt16 = (char**) &destInt32;
-        dest[8] = dest[13] = dest[18] = dest[23] = '-';
-        destInt32[0] = TableToHexUtf16[_byte0];
-        destInt32[1] = TableToHexUtf16[_byte1];
-        destInt32[2] = TableToHexUtf16[_byte2];
-        destInt32[3] = TableToHexUtf16[_byte3];
-        destInt32[7] = TableToHexUtf16[_byte6];
-        destInt32[8] = TableToHexUtf16[_byte7];
-        destInt32[12] = TableToHexUtf16[_byte10];
-        destInt32[13] = TableToHexUtf16[_byte11];
-        destInt32[14] = TableToHexUtf16[_byte12];
-        destInt32[15] = TableToHexUtf16[_byte13];
-        destInt32[16] = TableToHexUtf16[_byte14];
-        destInt32[17] = TableToHexUtf16[_byte15];
-        *destInt32AsInt16 += 1;
-        destInt32[4] = TableToHexUtf16[_byte4];
-        destInt32[5] = TableToHexUtf16[_byte5];
-        destInt32[9] = TableToHexUtf16[_byte8];
-        destInt32[10] = TableToHexUtf16[_byte9];
-    }
-
-    private void FormatUtf16B(char* dest)
-    {
-        // {dddddddd-dddd-dddd-dddd-dddddddddddd}
-        var destInt32 = (uint*) dest;
-        var destInt32AsInt16 = (char**) &destInt32;
-        dest[0] = '{';
-        dest[9] = dest[14] = dest[19] = dest[24] = '-';
-        dest[37] = '}';
-        destInt32[5] = TableToHexUtf16[_byte4];
-        destInt32[6] = TableToHexUtf16[_byte5];
-        destInt32[10] = TableToHexUtf16[_byte8];
-        destInt32[11] = TableToHexUtf16[_byte9];
-        *destInt32AsInt16 += 1;
-        destInt32[0] = TableToHexUtf16[_byte0];
-        destInt32[1] = TableToHexUtf16[_byte1];
-        destInt32[2] = TableToHexUtf16[_byte2];
-        destInt32[3] = TableToHexUtf16[_byte3];
-        destInt32[7] = TableToHexUtf16[_byte6];
-        destInt32[8] = TableToHexUtf16[_byte7];
-        destInt32[12] = TableToHexUtf16[_byte10];
-        destInt32[13] = TableToHexUtf16[_byte11];
-        destInt32[14] = TableToHexUtf16[_byte12];
-        destInt32[15] = TableToHexUtf16[_byte13];
-        destInt32[16] = TableToHexUtf16[_byte14];
-        destInt32[17] = TableToHexUtf16[_byte15];
-    }
-
-    private void FormatUtf16P(char* dest)
-    {
-        // (dddddddd-dddd-dddd-dddd-dddddddddddd)
-        var destInt32 = (uint*) dest;
-        var destInt32AsInt16 = (char**) &destInt32;
-        dest[0] = '(';
-        dest[9] = dest[14] = dest[19] = dest[24] = '-';
-        dest[37] = ')';
-        destInt32[5] = TableToHexUtf16[_byte4];
-        destInt32[6] = TableToHexUtf16[_byte5];
-        destInt32[10] = TableToHexUtf16[_byte8];
-        destInt32[11] = TableToHexUtf16[_byte9];
-        *destInt32AsInt16 += 1;
-        destInt32[0] = TableToHexUtf16[_byte0];
-        destInt32[1] = TableToHexUtf16[_byte1];
-        destInt32[2] = TableToHexUtf16[_byte2];
-        destInt32[3] = TableToHexUtf16[_byte3];
-        destInt32[7] = TableToHexUtf16[_byte6];
-        destInt32[8] = TableToHexUtf16[_byte7];
-        destInt32[12] = TableToHexUtf16[_byte10];
-        destInt32[13] = TableToHexUtf16[_byte11];
-        destInt32[14] = TableToHexUtf16[_byte12];
-        destInt32[15] = TableToHexUtf16[_byte13];
-        destInt32[16] = TableToHexUtf16[_byte14];
-        destInt32[17] = TableToHexUtf16[_byte15];
-    }
-
-    private void FormatUtf16X(char* dest)
-    {
-        const uint zeroXUtf16 = ((uint) 'x' << 16) | '0'; // 0x
-        const uint commaBraceUtf16 = ((uint) '{' << 16) | ','; // ,{
-        const uint closeBracesUtf16 = ((uint) '}' << 16) | '}'; // }}
-
-        // {0xdddddddd,0xdddd,0xdddd,{0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd}}
-        var destInt32 = (uint*) dest;
-        var destInt32AsInt16 = (char**) &destInt32;
-        dest[0] = '{';
-        dest[11] = dest[18] = dest[31] = dest[36] = dest[41] = dest[46] = dest[51] = dest[56] = dest[61] = ',';
-        destInt32[6] = destInt32[16] = destInt32[21] = destInt32[26] = destInt32[31] = zeroXUtf16; // 0x
-        destInt32[7] = TableToHexUtf16[_byte4];
-        destInt32[8] = TableToHexUtf16[_byte5];
-        destInt32[17] = TableToHexUtf16[_byte9];
-        destInt32[22] = TableToHexUtf16[_byte11];
-        destInt32[27] = TableToHexUtf16[_byte13];
-        destInt32[32] = TableToHexUtf16[_byte15];
-        destInt32[33] = closeBracesUtf16; // }}
-        *destInt32AsInt16 += 1;
-        destInt32[0] = destInt32[9] = destInt32[13] = destInt32[18] = destInt32[23] = destInt32[28] = zeroXUtf16; // 0x
-        destInt32[1] = TableToHexUtf16[_byte0];
-        destInt32[2] = TableToHexUtf16[_byte1];
-        destInt32[3] = TableToHexUtf16[_byte2];
-        destInt32[4] = TableToHexUtf16[_byte3];
-        destInt32[10] = TableToHexUtf16[_byte6];
-        destInt32[11] = TableToHexUtf16[_byte7];
-        destInt32[12] = commaBraceUtf16; // ,{
-        destInt32[14] = TableToHexUtf16[_byte8];
-        destInt32[19] = TableToHexUtf16[_byte10];
-        destInt32[24] = TableToHexUtf16[_byte12];
-        destInt32[29] = TableToHexUtf16[_byte14];
-    }
-
-    /// <summary>
-    ///     <para>
-    ///         <b>Obsolete. Use <see cref="ToGuidLittleEndian()" /> instead.</b>
-    ///     </para>
-    ///     <para>Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same binary representation (little endian).</para>
-    /// </summary>
-    /// <returns><see cref="System.Guid" /> with same binary representation (little endian).</returns>
-    [Obsolete("Use ToGuidLittleEndian() instead.")]
-    public Guid ToGuidByteLayout()
-    {
-        var result = new Guid();
-        Guid* resultPtr = &result;
-        var resultPtrBytes = (byte*) resultPtr;
-        resultPtrBytes[0] = _byte0;
-        resultPtrBytes[1] = _byte1;
-        resultPtrBytes[2] = _byte2;
-        resultPtrBytes[3] = _byte3;
-        resultPtrBytes[4] = _byte4;
-        resultPtrBytes[5] = _byte5;
-        resultPtrBytes[6] = _byte6;
-        resultPtrBytes[7] = _byte7;
-        resultPtrBytes[8] = _byte8;
-        resultPtrBytes[9] = _byte9;
-        resultPtrBytes[10] = _byte10;
-        resultPtrBytes[11] = _byte11;
-        resultPtrBytes[12] = _byte12;
-        resultPtrBytes[13] = _byte13;
-        resultPtrBytes[14] = _byte14;
-        resultPtrBytes[15] = _byte15;
-        return result;
-    }
-
     /// <summary>
     ///     Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> in little endian format.
     /// </summary>
     /// <returns><see cref="System.Guid" /> in little endian format.</returns>
     public Guid ToGuidLittleEndian()
     {
-        var result = new Guid();
+        var result = Guid.Empty;
         Guid* resultPtr = &result;
         var resultPtrBytes = (byte*) resultPtr;
         resultPtrBytes[0] = _byte0;
@@ -1305,38 +958,6 @@ public unsafe struct Uuid :
         resultPtrBytes[5] = _byte5;
         resultPtrBytes[6] = _byte6;
         resultPtrBytes[7] = _byte7;
-        resultPtrBytes[8] = _byte8;
-        resultPtrBytes[9] = _byte9;
-        resultPtrBytes[10] = _byte10;
-        resultPtrBytes[11] = _byte11;
-        resultPtrBytes[12] = _byte12;
-        resultPtrBytes[13] = _byte13;
-        resultPtrBytes[14] = _byte14;
-        resultPtrBytes[15] = _byte15;
-        return result;
-    }
-
-    /// <summary>
-    ///     <para>
-    ///         <b>Obsolete. Use <see cref="ToGuidBigEndian()" /> instead.</b>
-    ///     </para>
-    ///     <para>Converts <see cref="Dodo.Primitives.Uuid" /> to <see cref="System.Guid" /> preserve same string representation (big endian).</para>
-    /// </summary>
-    /// <returns><see cref="System.Guid" /> with same string representation (big endian).</returns>
-    [Obsolete("Use ToGuidBigEndian() instead.")]
-    public Guid ToGuidStringLayout()
-    {
-        var result = new Guid();
-        Guid* resultPtr = &result;
-        var resultPtrBytes = (byte*) resultPtr;
-        resultPtrBytes[0] = _byte3;
-        resultPtrBytes[1] = _byte2;
-        resultPtrBytes[2] = _byte1;
-        resultPtrBytes[3] = _byte0;
-        resultPtrBytes[4] = _byte5;
-        resultPtrBytes[5] = _byte4;
-        resultPtrBytes[6] = _byte7;
-        resultPtrBytes[7] = _byte6;
         resultPtrBytes[8] = _byte8;
         resultPtrBytes[9] = _byte9;
         resultPtrBytes[10] = _byte10;
@@ -1354,7 +975,7 @@ public unsafe struct Uuid :
     /// <returns><see cref="System.Guid" /> in big endian format.</returns>
     public Guid ToGuidBigEndian()
     {
-        var result = new Guid();
+        var result = Guid.Empty;
         Guid* resultPtr = &result;
         var resultPtrBytes = (byte*) resultPtr;
         resultPtrBytes[0] = _byte3;
@@ -1387,11 +1008,7 @@ public unsafe struct Uuid :
         ArgumentNullException.ThrowIfNull(input);
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (char* uuidStringPtr = &input.GetPinnableReference())
-        {
-            ParseWithExceptions(new ReadOnlySpan<char>(uuidStringPtr, input.Length), uuidStringPtr, resultPtr);
-        }
-
+        CharParseWithExceptions(input, resultPtr);
         this = result;
     }
 
@@ -1410,11 +1027,7 @@ public unsafe struct Uuid :
 
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (char* uuidStringPtr = &input.GetPinnableReference())
-        {
-            ParseWithExceptions(input, uuidStringPtr, resultPtr);
-        }
-
+        CharParseWithExceptions(input, resultPtr);
         this = result;
     }
 
@@ -1430,11 +1043,7 @@ public unsafe struct Uuid :
         ArgumentNullException.ThrowIfNull(input);
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (char* uuidStringPtr = &input.GetPinnableReference())
-        {
-            ParseWithExceptions(new ReadOnlySpan<char>(uuidStringPtr, input.Length), uuidStringPtr, resultPtr);
-        }
-
+        CharParseWithExceptions(input, resultPtr);
         return result;
     }
 
@@ -1453,11 +1062,26 @@ public unsafe struct Uuid :
 
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (char* uuidStringPtr = &input.GetPinnableReference())
+        CharParseWithExceptions(input, resultPtr);
+        return result;
+    }
+
+    /// <summary>
+    ///     Converts a read-only span of UTF-8 bytes that represents a UUID to the equivalent <see cref="Uuid" /> structure.
+    /// </summary>
+    /// <param name="utf8Text">The span of UTF-8 characters to parse.</param>
+    /// <returns>A structure that contains the value that was parsed.</returns>
+    /// <exception cref="FormatException"><paramref name="utf8Text" /> is not in a recognized format.</exception>
+    public static Uuid Parse(ReadOnlySpan<byte> utf8Text)
+    {
+        if (utf8Text.IsEmpty)
         {
-            ParseWithExceptions(input, uuidStringPtr, resultPtr);
+            throw new FormatException("Unrecognized Uuid format.");
         }
 
+        var result = new Uuid();
+        var resultPtr = (byte*) &result;
+        Utf8ParseWithExceptions(utf8Text, resultPtr);
         return result;
     }
 
@@ -1475,9 +1099,7 @@ public unsafe struct Uuid :
     /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
     public static Uuid ParseExact(
         string input,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         string format)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -1491,7 +1113,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1500,7 +1122,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1509,7 +1131,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1518,7 +1140,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1527,7 +1149,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1553,9 +1175,7 @@ public unsafe struct Uuid :
     /// <exception cref="FormatException"><paramref name="input" /> is not in the format specified by <paramref name="format" />.</exception>
     public static Uuid ParseExact(
         ReadOnlySpan<char> input,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         ReadOnlySpan<char> format)
     {
         if (input.IsEmpty)
@@ -1577,7 +1197,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1586,7 +1206,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1595,7 +1215,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1604,7 +1224,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1613,7 +1233,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        ParseWithExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                        CharParseWithExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     return result;
@@ -1646,13 +1266,10 @@ public unsafe struct Uuid :
 
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (char* uuidStringPtr = &input.GetPinnableReference())
+        if (CharParseWithoutExceptions(input, resultPtr))
         {
-            if (ParseWithoutExceptions(input.AsSpan(), uuidStringPtr, resultPtr))
-            {
-                output = result;
-                return true;
-            }
+            output = result;
+            return true;
         }
 
         output = default;
@@ -1680,13 +1297,10 @@ public unsafe struct Uuid :
 
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (char* uuidStringPtr = &input.GetPinnableReference())
+        if (CharParseWithoutExceptions(input, resultPtr))
         {
-            if (ParseWithoutExceptions(input, uuidStringPtr, resultPtr))
-            {
-                output = result;
-                return true;
-            }
+            output = result;
+            return true;
         }
 
         output = default;
@@ -1714,13 +1328,10 @@ public unsafe struct Uuid :
 
         var result = new Uuid();
         var resultPtr = (byte*) &result;
-        fixed (byte* uuidUtf8StringPtr = &uuidUtf8String.GetPinnableReference())
+        if (Utf8ParseWithoutExceptions(uuidUtf8String, resultPtr))
         {
-            if (ParseWithoutExceptionsUtf8(uuidUtf8String, uuidUtf8StringPtr, resultPtr))
-            {
-                output = result;
-                return true;
-            }
+            output = result;
+            return true;
         }
 
         output = default;
@@ -1744,9 +1355,7 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
     public static bool TryParseExact(
         [NotNullWhen(true)] string? input,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         string format,
         out Uuid output)
     {
@@ -1765,7 +1374,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1774,7 +1383,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1783,7 +1392,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1792,7 +1401,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1801,7 +1410,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1835,9 +1444,7 @@ public unsafe struct Uuid :
     /// <returns><see langword="true" /> if the parse operation was successful; otherwise, <see langword="false" />.</returns>
     public static bool TryParseExact(
         ReadOnlySpan<char> input,
-#if NET8_0_OR_GREATER
         [StringSyntax(StringSyntaxAttribute.GuidFormat)]
-#endif
         ReadOnlySpan<char> format,
         out Uuid output)
     {
@@ -1856,7 +1463,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsD((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1865,7 +1472,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsN((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1874,7 +1481,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsB((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1883,7 +1490,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsP((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1892,7 +1499,7 @@ public unsafe struct Uuid :
                 {
                     fixed (char* uuidStringPtr = &input.GetPinnableReference())
                     {
-                        parsed = ParseWithoutExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
+                        parsed = CharParseWithoutExceptionsX((uint) input.Length, uuidStringPtr, resultPtr);
                     }
 
                     break;
@@ -1909,1558 +1516,31 @@ public unsafe struct Uuid :
         return false;
     }
 
-    private static bool ParseWithoutExceptions(ReadOnlySpan<char> uuidString, char* uuidStringPtr, byte* resultPtr)
-    {
-        var length = (uint) uuidString.Length;
-        if (length == 0u)
-        {
-            return false;
-        }
-
-        char* dashBuffer = stackalloc char[1];
-        dashBuffer[0] = '-';
-        var dashSpan = new ReadOnlySpan<char>(dashBuffer, 1);
-        switch (uuidString[0])
-        {
-            case '(':
-                {
-                    return ParseWithoutExceptionsP(length, uuidStringPtr, resultPtr);
-                }
-            case '{':
-                {
-                    return uuidString.Contains(dashSpan, StringComparison.Ordinal)
-                        ? ParseWithoutExceptionsB(length, uuidStringPtr, resultPtr)
-                        : ParseWithoutExceptionsX(length, uuidStringPtr, resultPtr);
-                }
-            default:
-                {
-                    return uuidString.Contains(dashSpan, StringComparison.Ordinal)
-                        ? ParseWithoutExceptionsD(length, uuidStringPtr, resultPtr)
-                        : ParseWithoutExceptionsN(length, uuidStringPtr, resultPtr);
-                }
-        }
-    }
-
-    private static bool ParseWithoutExceptionsD(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 36u)
-        {
-            return false;
-        }
-
-        if (uuidStringPtr[8] != '-' || uuidStringPtr[13] != '-' || uuidStringPtr[18] != '-' || uuidStringPtr[23] != '-')
-        {
-            return false;
-        }
-
-        return TryParsePtrD(uuidStringPtr, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsN(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        return uuidStringLength == 32u && TryParsePtrN(uuidStringPtr, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsB(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 38u)
-        {
-            return false;
-        }
-
-        if (uuidStringPtr[0] != '{'
-            || uuidStringPtr[9] != '-'
-            || uuidStringPtr[14] != '-'
-            || uuidStringPtr[19] != '-'
-            || uuidStringPtr[24] != '-'
-            || uuidStringPtr[37] != '}')
-        {
-            return false;
-        }
-
-        return TryParsePtrD(uuidStringPtr + 1, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsP(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 38u)
-        {
-            return false;
-        }
-
-        if (uuidStringPtr[0] != '('
-            || uuidStringPtr[9] != '-'
-            || uuidStringPtr[14] != '-'
-            || uuidStringPtr[19] != '-'
-            || uuidStringPtr[24] != '-'
-            || uuidStringPtr[37] != ')')
-        {
-            return false;
-        }
-
-        return TryParsePtrD(uuidStringPtr + 1, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsX(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 68u)
-        {
-            return false;
-        }
-
-        if (uuidStringPtr[0] != '{'
-            || uuidStringPtr[1] != '0'
-            || uuidStringPtr[2] != 'x'
-            || uuidStringPtr[11] != ','
-            || uuidStringPtr[12] != '0'
-            || uuidStringPtr[13] != 'x'
-            || uuidStringPtr[18] != ','
-            || uuidStringPtr[19] != '0'
-            || uuidStringPtr[20] != 'x'
-            || uuidStringPtr[25] != ','
-            || uuidStringPtr[26] != '{'
-            || uuidStringPtr[27] != '0'
-            || uuidStringPtr[28] != 'x'
-            || uuidStringPtr[31] != ','
-            || uuidStringPtr[32] != '0'
-            || uuidStringPtr[33] != 'x'
-            || uuidStringPtr[36] != ','
-            || uuidStringPtr[37] != '0'
-            || uuidStringPtr[38] != 'x'
-            || uuidStringPtr[41] != ','
-            || uuidStringPtr[42] != '0'
-            || uuidStringPtr[43] != 'x'
-            || uuidStringPtr[46] != ','
-            || uuidStringPtr[47] != '0'
-            || uuidStringPtr[48] != 'x'
-            || uuidStringPtr[51] != ','
-            || uuidStringPtr[52] != '0'
-            || uuidStringPtr[53] != 'x'
-            || uuidStringPtr[56] != ','
-            || uuidStringPtr[57] != '0'
-            || uuidStringPtr[58] != 'x'
-            || uuidStringPtr[61] != ','
-            || uuidStringPtr[62] != '0'
-            || uuidStringPtr[63] != 'x'
-            || uuidStringPtr[66] != '}'
-            || uuidStringPtr[67] != '}')
-        {
-            return false;
-        }
-
-        return TryParsePtrX(uuidStringPtr, resultPtr);
-    }
-
-    /// <summary>
-    ///     (
-    /// </summary>
-    private const byte Utf8LeftParenthesis = 0x28;
-
-    /// <summary>
-    ///     )
-    /// </summary>
-    private const byte Utf8RightParenthesis = 0x29;
-
-    /// <summary>
-    ///     {
-    /// </summary>
-    private const byte Utf8LeftCurlyBracket = 0x7B;
-
-    /// <summary>
-    ///     }
-    /// </summary>
-    private const byte Utf8RightCurlyBracket = 0x7D;
-
-    /// <summary>
-    ///     -
-    /// </summary>
-    private const byte Utf8HyphenMinus = 0x2D;
-
-    /// <summary>
-    ///     0
-    /// </summary>
-    private const byte Utf8DigitZero = 0x30;
-
-    /// <summary>
-    ///     x
-    /// </summary>
-    private const byte Utf8LatinSmallLetterX = 0x78;
-
-    /// <summary>
-    ///     ,
-    /// </summary>
-    private const byte Utf8Comma = 0x2C;
-
-    /// <summary>
-    ///     -
-    /// </summary>
-    private const byte Utf8Dash = 0x2D;
-
-    private static bool ParseWithoutExceptionsUtf8(ReadOnlySpan<byte> uuidUtf8String, byte* uuidUtf8StringPtr, byte* resultPtr)
-    {
-        var length = (uint) uuidUtf8String.Length;
-        switch (uuidUtf8String[0])
-        {
-            case Utf8LeftParenthesis: // (
-                {
-                    return ParseWithoutExceptionsPUtf8(length, uuidUtf8StringPtr, resultPtr);
-                }
-            case Utf8LeftCurlyBracket:
-                {
-                    return uuidUtf8String.Contains(Utf8HyphenMinus)
-                        ? ParseWithoutExceptionsBUtf8(length, uuidUtf8StringPtr, resultPtr)
-                        : ParseWithoutExceptionsXUtf8(length, uuidUtf8StringPtr, resultPtr);
-                }
-            default:
-                {
-                    return uuidUtf8String.IndexOf(Utf8HyphenMinus) >= 0
-                        ? ParseWithoutExceptionsDUtf8(length, uuidUtf8StringPtr, resultPtr)
-                        : ParseWithoutExceptionsNUtf8(length, uuidUtf8StringPtr, resultPtr);
-                }
-        }
-    }
-
-
-    private static bool ParseWithoutExceptionsDUtf8(uint uuidStringLength, byte* uuidUtf8StringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 36u)
-        {
-            return false;
-        }
-
-        if (uuidUtf8StringPtr[8] != Utf8HyphenMinus
-            || uuidUtf8StringPtr[13] != Utf8HyphenMinus
-            || uuidUtf8StringPtr[18] != Utf8HyphenMinus
-            || uuidUtf8StringPtr[23] != Utf8HyphenMinus)
-        {
-            return false;
-        }
-
-        return TryParsePtrDUtf8(uuidUtf8StringPtr, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsNUtf8(uint uuidStringLength, byte* uuidUtf8StringPtr, byte* resultPtr)
-    {
-        return uuidStringLength == 32u && TryParsePtrNUtf8(uuidUtf8StringPtr, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsBUtf8(uint uuidStringLength, byte* uuidUtf8StringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 38u)
-        {
-            return false;
-        }
-
-        if (uuidUtf8StringPtr[0] != Utf8LeftCurlyBracket // {
-            || uuidUtf8StringPtr[9] != Utf8HyphenMinus //-
-            || uuidUtf8StringPtr[14] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[19] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[24] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[37] != Utf8RightCurlyBracket) // }
-        {
-            return false;
-        }
-
-        return TryParsePtrDUtf8(uuidUtf8StringPtr + 1, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsPUtf8(uint uuidStringLength, byte* uuidUtf8StringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 38u)
-        {
-            return false;
-        }
-
-        if (uuidUtf8StringPtr[0] != Utf8LeftParenthesis // (
-            || uuidUtf8StringPtr[9] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[14] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[19] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[24] != Utf8HyphenMinus // -
-            || uuidUtf8StringPtr[37] != Utf8RightParenthesis) // )
-        {
-            return false;
-        }
-
-        return TryParsePtrDUtf8(uuidUtf8StringPtr + 1, resultPtr);
-    }
-
-    private static bool ParseWithoutExceptionsXUtf8(uint uuidStringLength, byte* uuidUtf8StringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 68u)
-        {
-            return false;
-        }
-
-        if (uuidUtf8StringPtr[0] != Utf8LeftCurlyBracket // {
-            || uuidUtf8StringPtr[1] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[2] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[11] != Utf8Comma // ,
-            || uuidUtf8StringPtr[12] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[13] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[18] != Utf8Comma // ,
-            || uuidUtf8StringPtr[19] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[20] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[25] != Utf8Comma // ,
-            || uuidUtf8StringPtr[26] != Utf8LeftCurlyBracket // {
-            || uuidUtf8StringPtr[27] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[28] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[31] != Utf8Comma // ,
-            || uuidUtf8StringPtr[32] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[33] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[36] != Utf8Comma // ,
-            || uuidUtf8StringPtr[37] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[38] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[41] != Utf8Comma // ,
-            || uuidUtf8StringPtr[42] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[43] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[46] != Utf8Comma // ,
-            || uuidUtf8StringPtr[47] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[48] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[51] != Utf8Comma // ,
-            || uuidUtf8StringPtr[52] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[53] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[56] != Utf8Comma // ,
-            || uuidUtf8StringPtr[57] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[58] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[61] != Utf8Comma // ,
-            || uuidUtf8StringPtr[62] != Utf8DigitZero // 0
-            || uuidUtf8StringPtr[63] != Utf8LatinSmallLetterX // x
-            || uuidUtf8StringPtr[66] != Utf8RightCurlyBracket // }
-            || uuidUtf8StringPtr[67] != Utf8RightCurlyBracket // }
-           )
-        {
-            return false;
-        }
-
-        return TryParsePtrXUtf8(uuidUtf8StringPtr, resultPtr);
-    }
-
-    private static void ParseWithExceptions(ReadOnlySpan<char> uuidString, char* uuidStringPtr, byte* resultPtr)
-    {
-        var length = (uint) uuidString.Length;
-        if (length == 0u)
-        {
-            throw new FormatException("Unrecognized Uuid format.");
-        }
-
-        char* dashBuffer = stackalloc char[1];
-        dashBuffer[0] = '-';
-        var dashSpan = new ReadOnlySpan<char>(dashBuffer, 1);
-        switch (uuidStringPtr[0])
-        {
-            case '(':
-                {
-                    ParseWithExceptionsP(length, uuidStringPtr, resultPtr);
-                    break;
-                }
-            case '{':
-                {
-                    if (uuidString.Contains(dashSpan, StringComparison.Ordinal))
-                    {
-                        ParseWithExceptionsB(length, uuidStringPtr, resultPtr);
-                        break;
-                    }
-
-                    ParseWithExceptionsX(length, uuidStringPtr, resultPtr);
-                    break;
-                }
-            default:
-                {
-                    if (uuidString.Contains(dashSpan, StringComparison.Ordinal))
-                    {
-                        ParseWithExceptionsD(length, uuidStringPtr, resultPtr);
-                        break;
-                    }
-
-                    ParseWithExceptionsN(length, uuidStringPtr, resultPtr);
-                    break;
-                }
-        }
-    }
-
-    [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
-    private static void ParseWithExceptionsD(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 36u)
-        {
-            throw new FormatException("Uuid should contain 32 digits with 4 dashes xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.");
-        }
-
-        if (uuidStringPtr[8] != '-' || uuidStringPtr[13] != '-' || uuidStringPtr[18] != '-' || uuidStringPtr[23] != '-')
-        {
-            throw new FormatException("Dashes are in the wrong position for Uuid parsing.");
-        }
-
-        if (!TryParsePtrD(uuidStringPtr, resultPtr))
-        {
-            throw new FormatException("Uuid string should only contain hexadecimal characters.");
-        }
-    }
-
-    [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
-    private static void ParseWithExceptionsN(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 32u)
-        {
-            throw new FormatException("Uuid should contain only 32 digits xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.");
-        }
-
-        if (!TryParsePtrN(uuidStringPtr, resultPtr))
-        {
-            throw new FormatException("Uuid string should only contain hexadecimal characters.");
-        }
-    }
-
-    [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
-    private static void ParseWithExceptionsB(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 38u)
-        {
-            throw new FormatException("Uuid should contain 32 digits with 4 dashes {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}.");
-        }
-
-        if (uuidStringPtr[0] != '{' || uuidStringPtr[37] != '}')
-        {
-            throw new FormatException("Uuid should contain 32 digits with 4 dashes {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}.");
-        }
-
-        if (uuidStringPtr[9] != '-' || uuidStringPtr[14] != '-' || uuidStringPtr[19] != '-' || uuidStringPtr[24] != '-')
-        {
-            throw new FormatException("Dashes are in the wrong position for Uuid parsing.");
-        }
-
-        if (!TryParsePtrD(uuidStringPtr + 1, resultPtr))
-        {
-            throw new FormatException("Uuid string should only contain hexadecimal characters.");
-        }
-    }
-
-    [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
-    private static void ParseWithExceptionsP(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 38u)
-        {
-            throw new FormatException("Uuid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).");
-        }
-
-        if (uuidStringPtr[0] != '(' || uuidStringPtr[37] != ')')
-        {
-            throw new FormatException("Uuid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).");
-        }
-
-        if (uuidStringPtr[9] != '-' || uuidStringPtr[14] != '-' || uuidStringPtr[19] != '-' || uuidStringPtr[24] != '-')
-        {
-            throw new FormatException("Dashes are in the wrong position for Uuid parsing.");
-        }
-
-        if (!TryParsePtrD(uuidStringPtr + 1, resultPtr))
-        {
-            throw new FormatException("Uuid string should only contain hexadecimal characters.");
-        }
-    }
-
-    [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
-    private static void ParseWithExceptionsX(uint uuidStringLength, char* uuidStringPtr, byte* resultPtr)
-    {
-        if (uuidStringLength != 68u)
-        {
-            throw new FormatException(
-                "Could not find a brace, or the length between the previous token and the brace was zero (i.e., '0x,'etc.).");
-        }
-
-        if (uuidStringPtr[0] != '{'
-            || uuidStringPtr[26] != '{'
-            || uuidStringPtr[66] != '}')
-        {
-            throw new FormatException(
-                "Could not find a brace, or the length between the previous token and the brace was zero (i.e., '0x,'etc.).");
-        }
-
-        if (uuidStringPtr[67] != '}')
-        {
-            throw new FormatException("Could not find the ending brace.");
-        }
-
-        if (uuidStringPtr[11] != ','
-            || uuidStringPtr[18] != ','
-            || uuidStringPtr[25] != ','
-            || uuidStringPtr[31] != ','
-            || uuidStringPtr[36] != ','
-            || uuidStringPtr[41] != ','
-            || uuidStringPtr[46] != ','
-            || uuidStringPtr[51] != ','
-            || uuidStringPtr[56] != ','
-            || uuidStringPtr[61] != ',')
-        {
-            throw new FormatException(
-                "Could not find a comma, or the length between the previous token and the comma was zero (i.e., '0x,'etc.).");
-        }
-
-        if (uuidStringPtr[1] != '0'
-            || uuidStringPtr[2] != 'x'
-            || uuidStringPtr[12] != '0'
-            || uuidStringPtr[13] != 'x'
-            || uuidStringPtr[19] != '0'
-            || uuidStringPtr[20] != 'x'
-            || uuidStringPtr[27] != '0'
-            || uuidStringPtr[28] != 'x'
-            || uuidStringPtr[32] != '0'
-            || uuidStringPtr[33] != 'x'
-            || uuidStringPtr[37] != '0'
-            || uuidStringPtr[38] != 'x'
-            || uuidStringPtr[42] != '0'
-            || uuidStringPtr[43] != 'x'
-            || uuidStringPtr[47] != '0'
-            || uuidStringPtr[48] != 'x'
-            || uuidStringPtr[52] != '0'
-            || uuidStringPtr[53] != 'x'
-            || uuidStringPtr[57] != '0'
-            || uuidStringPtr[58] != 'x'
-            || uuidStringPtr[62] != '0'
-            || uuidStringPtr[63] != 'x')
-        {
-            throw new FormatException("Expected 0x prefix.");
-        }
-
-
-        if (!TryParsePtrX(uuidStringPtr, resultPtr))
-        {
-            throw new FormatException("Uuid string should only contain hexadecimal characters.");
-        }
-    }
-
-    private static bool TryParsePtrN(char* value, byte* resultPtr)
-    {
-        // e.g. "d85b1407351d4694939203acc5870eb1"
-        byte hi;
-        byte lo;
-        // 0 byte
-        if (value[0] < MaximalCharUtf16
-            && (hi = TableFromHexToBytesUtf16[value[0]]) != 0xFF
-            && value[1] < MaximalCharUtf16
-            && (lo = TableFromHexToBytesUtf16[value[1]]) != 0xFF)
-        {
-            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
-            // 1 byte
-            if (value[2] < MaximalCharUtf16
-                && (hi = TableFromHexToBytesUtf16[value[2]]) != 0xFF
-                && value[3] < MaximalCharUtf16
-                && (lo = TableFromHexToBytesUtf16[value[3]]) != 0xFF)
-            {
-                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
-                // 2 byte
-                if (value[4] < MaximalCharUtf16
-                    && (hi = TableFromHexToBytesUtf16[value[4]]) != 0xFF
-                    && value[5] < MaximalCharUtf16
-                    && (lo = TableFromHexToBytesUtf16[value[5]]) != 0xFF)
-                {
-                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
-                    // 3 byte
-                    if (value[6] < MaximalCharUtf16
-                        && (hi = TableFromHexToBytesUtf16[value[6]]) != 0xFF
-                        && value[7] < MaximalCharUtf16
-                        && (lo = TableFromHexToBytesUtf16[value[7]]) != 0xFF)
-                    {
-                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
-                        // 4 byte
-                        if (value[8] < MaximalCharUtf16
-                            && (hi = TableFromHexToBytesUtf16[value[8]]) != 0xFF
-                            && value[9] < MaximalCharUtf16
-                            && (lo = TableFromHexToBytesUtf16[value[9]]) != 0xFF)
-                        {
-                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
-                            // 5 byte
-                            if (value[10] < MaximalCharUtf16
-                                && (hi = TableFromHexToBytesUtf16[value[10]]) != 0xFF
-                                && value[11] < MaximalCharUtf16
-                                && (lo = TableFromHexToBytesUtf16[value[11]]) != 0xFF)
-                            {
-                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
-                                // 6 byte
-                                if (value[12] < MaximalCharUtf16
-                                    && (hi = TableFromHexToBytesUtf16[value[12]]) != 0xFF
-                                    && value[13] < MaximalCharUtf16
-                                    && (lo = TableFromHexToBytesUtf16[value[13]]) != 0xFF)
-                                {
-                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
-                                    // 7 byte
-                                    if (value[14] < MaximalCharUtf16
-                                        && (hi = TableFromHexToBytesUtf16[value[14]]) != 0xFF
-                                        && value[15] < MaximalCharUtf16
-                                        && (lo = TableFromHexToBytesUtf16[value[15]]) != 0xFF)
-                                    {
-                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
-                                        // 8 byte
-                                        if (value[16] < MaximalCharUtf16
-                                            && (hi = TableFromHexToBytesUtf16[value[16]]) != 0xFF
-                                            && value[17] < MaximalCharUtf16
-                                            && (lo = TableFromHexToBytesUtf16[value[17]]) != 0xFF)
-                                        {
-                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
-                                            // 9 byte
-                                            if (value[18] < MaximalCharUtf16
-                                                && (hi = TableFromHexToBytesUtf16[value[18]]) != 0xFF
-                                                && value[19] < MaximalCharUtf16
-                                                && (lo = TableFromHexToBytesUtf16[value[19]]) != 0xFF)
-                                            {
-                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
-                                                // 10 byte
-                                                if (value[20] < MaximalCharUtf16
-                                                    && (hi = TableFromHexToBytesUtf16[value[20]]) != 0xFF
-                                                    && value[21] < MaximalCharUtf16
-                                                    && (lo = TableFromHexToBytesUtf16[value[21]]) != 0xFF)
-                                                {
-                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
-                                                    // 11 byte
-                                                    if (value[22] < MaximalCharUtf16
-                                                        && (hi = TableFromHexToBytesUtf16[value[22]]) != 0xFF
-                                                        && value[23] < MaximalCharUtf16
-                                                        && (lo = TableFromHexToBytesUtf16[value[23]]) != 0xFF)
-                                                    {
-                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
-                                                        // 12 byte
-                                                        if (value[24] < MaximalCharUtf16
-                                                            && (hi = TableFromHexToBytesUtf16[value[24]]) != 0xFF
-                                                            && value[25] < MaximalCharUtf16
-                                                            && (lo = TableFromHexToBytesUtf16[value[25]]) != 0xFF)
-                                                        {
-                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
-                                                            // 13 byte
-                                                            if (value[26] < MaximalCharUtf16
-                                                                && (hi = TableFromHexToBytesUtf16[value[26]]) != 0xFF
-                                                                && value[27] < MaximalCharUtf16
-                                                                && (lo = TableFromHexToBytesUtf16[value[27]]) != 0xFF)
-                                                            {
-                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
-                                                                // 14 byte
-                                                                if (value[28] < MaximalCharUtf16
-                                                                    && (hi = TableFromHexToBytesUtf16[value[28]]) != 0xFF
-                                                                    && value[29] < MaximalCharUtf16
-                                                                    && (lo = TableFromHexToBytesUtf16[value[29]]) != 0xFF)
-                                                                {
-                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
-                                                                    // 15 byte
-                                                                    if (value[30] < MaximalCharUtf16
-                                                                        && (hi = TableFromHexToBytesUtf16[value[30]]) != 0xFF
-                                                                        && value[31] < MaximalCharUtf16
-                                                                        && (lo = TableFromHexToBytesUtf16[value[31]]) != 0xFF)
-                                                                    {
-                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryParsePtrD(char* value, byte* resultPtr)
-    {
-        // e.g. "d85b1407-351d-4694-9392-03acc5870eb1"
-        byte hi;
-        byte lo;
-        // 0 byte
-        if (value[0] < MaximalCharUtf16
-            && (hi = TableFromHexToBytesUtf16[value[0]]) != 0xFF
-            && value[1] < MaximalCharUtf16
-            && (lo = TableFromHexToBytesUtf16[value[1]]) != 0xFF)
-        {
-            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
-            // 1 byte
-            if (value[2] < MaximalCharUtf16
-                && (hi = TableFromHexToBytesUtf16[value[2]]) != 0xFF
-                && value[3] < MaximalCharUtf16
-                && (lo = TableFromHexToBytesUtf16[value[3]]) != 0xFF)
-            {
-                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
-                // 2 byte
-                if (value[4] < MaximalCharUtf16
-                    && (hi = TableFromHexToBytesUtf16[value[4]]) != 0xFF
-                    && value[5] < MaximalCharUtf16
-                    && (lo = TableFromHexToBytesUtf16[value[5]]) != 0xFF)
-                {
-                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
-                    // 3 byte
-                    if (value[6] < MaximalCharUtf16
-                        && (hi = TableFromHexToBytesUtf16[value[6]]) != 0xFF
-                        && value[7] < MaximalCharUtf16
-                        && (lo = TableFromHexToBytesUtf16[value[7]]) != 0xFF)
-                    {
-                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
-
-                        // value[8] == '-'
-
-                        // 4 byte
-                        if (value[9] < MaximalCharUtf16
-                            && (hi = TableFromHexToBytesUtf16[value[9]]) != 0xFF
-                            && value[10] < MaximalCharUtf16
-                            && (lo = TableFromHexToBytesUtf16[value[10]]) != 0xFF)
-                        {
-                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
-                            // 5 byte
-                            if (value[11] < MaximalCharUtf16
-                                && (hi = TableFromHexToBytesUtf16[value[11]]) != 0xFF
-                                && value[12] < MaximalCharUtf16
-                                && (lo = TableFromHexToBytesUtf16[value[12]]) != 0xFF)
-                            {
-                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
-
-                                // value[13] == '-'
-
-                                // 6 byte
-                                if (value[14] < MaximalCharUtf16
-                                    && (hi = TableFromHexToBytesUtf16[value[14]]) != 0xFF
-                                    && value[15] < MaximalCharUtf16
-                                    && (lo = TableFromHexToBytesUtf16[value[15]]) != 0xFF)
-                                {
-                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
-                                    // 7 byte
-                                    if (value[16] < MaximalCharUtf16
-                                        && (hi = TableFromHexToBytesUtf16[value[16]]) != 0xFF
-                                        && value[17] < MaximalCharUtf16
-                                        && (lo = TableFromHexToBytesUtf16[value[17]]) != 0xFF)
-                                    {
-                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
-
-                                        // value[18] == '-'
-
-                                        // 8 byte
-                                        if (value[19] < MaximalCharUtf16
-                                            && (hi = TableFromHexToBytesUtf16[value[19]]) != 0xFF
-                                            && value[20] < MaximalCharUtf16
-                                            && (lo = TableFromHexToBytesUtf16[value[20]]) != 0xFF)
-                                        {
-                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
-                                            // 9 byte
-                                            if (value[21] < MaximalCharUtf16
-                                                && (hi = TableFromHexToBytesUtf16[value[21]]) != 0xFF
-                                                && value[22] < MaximalCharUtf16
-                                                && (lo = TableFromHexToBytesUtf16[value[22]]) != 0xFF)
-                                            {
-                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
-
-                                                // value[23] == '-'
-
-                                                // 10 byte
-                                                if (value[24] < MaximalCharUtf16
-                                                    && (hi = TableFromHexToBytesUtf16[value[24]]) != 0xFF
-                                                    && value[25] < MaximalCharUtf16
-                                                    && (lo = TableFromHexToBytesUtf16[value[25]]) != 0xFF)
-                                                {
-                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
-                                                    // 11 byte
-                                                    if (value[26] < MaximalCharUtf16
-                                                        && (hi = TableFromHexToBytesUtf16[value[26]]) != 0xFF
-                                                        && value[27] < MaximalCharUtf16
-                                                        && (lo = TableFromHexToBytesUtf16[value[27]]) != 0xFF)
-                                                    {
-                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
-                                                        // 12 byte
-                                                        if (value[28] < MaximalCharUtf16
-                                                            && (hi = TableFromHexToBytesUtf16[value[28]]) != 0xFF
-                                                            && value[29] < MaximalCharUtf16
-                                                            && (lo = TableFromHexToBytesUtf16[value[29]]) != 0xFF)
-                                                        {
-                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
-                                                            // 13 byte
-                                                            if (value[30] < MaximalCharUtf16
-                                                                && (hi = TableFromHexToBytesUtf16[value[30]]) != 0xFF
-                                                                && value[31] < MaximalCharUtf16
-                                                                && (lo = TableFromHexToBytesUtf16[value[31]]) != 0xFF)
-                                                            {
-                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
-                                                                // 14 byte
-                                                                if (value[32] < MaximalCharUtf16
-                                                                    && (hi = TableFromHexToBytesUtf16[value[32]]) != 0xFF
-                                                                    && value[33] < MaximalCharUtf16
-                                                                    && (lo = TableFromHexToBytesUtf16[value[33]]) != 0xFF)
-                                                                {
-                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
-                                                                    // 15 byte
-                                                                    if (value[34] < MaximalCharUtf16
-                                                                        && (hi = TableFromHexToBytesUtf16[value[34]]) != 0xFF
-                                                                        && value[35] < MaximalCharUtf16
-                                                                        && (lo = TableFromHexToBytesUtf16[value[35]]) != 0xFF)
-                                                                    {
-                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryParsePtrX(char* value, byte* resultPtr)
-    {
-        // e.g. "{0xd85b1407,0x351d,0x4694,{0x93,0x92,0x03,0xac,0xc5,0x87,0x0e,0xb1}}"
-
-        byte hexByteHi;
-        byte hexByteLow;
-        // value[0] == '{'
-        // value[1] == '0'
-        // value[2] == 'x'
-        // 0 byte
-        if (value[3] < MaximalCharUtf16
-            && (hexByteHi = TableFromHexToBytesUtf16[value[3]]) != 0xFF
-            && value[4] < MaximalCharUtf16
-            && (hexByteLow = TableFromHexToBytesUtf16[value[4]]) != 0xFF)
-        {
-            resultPtr[0] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-            // 1 byte
-            if (value[5] < MaximalCharUtf16
-                && (hexByteHi = TableFromHexToBytesUtf16[value[5]]) != 0xFF
-                && value[6] < MaximalCharUtf16
-                && (hexByteLow = TableFromHexToBytesUtf16[value[6]]) != 0xFF)
-            {
-                resultPtr[1] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                // 2 byte
-                if (value[7] < MaximalCharUtf16
-                    && (hexByteHi = TableFromHexToBytesUtf16[value[7]]) != 0xFF
-                    && value[8] < MaximalCharUtf16
-                    && (hexByteLow = TableFromHexToBytesUtf16[value[8]]) != 0xFF)
-                {
-                    resultPtr[2] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                    // 3 byte
-                    if (value[9] < MaximalCharUtf16
-                        && (hexByteHi = TableFromHexToBytesUtf16[value[9]]) != 0xFF
-                        && value[10] < MaximalCharUtf16
-                        && (hexByteLow = TableFromHexToBytesUtf16[value[10]]) != 0xFF)
-                    {
-                        resultPtr[3] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                        // value[11] == ','
-                        // value[12] == '0'
-                        // value[13] == 'x'
-
-                        // 4 byte
-                        if (value[14] < MaximalCharUtf16
-                            && (hexByteHi = TableFromHexToBytesUtf16[value[14]]) != 0xFF
-                            && value[15] < MaximalCharUtf16
-                            && (hexByteLow = TableFromHexToBytesUtf16[value[15]]) != 0xFF)
-                        {
-                            resultPtr[4] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                            // 5 byte
-                            if (value[16] < MaximalCharUtf16
-                                && (hexByteHi = TableFromHexToBytesUtf16[value[16]]) != 0xFF
-                                && value[17] < MaximalCharUtf16
-                                && (hexByteLow = TableFromHexToBytesUtf16[value[17]]) != 0xFF)
-                            {
-                                resultPtr[5] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                // value[18] == ','
-                                // value[19] == '0'
-                                // value[20] == 'x'
-
-                                // 6 byte
-                                if (value[21] < MaximalCharUtf16
-                                    && (hexByteHi = TableFromHexToBytesUtf16[value[21]]) != 0xFF
-                                    && value[22] < MaximalCharUtf16
-                                    && (hexByteLow = TableFromHexToBytesUtf16[value[22]]) != 0xFF)
-                                {
-                                    resultPtr[6] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                                    // 7 byte
-                                    if (value[23] < MaximalCharUtf16
-                                        && (hexByteHi = TableFromHexToBytesUtf16[value[23]]) != 0xFF
-                                        && value[24] < MaximalCharUtf16
-                                        && (hexByteLow = TableFromHexToBytesUtf16[value[24]]) != 0xFF)
-                                    {
-                                        resultPtr[7] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                        // value[25] == ','
-                                        // value[26] == '{'
-                                        // value[27] == '0'
-                                        // value[28] == 'x'
-
-                                        // 8 byte
-                                        if (value[29] < MaximalCharUtf16
-                                            && (hexByteHi = TableFromHexToBytesUtf16[value[29]]) != 0xFF
-                                            && value[30] < MaximalCharUtf16
-                                            && (hexByteLow = TableFromHexToBytesUtf16[value[30]]) != 0xFF)
-                                        {
-                                            resultPtr[8] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                            // value[31] == ','
-                                            // value[32] == '0'
-                                            // value[33] == 'x'
-
-                                            // 9 byte
-                                            if (value[34] < MaximalCharUtf16
-                                                && (hexByteHi = TableFromHexToBytesUtf16[value[34]]) != 0xFF
-                                                && value[35] < MaximalCharUtf16
-                                                && (hexByteLow = TableFromHexToBytesUtf16[value[35]]) != 0xFF)
-                                            {
-                                                resultPtr[9] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                // value[36] == ','
-                                                // value[37] == '0'
-                                                // value[38] == 'x'
-
-                                                // 10 byte
-                                                if (value[39] < MaximalCharUtf16
-                                                    && (hexByteHi = TableFromHexToBytesUtf16[value[39]]) != 0xFF
-                                                    && value[40] < MaximalCharUtf16
-                                                    && (hexByteLow = TableFromHexToBytesUtf16[value[40]]) != 0xFF)
-                                                {
-                                                    resultPtr[10] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                    // value[41] == ','
-                                                    // value[42] == '0'
-                                                    // value[43] == 'x'
-
-                                                    // 11 byte
-                                                    if (value[44] < MaximalCharUtf16
-                                                        && (hexByteHi = TableFromHexToBytesUtf16[value[44]]) != 0xFF
-                                                        && value[45] < MaximalCharUtf16
-                                                        && (hexByteLow = TableFromHexToBytesUtf16[value[45]]) != 0xFF)
-                                                    {
-                                                        resultPtr[11] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                        // value[46] == ','
-                                                        // value[47] == '0'
-                                                        // value[48] == 'x'
-
-                                                        // 12 byte
-                                                        if (value[49] < MaximalCharUtf16
-                                                            && (hexByteHi = TableFromHexToBytesUtf16[value[49]]) != 0xFF
-                                                            && value[50] < MaximalCharUtf16
-                                                            && (hexByteLow = TableFromHexToBytesUtf16[value[50]]) != 0xFF)
-                                                        {
-                                                            resultPtr[12] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                            // value[51] == ','
-                                                            // value[52] == '0'
-                                                            // value[53] == 'x'
-
-                                                            // 13 byte
-                                                            if (value[54] < MaximalCharUtf16
-                                                                && (hexByteHi = TableFromHexToBytesUtf16[value[54]]) != 0xFF
-                                                                && value[55] < MaximalCharUtf16
-                                                                && (hexByteLow = TableFromHexToBytesUtf16[value[55]]) != 0xFF)
-                                                            {
-                                                                resultPtr[13] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                                // value[56] == ','
-                                                                // value[57] == '0'
-                                                                // value[58] == 'x'
-
-                                                                // 14 byte
-                                                                if (value[59] < MaximalCharUtf16
-                                                                    && (hexByteHi = TableFromHexToBytesUtf16[value[59]]) != 0xFF
-                                                                    && value[60] < MaximalCharUtf16
-                                                                    && (hexByteLow = TableFromHexToBytesUtf16[value[60]]) != 0xFF)
-                                                                {
-                                                                    resultPtr[14] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                                    // value[61] == ','
-                                                                    // value[62] == '0'
-                                                                    // value[63] == 'x'
-
-                                                                    // 15 byte
-                                                                    if (value[64] < MaximalCharUtf16
-                                                                        && (hexByteHi = TableFromHexToBytesUtf16[value[64]]) != 0xFF
-                                                                        && value[65] < MaximalCharUtf16
-                                                                        && (hexByteLow = TableFromHexToBytesUtf16[value[65]]) != 0xFF)
-                                                                    {
-                                                                        resultPtr[15] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryParsePtrNUtf8(byte* value, byte* resultPtr)
-    {
-        // e.g. "d85b1407351d4694939203acc5870eb1"
-        byte hi;
-        byte lo;
-        // 0 byte
-        if (value[0] < MaximalCharUtf16
-            && (hi = TableFromHexToBytesUtf16[value[0]]) != 0xFF
-            && value[1] < MaximalCharUtf16
-            && (lo = TableFromHexToBytesUtf16[value[1]]) != 0xFF)
-        {
-            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
-            // 1 byte
-            if (value[2] < MaximalCharUtf16
-                && (hi = TableFromHexToBytesUtf16[value[2]]) != 0xFF
-                && value[3] < MaximalCharUtf16
-                && (lo = TableFromHexToBytesUtf16[value[3]]) != 0xFF)
-            {
-                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
-                // 2 byte
-                if (value[4] < MaximalCharUtf16
-                    && (hi = TableFromHexToBytesUtf16[value[4]]) != 0xFF
-                    && value[5] < MaximalCharUtf16
-                    && (lo = TableFromHexToBytesUtf16[value[5]]) != 0xFF)
-                {
-                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
-                    // 3 byte
-                    if (value[6] < MaximalCharUtf16
-                        && (hi = TableFromHexToBytesUtf16[value[6]]) != 0xFF
-                        && value[7] < MaximalCharUtf16
-                        && (lo = TableFromHexToBytesUtf16[value[7]]) != 0xFF)
-                    {
-                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
-                        // 4 byte
-                        if (value[8] < MaximalCharUtf16
-                            && (hi = TableFromHexToBytesUtf16[value[8]]) != 0xFF
-                            && value[9] < MaximalCharUtf16
-                            && (lo = TableFromHexToBytesUtf16[value[9]]) != 0xFF)
-                        {
-                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
-                            // 5 byte
-                            if (value[10] < MaximalCharUtf16
-                                && (hi = TableFromHexToBytesUtf16[value[10]]) != 0xFF
-                                && value[11] < MaximalCharUtf16
-                                && (lo = TableFromHexToBytesUtf16[value[11]]) != 0xFF)
-                            {
-                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
-                                // 6 byte
-                                if (value[12] < MaximalCharUtf16
-                                    && (hi = TableFromHexToBytesUtf16[value[12]]) != 0xFF
-                                    && value[13] < MaximalCharUtf16
-                                    && (lo = TableFromHexToBytesUtf16[value[13]]) != 0xFF)
-                                {
-                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
-                                    // 7 byte
-                                    if (value[14] < MaximalCharUtf16
-                                        && (hi = TableFromHexToBytesUtf16[value[14]]) != 0xFF
-                                        && value[15] < MaximalCharUtf16
-                                        && (lo = TableFromHexToBytesUtf16[value[15]]) != 0xFF)
-                                    {
-                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
-                                        // 8 byte
-                                        if (value[16] < MaximalCharUtf16
-                                            && (hi = TableFromHexToBytesUtf16[value[16]]) != 0xFF
-                                            && value[17] < MaximalCharUtf16
-                                            && (lo = TableFromHexToBytesUtf16[value[17]]) != 0xFF)
-                                        {
-                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
-                                            // 9 byte
-                                            if (value[18] < MaximalCharUtf16
-                                                && (hi = TableFromHexToBytesUtf16[value[18]]) != 0xFF
-                                                && value[19] < MaximalCharUtf16
-                                                && (lo = TableFromHexToBytesUtf16[value[19]]) != 0xFF)
-                                            {
-                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
-                                                // 10 byte
-                                                if (value[20] < MaximalCharUtf16
-                                                    && (hi = TableFromHexToBytesUtf16[value[20]]) != 0xFF
-                                                    && value[21] < MaximalCharUtf16
-                                                    && (lo = TableFromHexToBytesUtf16[value[21]]) != 0xFF)
-                                                {
-                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
-                                                    // 11 byte
-                                                    if (value[22] < MaximalCharUtf16
-                                                        && (hi = TableFromHexToBytesUtf16[value[22]]) != 0xFF
-                                                        && value[23] < MaximalCharUtf16
-                                                        && (lo = TableFromHexToBytesUtf16[value[23]]) != 0xFF)
-                                                    {
-                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
-                                                        // 12 byte
-                                                        if (value[24] < MaximalCharUtf16
-                                                            && (hi = TableFromHexToBytesUtf16[value[24]]) != 0xFF
-                                                            && value[25] < MaximalCharUtf16
-                                                            && (lo = TableFromHexToBytesUtf16[value[25]]) != 0xFF)
-                                                        {
-                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
-                                                            // 13 byte
-                                                            if (value[26] < MaximalCharUtf16
-                                                                && (hi = TableFromHexToBytesUtf16[value[26]]) != 0xFF
-                                                                && value[27] < MaximalCharUtf16
-                                                                && (lo = TableFromHexToBytesUtf16[value[27]]) != 0xFF)
-                                                            {
-                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
-                                                                // 14 byte
-                                                                if (value[28] < MaximalCharUtf16
-                                                                    && (hi = TableFromHexToBytesUtf16[value[28]]) != 0xFF
-                                                                    && value[29] < MaximalCharUtf16
-                                                                    && (lo = TableFromHexToBytesUtf16[value[29]]) != 0xFF)
-                                                                {
-                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
-                                                                    // 15 byte
-                                                                    if (value[30] < MaximalCharUtf16
-                                                                        && (hi = TableFromHexToBytesUtf16[value[30]]) != 0xFF
-                                                                        && value[31] < MaximalCharUtf16
-                                                                        && (lo = TableFromHexToBytesUtf16[value[31]]) != 0xFF)
-                                                                    {
-                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryParsePtrDUtf8(byte* value, byte* resultPtr)
-    {
-        // e.g. "d85b1407-351d-4694-9392-03acc5870eb1"
-        byte hi;
-        byte lo;
-        // 0 byte
-        if (value[0] < MaximalCharUtf16
-            && (hi = TableFromHexToBytesUtf16[value[0]]) != 0xFF
-            && value[1] < MaximalCharUtf16
-            && (lo = TableFromHexToBytesUtf16[value[1]]) != 0xFF)
-        {
-            resultPtr[0] = (byte) ((byte) (hi << 4) | lo);
-            // 1 byte
-            if (value[2] < MaximalCharUtf16
-                && (hi = TableFromHexToBytesUtf16[value[2]]) != 0xFF
-                && value[3] < MaximalCharUtf16
-                && (lo = TableFromHexToBytesUtf16[value[3]]) != 0xFF)
-            {
-                resultPtr[1] = (byte) ((byte) (hi << 4) | lo);
-                // 2 byte
-                if (value[4] < MaximalCharUtf16
-                    && (hi = TableFromHexToBytesUtf16[value[4]]) != 0xFF
-                    && value[5] < MaximalCharUtf16
-                    && (lo = TableFromHexToBytesUtf16[value[5]]) != 0xFF)
-                {
-                    resultPtr[2] = (byte) ((byte) (hi << 4) | lo);
-                    // 3 byte
-                    if (value[6] < MaximalCharUtf16
-                        && (hi = TableFromHexToBytesUtf16[value[6]]) != 0xFF
-                        && value[7] < MaximalCharUtf16
-                        && (lo = TableFromHexToBytesUtf16[value[7]]) != 0xFF)
-                    {
-                        resultPtr[3] = (byte) ((byte) (hi << 4) | lo);
-
-                        // value[8] == '-'
-
-                        // 4 byte
-                        if (value[9] < MaximalCharUtf16
-                            && (hi = TableFromHexToBytesUtf16[value[9]]) != 0xFF
-                            && value[10] < MaximalCharUtf16
-                            && (lo = TableFromHexToBytesUtf16[value[10]]) != 0xFF)
-                        {
-                            resultPtr[4] = (byte) ((byte) (hi << 4) | lo);
-                            // 5 byte
-                            if (value[11] < MaximalCharUtf16
-                                && (hi = TableFromHexToBytesUtf16[value[11]]) != 0xFF
-                                && value[12] < MaximalCharUtf16
-                                && (lo = TableFromHexToBytesUtf16[value[12]]) != 0xFF)
-                            {
-                                resultPtr[5] = (byte) ((byte) (hi << 4) | lo);
-
-                                // value[13] == '-'
-
-                                // 6 byte
-                                if (value[14] < MaximalCharUtf16
-                                    && (hi = TableFromHexToBytesUtf16[value[14]]) != 0xFF
-                                    && value[15] < MaximalCharUtf16
-                                    && (lo = TableFromHexToBytesUtf16[value[15]]) != 0xFF)
-                                {
-                                    resultPtr[6] = (byte) ((byte) (hi << 4) | lo);
-                                    // 7 byte
-                                    if (value[16] < MaximalCharUtf16
-                                        && (hi = TableFromHexToBytesUtf16[value[16]]) != 0xFF
-                                        && value[17] < MaximalCharUtf16
-                                        && (lo = TableFromHexToBytesUtf16[value[17]]) != 0xFF)
-                                    {
-                                        resultPtr[7] = (byte) ((byte) (hi << 4) | lo);
-
-                                        // value[18] == '-'
-
-                                        // 8 byte
-                                        if (value[19] < MaximalCharUtf16
-                                            && (hi = TableFromHexToBytesUtf16[value[19]]) != 0xFF
-                                            && value[20] < MaximalCharUtf16
-                                            && (lo = TableFromHexToBytesUtf16[value[20]]) != 0xFF)
-                                        {
-                                            resultPtr[8] = (byte) ((byte) (hi << 4) | lo);
-                                            // 9 byte
-                                            if (value[21] < MaximalCharUtf16
-                                                && (hi = TableFromHexToBytesUtf16[value[21]]) != 0xFF
-                                                && value[22] < MaximalCharUtf16
-                                                && (lo = TableFromHexToBytesUtf16[value[22]]) != 0xFF)
-                                            {
-                                                resultPtr[9] = (byte) ((byte) (hi << 4) | lo);
-
-                                                // value[23] == '-'
-
-                                                // 10 byte
-                                                if (value[24] < MaximalCharUtf16
-                                                    && (hi = TableFromHexToBytesUtf16[value[24]]) != 0xFF
-                                                    && value[25] < MaximalCharUtf16
-                                                    && (lo = TableFromHexToBytesUtf16[value[25]]) != 0xFF)
-                                                {
-                                                    resultPtr[10] = (byte) ((byte) (hi << 4) | lo);
-                                                    // 11 byte
-                                                    if (value[26] < MaximalCharUtf16
-                                                        && (hi = TableFromHexToBytesUtf16[value[26]]) != 0xFF
-                                                        && value[27] < MaximalCharUtf16
-                                                        && (lo = TableFromHexToBytesUtf16[value[27]]) != 0xFF)
-                                                    {
-                                                        resultPtr[11] = (byte) ((byte) (hi << 4) | lo);
-                                                        // 12 byte
-                                                        if (value[28] < MaximalCharUtf16
-                                                            && (hi = TableFromHexToBytesUtf16[value[28]]) != 0xFF
-                                                            && value[29] < MaximalCharUtf16
-                                                            && (lo = TableFromHexToBytesUtf16[value[29]]) != 0xFF)
-                                                        {
-                                                            resultPtr[12] = (byte) ((byte) (hi << 4) | lo);
-                                                            // 13 byte
-                                                            if (value[30] < MaximalCharUtf16
-                                                                && (hi = TableFromHexToBytesUtf16[value[30]]) != 0xFF
-                                                                && value[31] < MaximalCharUtf16
-                                                                && (lo = TableFromHexToBytesUtf16[value[31]]) != 0xFF)
-                                                            {
-                                                                resultPtr[13] = (byte) ((byte) (hi << 4) | lo);
-                                                                // 14 byte
-                                                                if (value[32] < MaximalCharUtf16
-                                                                    && (hi = TableFromHexToBytesUtf16[value[32]]) != 0xFF
-                                                                    && value[33] < MaximalCharUtf16
-                                                                    && (lo = TableFromHexToBytesUtf16[value[33]]) != 0xFF)
-                                                                {
-                                                                    resultPtr[14] = (byte) ((byte) (hi << 4) | lo);
-                                                                    // 15 byte
-                                                                    if (value[34] < MaximalCharUtf16
-                                                                        && (hi = TableFromHexToBytesUtf16[value[34]]) != 0xFF
-                                                                        && value[35] < MaximalCharUtf16
-                                                                        && (lo = TableFromHexToBytesUtf16[value[35]]) != 0xFF)
-                                                                    {
-                                                                        resultPtr[15] = (byte) ((byte) (hi << 4) | lo);
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryParsePtrXUtf8(byte* value, byte* resultPtr)
-    {
-        // e.g. "{0xd85b1407,0x351d,0x4694,{0x93,0x92,0x03,0xac,0xc5,0x87,0x0e,0xb1}}"
-
-        byte hexByteHi;
-        byte hexByteLow;
-        // value[0] == '{'
-        // value[1] == '0'
-        // value[2] == 'x'
-        // 0 byte
-        if (value[3] < MaximalCharUtf16
-            && (hexByteHi = TableFromHexToBytesUtf16[value[3]]) != 0xFF
-            && value[4] < MaximalCharUtf16
-            && (hexByteLow = TableFromHexToBytesUtf16[value[4]]) != 0xFF)
-        {
-            resultPtr[0] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-            // 1 byte
-            if (value[5] < MaximalCharUtf16
-                && (hexByteHi = TableFromHexToBytesUtf16[value[5]]) != 0xFF
-                && value[6] < MaximalCharUtf16
-                && (hexByteLow = TableFromHexToBytesUtf16[value[6]]) != 0xFF)
-            {
-                resultPtr[1] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                // 2 byte
-                if (value[7] < MaximalCharUtf16
-                    && (hexByteHi = TableFromHexToBytesUtf16[value[7]]) != 0xFF
-                    && value[8] < MaximalCharUtf16
-                    && (hexByteLow = TableFromHexToBytesUtf16[value[8]]) != 0xFF)
-                {
-                    resultPtr[2] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                    // 3 byte
-                    if (value[9] < MaximalCharUtf16
-                        && (hexByteHi = TableFromHexToBytesUtf16[value[9]]) != 0xFF
-                        && value[10] < MaximalCharUtf16
-                        && (hexByteLow = TableFromHexToBytesUtf16[value[10]]) != 0xFF)
-                    {
-                        resultPtr[3] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                        // value[11] == ','
-                        // value[12] == '0'
-                        // value[13] == 'x'
-
-                        // 4 byte
-                        if (value[14] < MaximalCharUtf16
-                            && (hexByteHi = TableFromHexToBytesUtf16[value[14]]) != 0xFF
-                            && value[15] < MaximalCharUtf16
-                            && (hexByteLow = TableFromHexToBytesUtf16[value[15]]) != 0xFF)
-                        {
-                            resultPtr[4] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                            // 5 byte
-                            if (value[16] < MaximalCharUtf16
-                                && (hexByteHi = TableFromHexToBytesUtf16[value[16]]) != 0xFF
-                                && value[17] < MaximalCharUtf16
-                                && (hexByteLow = TableFromHexToBytesUtf16[value[17]]) != 0xFF)
-                            {
-                                resultPtr[5] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                // value[18] == ','
-                                // value[19] == '0'
-                                // value[20] == 'x'
-
-                                // 6 byte
-                                if (value[21] < MaximalCharUtf16
-                                    && (hexByteHi = TableFromHexToBytesUtf16[value[21]]) != 0xFF
-                                    && value[22] < MaximalCharUtf16
-                                    && (hexByteLow = TableFromHexToBytesUtf16[value[22]]) != 0xFF)
-                                {
-                                    resultPtr[6] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                                    // 7 byte
-                                    if (value[23] < MaximalCharUtf16
-                                        && (hexByteHi = TableFromHexToBytesUtf16[value[23]]) != 0xFF
-                                        && value[24] < MaximalCharUtf16
-                                        && (hexByteLow = TableFromHexToBytesUtf16[value[24]]) != 0xFF)
-                                    {
-                                        resultPtr[7] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                        // value[25] == ','
-                                        // value[26] == '{'
-                                        // value[27] == '0'
-                                        // value[28] == 'x'
-
-                                        // 8 byte
-                                        if (value[29] < MaximalCharUtf16
-                                            && (hexByteHi = TableFromHexToBytesUtf16[value[29]]) != 0xFF
-                                            && value[30] < MaximalCharUtf16
-                                            && (hexByteLow = TableFromHexToBytesUtf16[value[30]]) != 0xFF)
-                                        {
-                                            resultPtr[8] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                            // value[31] == ','
-                                            // value[32] == '0'
-                                            // value[33] == 'x'
-
-                                            // 9 byte
-                                            if (value[34] < MaximalCharUtf16
-                                                && (hexByteHi = TableFromHexToBytesUtf16[value[34]]) != 0xFF
-                                                && value[35] < MaximalCharUtf16
-                                                && (hexByteLow = TableFromHexToBytesUtf16[value[35]]) != 0xFF)
-                                            {
-                                                resultPtr[9] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                // value[36] == ','
-                                                // value[37] == '0'
-                                                // value[38] == 'x'
-
-                                                // 10 byte
-                                                if (value[39] < MaximalCharUtf16
-                                                    && (hexByteHi = TableFromHexToBytesUtf16[value[39]]) != 0xFF
-                                                    && value[40] < MaximalCharUtf16
-                                                    && (hexByteLow = TableFromHexToBytesUtf16[value[40]]) != 0xFF)
-                                                {
-                                                    resultPtr[10] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                    // value[41] == ','
-                                                    // value[42] == '0'
-                                                    // value[43] == 'x'
-
-                                                    // 11 byte
-                                                    if (value[44] < MaximalCharUtf16
-                                                        && (hexByteHi = TableFromHexToBytesUtf16[value[44]]) != 0xFF
-                                                        && value[45] < MaximalCharUtf16
-                                                        && (hexByteLow = TableFromHexToBytesUtf16[value[45]]) != 0xFF)
-                                                    {
-                                                        resultPtr[11] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                        // value[46] == ','
-                                                        // value[47] == '0'
-                                                        // value[48] == 'x'
-
-                                                        // 12 byte
-                                                        if (value[49] < MaximalCharUtf16
-                                                            && (hexByteHi = TableFromHexToBytesUtf16[value[49]]) != 0xFF
-                                                            && value[50] < MaximalCharUtf16
-                                                            && (hexByteLow = TableFromHexToBytesUtf16[value[50]]) != 0xFF)
-                                                        {
-                                                            resultPtr[12] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                            // value[51] == ','
-                                                            // value[52] == '0'
-                                                            // value[53] == 'x'
-
-                                                            // 13 byte
-                                                            if (value[54] < MaximalCharUtf16
-                                                                && (hexByteHi = TableFromHexToBytesUtf16[value[54]]) != 0xFF
-                                                                && value[55] < MaximalCharUtf16
-                                                                && (hexByteLow = TableFromHexToBytesUtf16[value[55]]) != 0xFF)
-                                                            {
-                                                                resultPtr[13] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                                // value[56] == ','
-                                                                // value[57] == '0'
-                                                                // value[58] == 'x'
-
-                                                                // 14 byte
-                                                                if (value[59] < MaximalCharUtf16
-                                                                    && (hexByteHi = TableFromHexToBytesUtf16[value[59]]) != 0xFF
-                                                                    && value[60] < MaximalCharUtf16
-                                                                    && (hexByteLow = TableFromHexToBytesUtf16[value[60]]) != 0xFF)
-                                                                {
-                                                                    resultPtr[14] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-
-                                                                    // value[61] == ','
-                                                                    // value[62] == '0'
-                                                                    // value[63] == 'x'
-
-                                                                    // 15 byte
-                                                                    if (value[64] < MaximalCharUtf16
-                                                                        && (hexByteHi = TableFromHexToBytesUtf16[value[64]]) != 0xFF
-                                                                        && value[65] < MaximalCharUtf16
-                                                                        && (hexByteLow = TableFromHexToBytesUtf16[value[65]]) != 0xFF)
-                                                                    {
-                                                                        resultPtr[15] = (byte) ((byte) (hexByteHi << 4) | hexByteLow);
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     //
     // IComparisonOperators
     //
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_LessThan(TSelf, TOther)" />
-#else
-    /// <summary>
-    ///     Compares two values to determine which is less.
-    /// </summary>
-    /// <param name="left">The value to compare with <paramref name="right" />.</param>
-    /// <param name="right">The value to compare with <paramref name="left" />.</param>
-    /// <returns><see langword="true" /> if <paramref name="left" /> is less than <paramref name="right" />; otherwise, <see langword="false" />.</returns>
-#endif
     public static bool operator <(Uuid left, Uuid right)
     {
         int compareResult = left.CompareTo(right);
         return compareResult is -1;
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_LessThanOrEqual(TSelf, TOther)" />
-#else
-    /// <summary>
-    ///     Compares two values to determine which is less or equal.
-    /// </summary>
-    /// <param name="left">The value to compare with <paramref name="right" />.</param>
-    /// <param name="right">The value to compare with <paramref name="left" />.</param>
-    /// <returns>
-    ///     <see langword="true" /> if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise,
-    ///     <see langword="false" />.
-    /// </returns>
-#endif
     public static bool operator <=(Uuid left, Uuid right)
     {
         int compareResult = left.CompareTo(right);
         return compareResult is 0 or -1;
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThan(TSelf, TOther)" />
-#else
-    /// <summary>
-    ///     Compares two values to determine which is greater.
-    /// </summary>
-    /// <param name="left">The value to compare with <paramref name="right" />.</param>
-    /// <param name="right">The value to compare with <paramref name="left" />.</param>
-    /// <returns>
-    ///     <see langword="true" /> if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, <see langword="false" />
-    ///     .
-    /// </returns>
-#endif
     public static bool operator >(Uuid left, Uuid right)
     {
         int compareResult = left.CompareTo(right);
         return compareResult is 1;
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="System.Numerics.IComparisonOperators{TSelf, TOther, TResult}.op_GreaterThanOrEqual(TSelf, TOther)" />
-#else
-    /// <summary>
-    ///     Compares two values to determine which is greater or equal.
-    /// </summary>
-    /// <param name="left">The value to compare with <paramref name="right" />.</param>
-    /// <param name="right">The value to compare with <paramref name="left" />.</param>
-    /// <returns>
-    ///     <see langword="true" /> if <paramref name="left" /> is greater than or equal to <paramref name="right" />; otherwise,
-    ///     <see langword="false" />.
-    /// </returns>
-#endif
     public static bool operator >=(Uuid left, Uuid right)
     {
         int compareResult = left.CompareTo(right);
@@ -3470,33 +1550,13 @@ public unsafe struct Uuid :
     //
     // IParsable
     //
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)" />
-#else
-    /// <summary>
-    ///     Parses a string into a value.
-    /// </summary>
-    /// <param name="s">The string to parse.</param>
-    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="s" /> is <see langword="null" />.</exception>
-    /// <exception cref="FormatException"><paramref name="s" /> is not in the correct format.</exception>
-#endif
     public static Uuid Parse(string s, IFormatProvider? provider)
     {
         return Parse(s);
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="IParsable{TSelf}.TryParse(string?, IFormatProvider?, out TSelf)" />
-#else
-    /// <summary>
-    ///     Tries to parse a string into a value.
-    /// </summary>
-    /// <param name="s">The string to parse.</param>
-    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
-    /// <param name="result">On return, contains the result of successfully parsing <paramref name="s" /> or an undefined value on failure.</param>
-    /// <returns><see langword="true" /> if <paramref name="s" /> was successfully parsed; otherwise, <see langword="false" />.</returns>
-#endif
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Uuid result)
     {
         return TryParse(s, out result);
@@ -3505,102 +1565,30 @@ public unsafe struct Uuid :
     //
     // ISpanParsable
     //
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)" />
-#else
-    /// <summary>
-    ///     Parses a span of characters into a value.
-    /// </summary>
-    /// <param name="s">The span of characters to parse.</param>
-    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
-    /// <exception cref="FormatException"><paramref name="s" /> is not in a recognized format.</exception>
-#endif
     public static Uuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
     {
         return Parse(s);
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc cref="ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)" />
-#else
-    /// <summary>
-    ///     Tries to parse a span of characters into a value.
-    /// </summary>
-    /// <param name="s">The span of characters to parse.</param>
-    /// <param name="provider">An object that provides culture-specific formatting information about <paramref name="s" />.</param>
-    /// <param name="result">On return, contains the result of successfully parsing <paramref name="s" /> or an undefined value on failure.</param>
-    /// <returns><see langword="true" /> if <paramref name="s" /> was successfully parsed; otherwise, <see langword="false" />.</returns>
-#endif
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Uuid result)
     {
         return TryParse(s, out result);
     }
 
-    #region Generator
-
-    private const long ChristianCalendarGregorianReformTicksDate = 499_163_040_000_000_000L;
-
-    private const byte ResetVersionMask = 0b0000_1111;
-    private const byte Version1Flag = 0b0001_0000;
-
-    private const byte ResetReservedMask = 0b0011_1111;
-    private const byte ReservedFlag = 0b1000_0000;
-
-    /// <summary>
-    ///     <para>
-    ///         <b>Obsolete. Use <see cref="CreateVersion7()" /> instead.</b>
-    ///     </para>
-    ///     <para>Initializes a new instance of the <see cref="Uuid" /> structure that represents Uuid v1 (RFC4122).</para>
-    /// </summary>
-    /// <returns></returns>
-    [Obsolete("Use CreateVersion7() instead.")]
-    public static Uuid NewTimeBased()
+    //
+    // IUtf8SpanParsable
+    //
+    /// <inheritdoc cref="IUtf8SpanParsable{TSelf}.Parse(ReadOnlySpan{byte}, IFormatProvider?)" />
+    public static Uuid Parse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider)
     {
-        byte* resultPtr = stackalloc byte[16];
-        var resultAsGuidPtr = (Guid*) resultPtr;
-        var guid = Guid.NewGuid();
-        resultAsGuidPtr[0] = guid;
-        long currentTicks = DateTime.UtcNow.Ticks - ChristianCalendarGregorianReformTicksDate;
-        var ticksPtr = (byte*) &currentTicks;
-        resultPtr[0] = ticksPtr[3];
-        resultPtr[1] = ticksPtr[2];
-        resultPtr[2] = ticksPtr[1];
-        resultPtr[3] = ticksPtr[0];
-        resultPtr[4] = ticksPtr[5];
-        resultPtr[5] = ticksPtr[4];
-        resultPtr[6] = (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag);
-        resultPtr[7] = ticksPtr[6];
-        resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
-        return new Uuid(new Span<byte>(resultPtr, 16));
+        return Parse(utf8Text);
     }
 
-    /// <summary>
-    ///     <para>
-    ///         <b>Obsolete. Use <see cref="CreateVersion7()" /> instead.</b>
-    ///     </para>
-    ///     <para>Initializes a new instance of the <see cref="Uuid" /> structure that works the same way as UUID_TO_BIN(UUID(), 1) from MySQL 8.0.</para>
-    /// </summary>
-    /// <returns></returns>
-    [Obsolete("Use CreateVersion7() instead.")]
-    public static Uuid NewMySqlOptimized()
+    /// <inheritdoc cref="IUtf8SpanParsable{TSelf}.TryParse(ReadOnlySpan{byte}, IFormatProvider?, out TSelf)" />
+    public static bool TryParse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider, out Uuid result)
     {
-        byte* resultPtr = stackalloc byte[16];
-        var resultAsGuidPtr = (Guid*) resultPtr;
-        var guid = Guid.NewGuid();
-        resultAsGuidPtr[0] = guid;
-        long currentTicks = DateTime.UtcNow.Ticks - ChristianCalendarGregorianReformTicksDate;
-        var ticksPtr = (byte*) &currentTicks;
-        resultPtr[0] = (byte) ((ticksPtr[7] & ResetVersionMask) | Version1Flag);
-        resultPtr[1] = ticksPtr[6];
-        resultPtr[2] = ticksPtr[5];
-        resultPtr[3] = ticksPtr[4];
-        resultPtr[4] = ticksPtr[3];
-        resultPtr[5] = ticksPtr[2];
-        resultPtr[6] = ticksPtr[1];
-        resultPtr[7] = ticksPtr[0];
-        resultPtr[8] = (byte) ((resultPtr[8] & ResetReservedMask) | ReservedFlag);
-        return new Uuid(new Span<byte>(resultPtr, 16));
+        return TryParse(utf8Text, out result);
     }
-
-    #endregion
 }

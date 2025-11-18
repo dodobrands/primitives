@@ -14,32 +14,24 @@ jobs:
               uses: actions/checkout@v4
               with:
                   ref: ${{ github.sha }}
-            - name: Setup .NET Core SDK 6.0.428
-              uses: actions/setup-dotnet@v4
+            - name: Setup .NET Core SDK 8.0.416
+              uses: actions/setup-dotnet@v5
               with:
-                  dotnet-version: 6.0.428
-            - name: Setup .NET Core SDK 8.0.406
-              uses: actions/setup-dotnet@v4
+                  dotnet-version: 8.0.416
+            - name: Setup .NET Core SDK 9.0.307
+              uses: actions/setup-dotnet@v5
               with:
-                  dotnet-version: 8.0.406
-            - name: Setup .NET Core SDK 9.0.200
-              uses: actions/setup-dotnet@v4
+                  dotnet-version: 9.0.307
+            - name: Setup .NET Core SDK 10.0.100
+              uses: actions/setup-dotnet@v5
               with:
-                  dotnet-version: 9.0.200
+                  dotnet-version: 10.0.100
             - name: Create coverage directory and promote absolute paths to env
               shell: bash
               run: |
                   mkdir coverage
                   PATH_TO_COVERAGE_DIRECTORY=$(realpath coverage)
                   echo "coverage_directory=${PATH_TO_COVERAGE_DIRECTORY}" >> $GITHUB_ENV
-
-                  PATH_NET6_NOHW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net6nohw"
-                  echo "cover_net6_nohw=${PATH_NET6_NOHW}" >> $GITHUB_ENV
-                  echo "cover_net6_nohw_merge=${PATH_NET6_NOHW}.net6.0.json" >> $GITHUB_ENV
-
-                  PATH_NET6_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net6hw"
-                  echo "cover_net6_hw=${PATH_NET6_HW}" >> $GITHUB_ENV
-                  echo "cover_net6_hw_merge=${PATH_NET6_HW}.net6.0.json" >> $GITHUB_ENV
 
                   PATH_NET8_NOHW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net8nohw"
                   echo "cover_net8_nohw=${PATH_NET8_NOHW}" >> $GITHUB_ENV
@@ -55,30 +47,15 @@ jobs:
 
                   PATH_NET9_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net9hw"
                   echo "cover_net9_hw=${PATH_NET9_HW}" >> $GITHUB_ENV
-                  echo "cover_net9_hw_merge=${PATH_NET9_HW}.net9.0.info" >> $GITHUB_ENV
-            - name: Run .NET 6 tests without Hardware Intrinsics
-              shell: bash
-              run: |
-                  export COMPlus_EnableHWIntrinsic=0
-                  export DOTNET_EnableHWIntrinsic=0
-                  export COMPlus_ReadyToRun=0
-                  export DOTNET_ReadyToRun=0
-                  export CollectCoverage=true
-                  export CoverletOutputFormat=json
-                  export CoverletOutput=${{ env.cover_net6_nohw }}
-                  dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
-            - name: Run .NET 6 tests with Hardware Intrinsics
-              shell: bash
-              run: |
-                  export COMPlus_EnableHWIntrinsic=1
-                  export DOTNET_EnableHWIntrinsic=1
-                  unset COMPlus_ReadyToRun
-                  unset DOTNET_ReadyToRun
-                  export CollectCoverage=true
-                  export CoverletOutputFormat=json
-                  export CoverletOutput=${{ env.cover_net6_hw }}
-                  export MergeWith=${{ env.cover_net6_nohw_merge }}
-                  dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net6.0
+                  echo "cover_net9_hw_merge=${PATH_NET9_HW}.net9.0.json" >> $GITHUB_ENV
+
+                  PATH_NET10_NOHW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net10nohw"
+                  echo "cover_net10_nohw=${PATH_NET10_NOHW}" >> $GITHUB_ENV
+                  echo "cover_net10_nohw_merge=${PATH_NET10_NOHW}.net10.0.json" >> $GITHUB_ENV
+
+                  PATH_NET10_HW="${PATH_TO_COVERAGE_DIRECTORY}/cover_net10hw"
+                  echo "cover_net10_hw=${PATH_NET10_HW}" >> $GITHUB_ENV
+                  echo "cover_net10_hw_merge=${PATH_NET10_HW}.net10.0.info" >> $GITHUB_ENV
             - name: Run .NET 8 tests without Hardware Intrinsics
               shell: bash
               run: |
@@ -89,7 +66,6 @@ jobs:
                   export CollectCoverage=true
                   export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net8_nohw }}
-                  export MergeWith=${{ env.cover_net6_hw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net8.0
             - name: Run .NET 8 tests with Hardware Intrinsics
               shell: bash
@@ -123,32 +99,56 @@ jobs:
                   unset COMPlus_ReadyToRun
                   unset DOTNET_ReadyToRun
                   export CollectCoverage=true
-                  export CoverletOutputFormat=lcov
+                  export CoverletOutputFormat=json
                   export CoverletOutput=${{ env.cover_net9_hw }}
                   export MergeWith=${{ env.cover_net9_nohw_merge }}
                   dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net9.0
+            - name: Run .NET 10 tests without Hardware Intrinsics
+              shell: bash
+              run: |
+                  export COMPlus_EnableHWIntrinsic=0
+                  export DOTNET_EnableHWIntrinsic=0
+                  export COMPlus_ReadyToRun=0
+                  export DOTNET_ReadyToRun=0
+                  export CollectCoverage=true
+                  export CoverletOutputFormat=json
+                  export CoverletOutput=${{ env.cover_net10_nohw }}
+                  export MergeWith=${{ env.cover_net9_hw_merge }}
+                  dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net10.0
+            - name: Run .NET 10 tests with Hardware Intrinsics
+              shell: bash
+              run: |
+                  export COMPlus_EnableHWIntrinsic=1
+                  export DOTNET_EnableHWIntrinsic=1
+                  unset COMPlus_ReadyToRun
+                  unset DOTNET_ReadyToRun
+                  export CollectCoverage=true
+                  export CoverletOutputFormat=lcov
+                  export CoverletOutput=${{ env.cover_net10_hw }}
+                  export MergeWith=${{ env.cover_net10_nohw_merge }}
+                  dotnet test -c Release ./src/Dodo.Primitives.Tests/Dodo.Primitives.Tests.csproj -f net10.0
             - name: Upload coverage reports to Codecov
-              uses: codecov/codecov-action@v4
+              uses: codecov/codecov-action@v5
               env:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               with:
                   fail_ci_if_error: true
-                  files: ${{ env.cover_net9_hw_merge }}
+                  files: ${{ env.cover_net10_hw_merge }}
             - name: Build and publish library to NuGet
               shell: bash
               run: |
-                  dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net6.0
                   dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net8.0
                   dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net9.0
+                  dotnet publish ./src/Dodo.Primitives/Dodo.Primitives.csproj -c Release -f net10.0
                   dotnet pack -c Release --output out/primitives ./src/Dodo.Primitives/Dodo.Primitives.csproj
 
                   rm ./out/primitives/*.symbols.nupkg
                   PATH_TO_PACKAGE=$(readlink -f ./out/primitives/*.nupkg)
                   dotnet nuget push "$PATH_TO_PACKAGE" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
-                  dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net6.0
                   dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net8.0
                   dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net9.0
+                  dotnet publish ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj -c Release -f net10.0
                   dotnet pack -c Release --output out/generation ./src/Dodo.Primitives.Generation/Dodo.Primitives.Generation.csproj
 
                   rm ./out/generation/*.symbols.nupkg
