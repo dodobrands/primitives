@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 using Dodo.Primitives.Tests.Uuids.Data;
 using Dodo.Primitives.Tests.Uuids.Data.Models;
@@ -6,12 +10,29 @@ using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
 
-public class UuidTryParseUtf8Tests
+public class UuidTryParseUtf8WithFormatProviderTests
 {
-    [Test]
-    public void TryParseUtf8NullSpanShouldFalse()
+    public static IEnumerable GetFormatProviders()
     {
-        bool parsed = Uuid.TryParse((ReadOnlySpan<byte>) null, out Uuid uuid);
+        foreach (IFormatProvider? nullableFormatProvider in GetNullableFormatProviders())
+        {
+            yield return nullableFormatProvider;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "RedundantCast")]
+    public static IEnumerable<IFormatProvider?> GetNullableFormatProviders()
+    {
+        yield return (IFormatProvider?) CultureInfo.InvariantCulture;
+        yield return (IFormatProvider?) new CultureInfo("en-US");
+        yield return (IFormatProvider?) null!;
+    }
+
+    [Test]
+    public void TryParseNullUtf8StringShouldFalse([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
+    {
+        byte[]? valueToParse = null;
+        bool parsed = Uuid.TryParse(valueToParse, formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.That(parsed, Is.False);
@@ -20,9 +41,10 @@ public class UuidTryParseUtf8Tests
     }
 
     [Test]
-    public void TryParseUtf8EmptySpanShouldFalse()
+    public void TryParseEmptyUtf8StringShouldFalse([ValueSource(nameof(GetFormatProviders))] IFormatProvider formatProvider)
     {
-        bool parsed = Uuid.TryParse(ReadOnlySpan<byte>.Empty, out Uuid uuid);
+        byte[] valueToParse = Array.Empty<byte>();
+        bool parsed = Uuid.TryParse(valueToParse, formatProvider, out Uuid uuid);
         Assert.Multiple(() =>
         {
             Assert.That(parsed, Is.False);
@@ -39,19 +61,19 @@ public class UuidTryParseUtf8Tests
     }
 
     [Test]
-    public void ParseUtf8NIncorrectLargeSpan()
+    public void TryParseUtf8NIncorrectLargeSpan()
     {
         TryParseUtf8IncorrectSpan(UuidTestData.LargeNStrings);
     }
 
     [Test]
-    public void ParseNIncorrectSmallSpan()
+    public void TryParseUtf8NIncorrectSmallSpan()
     {
         TryParseUtf8IncorrectSpan(UuidTestData.SmallNStrings);
     }
 
     [Test]
-    public void ParseIncorrectNSpan()
+    public void TryParseUtf8IncorrectNSpan()
     {
         TryParseUtf8IncorrectSpan(UuidTestData.BrokenNStrings);
     }
@@ -71,6 +93,7 @@ public class UuidTryParseUtf8Tests
     {
         TryParseUtf8IncorrectSpan(UuidTestData.LargeDStrings);
     }
+
 
     [Test]
     public void TryParseUtf8DIncorrectSmallSpan()
@@ -176,23 +199,24 @@ public class UuidTryParseUtf8Tests
     {
         Assert.Multiple(() =>
         {
-            Span<byte> utf8Buffer = stackalloc byte[8192];
-            foreach (UuidStringWithBytes correctString in correctStrings)
+            foreach (IFormatProvider? formatProvider in GetNullableFormatProviders())
             {
-                int utf8Chars = GetUtf8BytesSpanFromString(correctString.String, utf8Buffer);
-                Span<byte> spanToParse = utf8Buffer[..utf8Chars];
-                byte[] expectedBytes = correctString.Bytes;
-
-                bool parsed = Uuid.TryParse(spanToParse, out Uuid uuid);
-
-                var actualBytes = new byte[16];
-                fixed (byte* pinnedActualBytes = actualBytes)
+                foreach (UuidStringWithBytes correctString in correctStrings)
                 {
-                    *(Uuid*) pinnedActualBytes = uuid;
-                }
+                    byte[] spanToParse = Encoding.UTF8.GetBytes(correctString.String);
+                    byte[] expectedBytes = correctString.Bytes;
 
-                Assert.That(parsed);
-                Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                    bool parsed = Uuid.TryParse(spanToParse, formatProvider, out Uuid uuid);
+
+                    var actualBytes = new byte[16];
+                    fixed (byte* pinnedActualBytes = actualBytes)
+                    {
+                        *(Uuid*) pinnedActualBytes = uuid;
+                    }
+
+                    Assert.That(parsed);
+                    Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+                }
             }
         });
     }
@@ -201,30 +225,15 @@ public class UuidTryParseUtf8Tests
     {
         Assert.Multiple(() =>
         {
-            Span<byte> utf8Buffer = stackalloc byte[8192];
-            foreach (string largeString in incorrectLargeStrings)
+            foreach (IFormatProvider? formatProvider in GetNullableFormatProviders())
             {
-                int utf8Chars = GetUtf8BytesSpanFromString(largeString, utf8Buffer);
-                Span<byte> spanToParse = utf8Buffer[..utf8Chars];
-                Assert.That(Uuid.TryParse(spanToParse, out _), Is.False);
+                foreach (string largeString in incorrectLargeStrings)
+                {
+                    byte[] spanToParse = Encoding.UTF8.GetBytes(largeString);
+                    Assert.That(Uuid.TryParse(spanToParse, formatProvider, out _), Is.False);
+                }
             }
         });
-    }
-
-    private static int GetUtf8BytesSpanFromString(string uuidString, Span<byte> result)
-    {
-        byte[] resultBytes = Encoding.UTF8.GetBytes(uuidString);
-        if (resultBytes.Length > result.Length)
-        {
-            throw new Exception("Utf8 bytes larger than provided buffer");
-        }
-
-        for (var i = 0; i < resultBytes.Length; i++)
-        {
-            result[i] = resultBytes[i];
-        }
-
-        return resultBytes.Length;
     }
 
     #endregion

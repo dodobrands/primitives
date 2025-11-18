@@ -1,5 +1,4 @@
-﻿using System;
-using Dodo.Primitives.Tests.Uuids.Data;
+﻿using Dodo.Primitives.Tests.Uuids.Data;
 using NUnit.Framework;
 
 namespace Dodo.Primitives.Tests.Uuids;
@@ -21,7 +20,6 @@ public class UuidPropertiesTests
     }
 
 #if NET9_0_OR_GREATER
-
     [TestCaseSource(typeof(UuidTestData), nameof(UuidTestData.GetAllUuidVersions))]
     public void VersionHasCorrectValueThatMathGuidOnNet9(string uuidString, int expectedVersion)
     {

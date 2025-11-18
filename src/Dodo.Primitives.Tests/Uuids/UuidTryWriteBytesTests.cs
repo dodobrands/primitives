@@ -30,7 +30,7 @@ public class UuidTryWriteBytesTests
 
         bool wasWritten = uuid.TryWriteBytes(output);
 
-        byte[] outputBytes = output.Slice(0, 16).ToArray();
+        byte[] outputBytes = output[..16].ToArray();
 
         Assert.That(wasWritten);
         Assert.That(outputBytes, Is.EqualTo(correctBytes));

@@ -9,7 +9,7 @@ internal static unsafe class InternalHexTables
     internal const ushort MaximalChar = 128;
     internal static readonly uint* TableToHexUtf16;
     internal static readonly ushort* TableToHexUtf8;
-    internal static readonly byte* TableFromHexToBytesUtf16;
+    internal static readonly byte* TableFromHexToBytes;
 
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     static InternalHexTables()
@@ -36,12 +36,12 @@ internal static unsafe class InternalHexTables
             TableToHexUtf16[i] = utf16;
         }
 
-        IntPtr tableFromHexToBytesUtf16Buffer = Marshal.AllocHGlobal(MaximalChar);
-        void* tableFromHexToBytesUtf16BufferPointer = tableFromHexToBytesUtf16Buffer.ToPointer();
-        TableFromHexToBytesUtf16 = (byte*) tableFromHexToBytesUtf16BufferPointer;
+        IntPtr tableFromHexToBytesBuffer = Marshal.AllocHGlobal(MaximalChar);
+        void* tableFromHexToBytesBufferPointer = tableFromHexToBytesBuffer.ToPointer();
+        TableFromHexToBytes = (byte*) tableFromHexToBytesBufferPointer;
         for (var i = 0; i < MaximalChar; i++)
         {
-            TableFromHexToBytesUtf16[i] = (char) i switch
+            TableFromHexToBytes[i] = (char) i switch
             {
                 '0' => 0x0,
                 '1' => 0x1,

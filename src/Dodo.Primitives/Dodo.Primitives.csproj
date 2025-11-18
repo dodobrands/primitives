@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <ProjectGuid>b9ecdb73-d6f3-4ec4-b4b4-a7ed2ae781b7</ProjectGuid>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
