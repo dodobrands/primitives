@@ -24,7 +24,7 @@ public class UuidPropertiesTests
     public void VersionHasCorrectValueThatMathGuidOnNet9(string uuidString, int expectedVersion)
     {
         var uuid = new Uuid(uuidString);
-        var guid = new Guid(uuidString);
+        var guid = new System.Guid(uuidString);
         Assert.That(uuid.Version, Is.EqualTo(expectedVersion));
         Assert.That(uuid.Version, Is.EqualTo(guid.Version));
     }
@@ -33,7 +33,7 @@ public class UuidPropertiesTests
     public void VariantHasCorrectValueThatMathGuidOnNet9(string uuidString, int expectedVariant)
     {
         var uuid = new Uuid(uuidString);
-        var guid = new Guid(uuidString);
+        var guid = new System.Guid(uuidString);
         Assert.That(uuid.Variant, Is.EqualTo(expectedVariant));
         Assert.That(uuid.Variant, Is.EqualTo(guid.Variant));
     }
