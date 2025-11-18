@@ -17,6 +17,7 @@ namespace Dodo.Primitives;
 [TypeConverter(typeof(UuidTypeConverter))]
 [JsonConverter(typeof(SystemTextJsonUuidJsonConverter))]
 [SuppressMessage("ReSharper", "RedundantNameQualifier")]
+[SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
 public unsafe partial struct Uuid :
     ISpanFormattable,
     IFormattable,
